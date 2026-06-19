@@ -233,7 +233,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/rlSampleOut">
 
-        <include layout="@layout/chat_input_panel" />
+        <include
+            android:id="@+id/input"
+            layout="@layout/chat_input_panel" />
     </FrameLayout>
 
 </RelativeLayout>

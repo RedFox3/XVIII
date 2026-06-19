@@ -85,7 +85,7 @@ abstract class BaseAttachmentsViewModel<T : Any>(protected val api: ApiService) 
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <VM : ViewModel?> create(modelClass: Class<VM>): VM = when (modelClass) {
+        override fun <VM : ViewModel> create(modelClass: Class<VM>): VM = when (modelClass) {
             DocAttachmentsViewModel::class.java -> DocAttachmentsViewModel(api) as VM
             LinkAttachmentsViewModel::class.java -> LinkAttachmentsViewModel(api) as VM
             VideoAttachmentsViewModel::class.java -> VideoAttachmentsViewModel(api) as VM

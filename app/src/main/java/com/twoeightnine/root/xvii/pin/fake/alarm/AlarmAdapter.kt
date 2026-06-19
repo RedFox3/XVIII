@@ -19,15 +19,14 @@
 package com.twoeightnine.root.xvii.pin.fake.alarm
 
 import android.content.Context
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.ItemAlarmBinding
 import com.twoeightnine.root.xvii.uikit.Munch
 import com.twoeightnine.root.xvii.uikit.paint
 import com.twoeightnine.root.xvii.utils.secToTime
 import global.msnthrp.xvii.uikit.base.adapters.BaseAdapter
-import kotlinx.android.synthetic.main.item_alarm.view.*
 
 class AlarmAdapter(
         context: Context,
@@ -37,7 +36,7 @@ class AlarmAdapter(
     override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
-    ) = AlarmViewHolder(inflater.inflate(R.layout.item_alarm, parent, false))
+    ) = AlarmViewHolder(ItemAlarmBinding.inflate(LayoutInflater.from(parent.context)))
 
     override fun onBindViewHolder(holder: AlarmViewHolder, position: Int) {
         holder.bind(items[position])
@@ -51,10 +50,10 @@ class AlarmAdapter(
         onAllEnabled()
     }
 
-    inner class AlarmViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class AlarmViewHolder(private val binding: ItemAlarmBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(alarm: Alarm) {
-            with(itemView) {
+            with(binding) {
                 tvTime.text = secToTime(alarm.time)
                 swEnabled.isChecked = alarm.enabled
                 cbEveryDay.isChecked = !alarm.onlyOnce

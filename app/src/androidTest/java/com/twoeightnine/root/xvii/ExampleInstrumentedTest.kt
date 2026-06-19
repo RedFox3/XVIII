@@ -37,6 +37,6 @@ class ExampleInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getTargetContext()
 
-        assertEquals("com.twoeightnine.root.xvii", appContext.packageName)
+        assertEquals("com.twoeightnine.root.xviii", appContext.packageName)
     }
 }

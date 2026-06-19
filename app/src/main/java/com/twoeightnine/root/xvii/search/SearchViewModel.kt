@@ -69,10 +69,19 @@ class SearchViewModel(private val api: ApiService) : ViewModel() {
     }
 
     private fun createFromUser(user: User) = Dialog(
-            peerId = user.id,
-            title = user.fullName,
-            photo = user.photo100,
-            isOnline = user.isOnline
+        peerId = user.id,
+        messageId = 0,
+        title = user.fullName,
+        photo = user.photo100,
+        text = "",
+        timeStamp = 0,
+        isOut = false,
+        isRead = true,
+        unreadCount = 0,
+        isOnline = user.isOnline,
+        isMute = false,
+        isPinned = false,
+        alias = null
     )
 
     companion object {
@@ -97,10 +106,19 @@ class SearchViewModel(private val api: ApiService) : ViewModel() {
             friends.response?.items?.forEach { dialogs.add(createFromUser(it)) }
             cResp?.items?.forEach { conversation ->
                 dialogs.add(Dialog(
-                        peerId = conversation.peer?.id ?: 0,
-                        title = cResp.getTitleFor(conversation) ?: "",
-                        photo = cResp.getPhotoFor(conversation) ?: "",
-                        isOnline = cResp.isOnline(conversation)
+                    peerId = conversation.peer?.id ?: 0,
+                    messageId = 0,
+                    title = cResp.getTitleFor(conversation) ?: "",
+                    photo = cResp.getPhotoFor(conversation) ?: "",
+                    text = "",
+                    timeStamp = 0,
+                    isOut = false,
+                    isRead = true,
+                    unreadCount = 0,
+                    isOnline = cResp.isOnline(conversation),
+                    isMute = false,
+                    isPinned = false,
+                    alias = null
                 ))
             }
             users.response?.items?.forEach { dialogs.add(createFromUser(it)) }
@@ -111,7 +129,7 @@ class SearchViewModel(private val api: ApiService) : ViewModel() {
 
     class Factory @Inject constructor(private val api: ApiService) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass == SearchViewModel::class.java) {
                 return SearchViewModel(api) as T
             }

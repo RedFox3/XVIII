@@ -19,17 +19,16 @@
 package com.twoeightnine.root.xvii.search
 
 import android.content.Context
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.ItemDialogSearchBinding
 import com.twoeightnine.root.xvii.extensions.load
 import com.twoeightnine.root.xvii.managers.Prefs
 import global.msnthrp.xvii.data.dialogs.Dialog
 import global.msnthrp.xvii.uikit.base.adapters.BaseAdapter
 import global.msnthrp.xvii.uikit.extensions.hide
 import global.msnthrp.xvii.uikit.extensions.lowerIf
-import kotlinx.android.synthetic.main.item_dialog_search.view.*
 
 class SearchAdapter(
         context: Context,
@@ -37,16 +36,17 @@ class SearchAdapter(
         private val onLongClick: (Dialog) -> Unit
 ) : BaseAdapter<Dialog, SearchAdapter.SearchViewHolder>(context) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = SearchViewHolder(inflater.inflate(R.layout.item_dialog_search, null))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        SearchViewHolder(ItemDialogSearchBinding.inflate(LayoutInflater.from(parent.context)))
 
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
         holder.bind(items[position])
     }
 
-    inner class SearchViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class SearchViewHolder(private val binding: ItemDialogSearchBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(dialog: Dialog) {
-            with(itemView) {
+            with(binding) {
                 civPhoto.load(dialog.photo)
                 tvTitle.text = dialog.title
                 tvTitle.lowerIf(Prefs.lowerTexts)

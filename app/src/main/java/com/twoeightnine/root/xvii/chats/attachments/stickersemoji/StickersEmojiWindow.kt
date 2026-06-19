@@ -19,14 +19,14 @@
 package com.twoeightnine.root.xvii.chats.attachments.stickersemoji
 
 import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
-import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.WindowStickersBinding
 import com.twoeightnine.root.xvii.model.attachments.Sticker
 import com.twoeightnine.root.xvii.views.KeyboardWindow
 import global.msnthrp.xvii.data.stickersemoji.model.Emoji
 import global.msnthrp.xvii.uikit.extensions.hide
 import global.msnthrp.xvii.uikit.extensions.isValidForGlide
-import kotlinx.android.synthetic.main.window_stickers.view.*
 
 
 class StickersEmojiWindow(
@@ -41,10 +41,14 @@ class StickersEmojiWindow(
         StickersEmojiRepository()
     }
 
+    private lateinit var binding: WindowStickersBinding
+
     override fun getAdditionalHeight() = 0
 
-    override fun createView(): View =
-            View.inflate(context, R.layout.window_stickers, null)
+    override fun createView(): View {
+        binding = WindowStickersBinding.inflate(LayoutInflater.from(context))
+        return binding.root
+    }
 
     override fun onViewCreated() {
         super.onViewCreated()
@@ -63,7 +67,7 @@ class StickersEmojiWindow(
 
                 val hasRecentStickers = stickerPacks.find { it.name == null }?.stickers?.isNotEmpty()
                         ?: false
-                with(contentView) {
+                with(binding) {
                     progressBar.hide()
                     val pagerAdapter = PacksPagerAdapter(context, stickerPacks, emojiPacks, WindowCallback())
                     viewPager.adapter = pagerAdapter

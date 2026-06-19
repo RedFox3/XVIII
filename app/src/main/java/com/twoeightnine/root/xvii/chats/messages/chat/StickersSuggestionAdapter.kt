@@ -19,14 +19,12 @@
 package com.twoeightnine.root.xvii.chats.messages.chat
 
 import android.content.Context
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.ItemStickerSuggestionBinding
 import com.twoeightnine.root.xvii.extensions.load
 import com.twoeightnine.root.xvii.model.attachments.Sticker
 import global.msnthrp.xvii.uikit.base.adapters.BaseAdapter
-import kotlinx.android.synthetic.main.item_sticker.view.*
 
 class StickersSuggestionAdapter(
         context: Context,
@@ -34,19 +32,19 @@ class StickersSuggestionAdapter(
 ) : BaseAdapter<Sticker, StickersSuggestionAdapter.StickerViewHolder>(context) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            StickerViewHolder(inflater.inflate(R.layout.item_sticker_suggestion, parent, false))
+            StickerViewHolder(ItemStickerSuggestionBinding.inflate(inflater, parent, false))
 
     override fun onBindViewHolder(holder: StickerViewHolder, position: Int) {
         holder.bind(items[position])
     }
 
-    inner class StickerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class StickerViewHolder(private val binding: ItemStickerSuggestionBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(sticker: Sticker) {
-            with(itemView) {
+            with(binding) {
                 ivSticker.load(sticker.photo256, placeholder = false)
 
-                setOnClickListener { onClick(items[adapterPosition]) }
+                root.setOnClickListener { onClick(items[adapterPosition]) }
             }
         }
     }

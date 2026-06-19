@@ -19,14 +19,17 @@
 package com.twoeightnine.root.xvii.chatowner.fragments
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.FragmentChatOwnerGroupBinding
 import com.twoeightnine.root.xvii.model.Group
-import kotlinx.android.synthetic.main.fragment_chat_owner_conversation.*
 
-class GroupChatOwnerFragment : BaseChatOwnerFragment<Group>() {
+class GroupChatOwnerFragment : BaseChatOwnerFragment<Group, FragmentChatOwnerGroupBinding>() {
 
-    override fun getLayoutId() = R.layout.fragment_chat_owner_group
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentChatOwnerGroupBinding.inflate(inflater, container, false)
 
     override fun getChatOwnerClass() = Group::class.java
 
@@ -38,7 +41,7 @@ class GroupChatOwnerFragment : BaseChatOwnerFragment<Group>() {
         addValue(R.drawable.ic_vk, group.screenName)
     }
 
-    override fun getBottomPaddableView(): View = vBottom
+    override fun getBottomPaddableView(): View = binding.vBottom
 
     companion object {
         fun newInstance(peerId: Int): GroupChatOwnerFragment {

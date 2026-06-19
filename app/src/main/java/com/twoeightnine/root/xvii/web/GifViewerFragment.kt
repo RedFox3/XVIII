@@ -20,10 +20,13 @@ package com.twoeightnine.root.xvii.web
 
 import android.os.Bundle
 import android.os.Environment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.twoeightnine.root.xvii.App
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
+import com.twoeightnine.root.xvii.databinding.ActivityGifViewerBinding
 import com.twoeightnine.root.xvii.model.attachments.Doc
 import com.twoeightnine.root.xvii.utils.ApiUtils
 import com.twoeightnine.root.xvii.utils.DownloadUtils
@@ -32,11 +35,10 @@ import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
 import global.msnthrp.xvii.uikit.extensions.applyTopInsetPadding
 import global.msnthrp.xvii.uikit.extensions.toggle
 import global.msnthrp.xvii.uikit.utils.GlideApp
-import kotlinx.android.synthetic.main.activity_gif_viewer.*
 import java.io.File
 import javax.inject.Inject
 
-class GifViewerFragment : BaseFragment() {
+class GifViewerFragment : BaseFragment<ActivityGifViewerBinding>() {
 
     private val doc by lazy {
         requireArguments().getParcelable<Doc>(ARG_DOC)
@@ -49,7 +51,8 @@ class GifViewerFragment : BaseFragment() {
     @Inject
     lateinit var apiUtils: ApiUtils
 
-    override fun getLayoutId(): Int = R.layout.activity_gif_viewer
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        ActivityGifViewerBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,34 +60,36 @@ class GifViewerFragment : BaseFragment() {
         val doc = doc ?: return
         val url = doc.url ?: return
 
-        tvTitle.text = doc.title
-        ivGif.setOnClickListener {
-            rlControls.toggle()
-        }
+        binding.apply {
+            tvTitle.text = doc.title
+            ivGif.setOnClickListener {
+                rlControls.toggle()
+            }
 
-        btnSaveToDocs.setOnClickListener {
-            apiUtils.saveDoc(requireContext(), doc.ownerId, doc.id, doc.accessKey ?: "")
-        }
-        btnDownload.setOnClickListener {
-            permissionHelper.doOrRequest(
+            btnSaveToDocs.setOnClickListener {
+                apiUtils.saveDoc(requireContext(), doc.ownerId, doc.id, doc.accessKey ?: "")
+            }
+            btnDownload.setOnClickListener {
+                permissionHelper.doOrRequest(
                     arrayOf(PermissionHelper.WRITE_STORAGE, PermissionHelper.READ_STORAGE),
                     R.string.no_access_to_storage,
                     R.string.need_access_to_storage
-            ) {
-                val fileName = "${doc.title}_${doc.id}.${doc.ext}"
-                val file = File(SAVE_FILE, fileName)
-                DownloadUtils.download(requireContext(), file, url)
+                ) {
+                    val fileName = "${doc.title}_${doc.id}.${doc.ext}"
+                    val file = File(SAVE_FILE, fileName)
+                    DownloadUtils.download(requireContext(), file, url)
+                }
             }
-        }
-        ivBack.setOnClickListener { onBackPressed() }
+            ivBack.setOnClickListener { onBackPressed() }
 
-        GlideApp.with(ivGif)
+            GlideApp.with(ivGif)
                 .load(url)
                 .into(ivGif)
 
-        setStatusBarLight(isLight = false)
-        rlTop.applyTopInsetPadding()
-        rlBottom.applyBottomInsetPadding()
+            setStatusBarLight(isLight = false)
+            rlTop.applyTopInsetPadding()
+            rlBottom.applyBottomInsetPadding()
+        }
     }
 
     companion object {

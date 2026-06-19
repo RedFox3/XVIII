@@ -26,25 +26,25 @@ import global.msnthrp.xvii.core.journal.model.JournalEvent
 @Entity(tableName = "journal")
 data class JournalEntity(
         @PrimaryKey(autoGenerate = true)
-        val id: Int = 0,
+        val id: Int,
 
-        val type: Int = 0,
+        val type: Int,
         @ColumnInfo(name = "peer_id")
-        val peerId: Int = 0,
+        val peerId: Int,
         @ColumnInfo(name = "time_stamp")
-        val timeStamp: Long = 0L,
+        val timeStamp: Long,
 
         @ColumnInfo(name = "message_id")
-        val messageId: Int? = null,
+        val messageId: Int?,
         @ColumnInfo(name = "from_id")
-        val fromId: Int? = null,
+        val fromId: Int?,
 
         @ColumnInfo(name = "device_code")
-        val deviceCode: Int? = null,
+        val deviceCode: Int?,
         @ColumnInfo(name = "last_seen")
-        val lastSeen: Long? = null,
+        val lastSeen: Long?,
 
-        val text: String? = null
+        val text: String?
 ) {
 
     fun toJournalEvent(): JournalEvent? {
@@ -118,17 +118,18 @@ data class JournalEntity(
                     ?: (journalEvent as? JournalEvent.MessageJE.EditedMessageJE)?.messageText
 
             return JournalEntity(
-                    type = type,
-                    peerId = peerId,
-                    timeStamp = timeStamp,
+                id = 0,
+                type = type,
+                peerId = peerId,
+                timeStamp = timeStamp,
 
-                    messageId = messageId,
-                    fromId = fromId,
+                messageId = messageId,
+                fromId = fromId,
 
-                    deviceCode = deviceCode,
-                    lastSeen = lastSeen,
+                deviceCode = deviceCode,
+                lastSeen = lastSeen,
 
-                    text = text
+                text = text
             )
 
         }

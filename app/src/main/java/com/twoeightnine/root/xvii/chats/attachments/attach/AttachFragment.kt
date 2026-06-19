@@ -21,7 +21,9 @@ package com.twoeightnine.root.xvii.chats.attachments.attach
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
 import com.twoeightnine.root.xvii.chats.attachments.docs.DocAttachFragment
@@ -29,17 +31,18 @@ import com.twoeightnine.root.xvii.chats.attachments.gallery.GalleryFragment
 import com.twoeightnine.root.xvii.chats.attachments.gallery.model.DeviceItem
 import com.twoeightnine.root.xvii.chats.attachments.photos.PhotoAttachFragment
 import com.twoeightnine.root.xvii.chats.attachments.videos.VideoAttachFragment
+import com.twoeightnine.root.xvii.databinding.FragmentAttachBinding
 import com.twoeightnine.root.xvii.model.attachments.Attachment
 import global.msnthrp.xvii.uikit.base.adapters.BasePagerAdapter
-import kotlinx.android.synthetic.main.fragment_attach.*
 
-class AttachFragment : BaseFragment() {
+class AttachFragment : BaseFragment<FragmentAttachBinding>() {
 
     private val adapter by lazy {
         BasePagerAdapter(childFragmentManager)
     }
 
-    override fun getLayoutId() = R.layout.fragment_attach
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentAttachBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -48,9 +51,9 @@ class AttachFragment : BaseFragment() {
             add(PhotoAttachFragment.newInstance(::onAttachmentsSelected), getString(R.string.photos))
             add(VideoAttachFragment.newInstance(::onAttachmentsSelected), getString(R.string.videos))
             add(DocAttachFragment.newInstance(::onAttachmentsSelected), getString(R.string.docs))
-            vpAttach.adapter = this
+            binding.vpAttach.adapter = this
         }
-        xviiToolbar.setupWith(vpAttach)
+        binding.xviiToolbar.setupWith(binding.vpAttach)
     }
 
     private fun onSelectedFromGallery(paths: List<DeviceItem>) {

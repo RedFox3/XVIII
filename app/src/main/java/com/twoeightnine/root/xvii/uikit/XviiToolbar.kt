@@ -22,30 +22,33 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.ColorStateList
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.tabs.TabLayout
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseActivity
-import global.msnthrp.xvii.uikit.extensions.*
-import kotlinx.android.synthetic.main.toolbar2.view.*
-import kotlinx.android.synthetic.main.view_tabs.view.*
+import com.twoeightnine.root.xvii.databinding.Toolbar2Binding
+import com.twoeightnine.root.xvii.databinding.ViewTabsBinding
+import global.msnthrp.xvii.uikit.extensions.EndAnimatorListener
+import global.msnthrp.xvii.uikit.extensions.applyTopInsetPadding
+import global.msnthrp.xvii.uikit.extensions.setVisible
 
 class XviiToolbar(context: Context, attributeSet: AttributeSet) : AppBarLayout(context, attributeSet) {
+
+    val binding = Toolbar2Binding.inflate(LayoutInflater.from(context), this, true)
 
     var title: String? = null
         set(value) {
             field = value
-            tvToolbarTitle?.text = value
+            binding.tvToolbarTitle.text = value
         }
 
     var forChat: Boolean = false
         set(value) {
             field = value
-            rlChat?.setVisible(value)
-            tvToolbarTitle?.text = if (value) "" else title
+            binding.rlChat.setVisible(value)
+            binding.tvToolbarTitle.text = if (value) "" else title
         }
 
     var showLogo: Boolean = false
@@ -59,6 +62,8 @@ class XviiToolbar(context: Context, attributeSet: AttributeSet) : AppBarLayout(c
     private var alwaysLifted: Boolean = false
 
 
+    private var tabsBinding: ViewTabsBinding? = null
+
     private var animationRunning = false
 
 //    var isLifted: Boolean
@@ -70,32 +75,31 @@ class XviiToolbar(context: Context, attributeSet: AttributeSet) : AppBarLayout(c
     var onClick: (() -> Unit)? = null
         set(value) {
             field = value
-            toolbar?.setOnClickListener { value?.invoke() }
+            binding.toolbar.setOnClickListener { value?.invoke() }
         }
 
     init {
         initAttributes(attributeSet)
         isLiftOnScroll = !alwaysLifted
-        inflate(context, R.layout.toolbar2, this)
         setBackgroundColor(ContextCompat.getColor(context, R.color.background))
-        toolbar.title = ""
+        binding.toolbar.title = ""
         if (!forChat) {
-            tvToolbarTitle.text = title
+            binding.tvToolbarTitle.text = title
         }
-        toolbar.overflowIcon?.paint(Munch.color.color)
+        binding.toolbar.overflowIcon?.paint(Munch.color.color)
 
         if (withTabs) {
             addTabs()
         }
-        rlChat.setVisible(forChat)
-        tvSubtitle.isSelected = true
+        binding.rlChat.setVisible(forChat)
+        binding.tvSubtitle.isSelected = true
         setLogoVisible(showLogo)
 
         applyTopInsetPadding()
     }
 
     fun showOverflowMenu() {
-        toolbar.showOverflowMenu()
+        binding.toolbar.showOverflowMenu()
     }
 
     private fun initAttributes(attributeSet: AttributeSet) {
@@ -110,8 +114,8 @@ class XviiToolbar(context: Context, attributeSet: AttributeSet) : AppBarLayout(c
     }
 
     private fun addTabs() {
-        (View.inflate(context, R.layout.view_tabs, null) as TabLayout).apply {
-            tabTextColors = ColorStateList(
+        tabsBinding = ViewTabsBinding.inflate(LayoutInflater.from(context)).apply {
+            root.tabTextColors = ColorStateList(
                     arrayOf(
                             intArrayOf(android.R.attr.state_selected),
                             intArrayOf()
@@ -121,13 +125,13 @@ class XviiToolbar(context: Context, attributeSet: AttributeSet) : AppBarLayout(c
                             ContextCompat.getColor(context, R.color.minor_text)
                     )
             )
-            setSelectedTabIndicatorColor(Munch.color.color)
-            this@XviiToolbar.addView(this)
+            root.setSelectedTabIndicatorColor(Munch.color.color)
+            this@XviiToolbar.addView(root)
         }
     }
 
     fun setupWith(baseActivity: BaseActivity) {
-        baseActivity.setSupportActionBar(toolbar)
+        baseActivity.setSupportActionBar(binding.toolbar)
         baseActivity.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(hasBackArrow)
             val homeDrawable = ContextCompat.getDrawable(context, R.drawable.ic_back)
@@ -139,7 +143,7 @@ class XviiToolbar(context: Context, attributeSet: AttributeSet) : AppBarLayout(c
     }
 
     fun setupWith(viewPager: ViewPager) {
-        tabs.setupWithViewPager(viewPager, true)
+        tabsBinding?.tabs?.setupWithViewPager(viewPager, true)
     }
 
     private fun updateElevation(newElevation: Float) = synchronized(this) {
@@ -160,10 +164,10 @@ class XviiToolbar(context: Context, attributeSet: AttributeSet) : AppBarLayout(c
     }
 
     private fun setLogoVisible(visible: Boolean) {
-        ivToolbarLogo?.setVisible(visible)
-        tvToolbarTitle?.text = if (visible) "" else title
+        binding.ivToolbarLogo.setVisible(visible)
+        binding.tvToolbarTitle.text = if (visible) "" else title
         if (visible) {
-            ivToolbarLogo?.paint(ContextCompat.getColor(context, R.color.main_text))
+            binding.ivToolbarLogo.paint(ContextCompat.getColor(context, R.color.main_text))
         }
     }
 

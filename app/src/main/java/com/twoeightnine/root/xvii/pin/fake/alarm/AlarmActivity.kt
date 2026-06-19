@@ -24,15 +24,14 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseActivity
+import com.twoeightnine.root.xvii.databinding.ActivityAlarmsBinding
 import com.twoeightnine.root.xvii.lg.L
 import com.twoeightnine.root.xvii.main.MainActivity
 import com.twoeightnine.root.xvii.utils.AppBarLifter
 import com.twoeightnine.root.xvii.utils.goHome
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetMargin
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
-import kotlinx.android.synthetic.main.activity_alarms.*
 
 class AlarmActivity : BaseActivity() {
 
@@ -45,25 +44,29 @@ class AlarmActivity : BaseActivity() {
         }
     }
 
+    private val binding by lazy { ActivityAlarmsBinding.inflate(layoutInflater) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_alarms)
-        rvAlarms.layoutManager = LinearLayoutManager(this)
-        rvAlarms.adapter = adapter
-        rvAlarms.addOnScrollListener(AppBarLifter(xviiToolbar))
-        adapter.update(createDefaultAlarms())
-        rvAlarms.addOnScrollListener(FabVisibilityWatcher())
+        setContentView(binding.root)
+        binding.apply {
+            rvAlarms.layoutManager = LinearLayoutManager(this@AlarmActivity)
+            rvAlarms.adapter = adapter
+            rvAlarms.addOnScrollListener(AppBarLifter(xviiToolbar))
+            adapter.update(createDefaultAlarms())
+            rvAlarms.addOnScrollListener(FabVisibilityWatcher())
 
-        fabAdd.setOnClickListener {
-            TimePickerDialog(this, { _, hour, minute ->
-                alarms.add(Alarm(hour * 60 + minute, true))
-                alarms.sortBy { it.time }
-                adapter.update(alarms)
-            }, 9, 17, true).show()
+            fabAdd.setOnClickListener {
+                TimePickerDialog(this@AlarmActivity, { _, hour, minute ->
+                    alarms.add(Alarm(hour * 60 + minute, true))
+                    alarms.sortBy { it.time }
+                    adapter.update(alarms)
+                }, 9, 17, true).show()
+            }
+
+            rvAlarms.applyBottomInsetPadding()
+            fabAdd.applyBottomInsetMargin()
         }
-
-        rvAlarms.applyBottomInsetPadding()
-        fabAdd.applyBottomInsetMargin()
     }
 
     override fun onBackPressed() {
@@ -102,9 +105,9 @@ class AlarmActivity : BaseActivity() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
             if (dy < 0) {
-                fabAdd.show()
+                binding.fabAdd.show()
             } else {
-                fabAdd.hide()
+                binding.fabAdd.hide()
             }
         }
     }

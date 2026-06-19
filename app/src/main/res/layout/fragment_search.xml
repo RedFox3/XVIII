@@ -25,13 +25,15 @@
     android:clickable="true"
     android:focusable="true">
 
-    <include layout="@layout/view_search" />
+    <include
+        android:id="@+id/search"
+        layout="@layout/view_search" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSearch"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/rlSearch"
+        android:layout_below="@+id/search"
         android:clipToPadding="false" />
 
     <LinearLayout

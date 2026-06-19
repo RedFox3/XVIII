@@ -19,7 +19,6 @@
 package com.twoeightnine.root.xvii.uikit
 
 import com.twoeightnine.root.xvii.App
-import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.managers.Prefs
 import global.msnthrp.xvii.uikit.utils.color.Rgb
 import global.msnthrp.xvii.uikit.utils.color.addHue
@@ -32,8 +31,8 @@ object Munch {
     private const val SIMILAR = 60
     private const val RANGE = 90
 
-    private val backgroundLight = App.context.getColor(R.color.background_light)
-    private val backgroundDark = App.context.getColor(R.color.background_dark)
+    private val backgroundLight = App.context.getColor(global.msnthrp.xvii.uikit.R.color.background_light)
+    private val backgroundDark = App.context.getColor(global.msnthrp.xvii.uikit.R.color.background_dark)
 
 
     val isLightTheme = Prefs.isLightTheme

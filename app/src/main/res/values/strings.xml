@@ -17,11 +17,11 @@
   -->
 
 <resources>
-    <string name="app_name" translatable="false">xvii</string>
+    <string name="app_name" translatable="false">xviii</string>
     <string name="about_app">about</string>
     <string name="settings">settings</string>
     <string name="addons">add-ons</string>
-    <string name="share_on_wall">share xvii on my wall</string>
+    <string name="share_on_wall">share xviii on my wall</string>
     <string name="share">share</string>
     <string name="share_image">share the image</string>
 
@@ -66,7 +66,7 @@
     <string name="unpin">unpin</string>
     <string name="alias">alias</string>
     <string name="unmark">unmark</string>
-    <string name="join_us">follow xvii official group in vk for latest news about the app</string>
+    <string name="join_us">follow xviii official group in vk for latest news about the app</string>
     <string name="download">download</string>
     <string name="add_to_saved">save to album</string>
     <string name="added_to_saved">photo has been saved to album</string>
@@ -174,7 +174,7 @@
     <string name="delete_only_for_me">delete only for me</string>
     <string name="wanna_delete_messages">do you really want to delete these messages?</string>
     <string name="unable_to_add_to_gallery">unable to add to gallery. it will be added automatically later</string>
-    <string name="generation_dh_hint">make sure your interlocutor has installed and opened xvii. it is necessary for key exchange</string>
+    <string name="generation_dh_hint">make sure your interlocutor has installed and opened xviii. it is necessary for key exchange</string>
     <string name="fingerprint">fingerprint</string>
     <string name="decrypting_image">image is being decrypted</string>
     <string name="invalid_file">unable to decrypt this file</string>
@@ -212,8 +212,8 @@
     <string name="more_title">more</string>
 
     <string name="no_access_to_storage">no access to the storage</string>
-    <string name="need_access_to_storage">xvii needs an access to the storage to provide the feature of attaching and saving media files</string>
-    <string name="tap_to_provide_permissions">tap here to allow xvii to use your storage</string>
+    <string name="need_access_to_storage">xviii needs an access to the storage to provide the feature of attaching and saving media files</string>
+    <string name="tap_to_provide_permissions">tap here to allow xviii to use your storage</string>
     <string name="want_to_scream" translatable="false">you want to scream?</string>
     <string name="really_want_to_scream" translatable="false">do you really want to scream out loud?</string>
     <string name="scream_now" translatable="false">so be ready for aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</string>
@@ -286,7 +286,7 @@
     <string name="gift_for_you">gift</string>
     <string name="unable_to_pick_file">unable to pick this file. try to select other one or contact support</string>
 
-    <string name="xvii_longpoll">xvii background service</string>
+    <string name="xvii_longpoll">xviii background service</string>
     <string name="longpoll_hint">tap here to hide this notification</string>
     <string name="longpoll_explanation">since android 8 (oreo) the os doesn\'t allow to run background services and the only exception is firebase services. but vk administration didn\'t publish api for its own firebase cloud messaging. vk\'s longpoll requires a custom service and xvii needs to show this notification all the time to keep the background service running</string>
 
@@ -493,7 +493,7 @@
     <string name="login_oauth_hint">for your security, xvii uses default vk form for logging in, which means it does not receive your login and password</string>
     <string name="login_log_in">log in</string>
 
-    <string name="alert_privacy_and_tos">to continue using xvii, you must agree to %s and %s</string>
+    <string name="alert_privacy_and_tos">to continue using xviii, you must agree to %s and %s</string>
     <string name="alert_privacy_and_tos_agree">agree and continue</string>
     <string name="alert_privacy_and_tos_disagree">disagree and exit</string>
 
@@ -573,7 +573,7 @@
         <item quantity="other">%s votes</item>
     </plurals>
 
-    <string name="aboutbig">xvii messenger (by twoeightnine)\nver. %1$s since %2$s</string>
+    <string name="aboutbig">xviii messenger (by twoeightnine)\nver. %1$s since %2$s</string>
 
     <string name="other">other</string>
     <string name="recent">recent</string>

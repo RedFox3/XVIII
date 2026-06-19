@@ -25,9 +25,9 @@ import android.os.Bundle
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.ActivityContentBinding
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.utils.DragTouchListener
-import kotlinx.android.synthetic.main.activity_content.*
 
 /**
  * it is often needed to place the only fragment inside an activity
@@ -36,19 +36,21 @@ import kotlinx.android.synthetic.main.activity_content.*
  */
 abstract class ContentActivity : BaseActivity() {
 
-    protected open fun getLayoutId() = R.layout.activity_content
+    protected open val binding by lazy { ActivityContentBinding.inflate(layoutInflater) }
 
     abstract fun createFragment(intent: Intent?): Fragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(getLayoutId())
+        setContentView(binding.root)
         savedInstanceState ?: loadFragment(createFragment(intent))
 
-        if (shouldEnableSwipeToBack() && Prefs.enableSwipeToBack) {
-            (vDraggable.layoutParams as? ViewGroup.MarginLayoutParams)
+        binding.apply {
+            if (shouldEnableSwipeToBack() && Prefs.enableSwipeToBack) {
+                (vDraggable.layoutParams as? ViewGroup.MarginLayoutParams)
                     ?.bottomMargin = getDraggableBottomMargin()
-            vDraggable.setOnTouchListener(DragTouchListener(this, flContainer, vShadow))
+                vDraggable.setOnTouchListener(DragTouchListener(this@ContentActivity, flContainer, vShadow))
+            }
         }
 
         //android O fix bug orientation. https://stackoverflow.com/a/50832408
@@ -57,7 +59,7 @@ abstract class ContentActivity : BaseActivity() {
         }
 
         // https://medium.com/androiddevelopers/windows-insets-fragment-transitions-9024b239a436
-        flContainer.setOnApplyWindowInsetsListener { view, insets ->
+        binding.flContainer.setOnApplyWindowInsetsListener { view, insets ->
             var consumed = false
 
             val vg = view as ViewGroup

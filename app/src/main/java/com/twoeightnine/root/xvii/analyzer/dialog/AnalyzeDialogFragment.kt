@@ -19,17 +19,18 @@
 package com.twoeightnine.root.xvii.analyzer.dialog
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import com.twoeightnine.root.xvii.App
-import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
+import com.twoeightnine.root.xvii.databinding.FragmentAnalyseDialogAllBinding
 import com.twoeightnine.root.xvii.model.User
 import com.twoeightnine.root.xvii.model.Wrapper
-import kotlinx.android.synthetic.main.fragment_analyse_dialog_all.*
 import javax.inject.Inject
 
-class AnalyzeDialogFragment : BaseFragment() {
+class AnalyzeDialogFragment : BaseFragment<FragmentAnalyseDialogAllBinding>() {
 
     @Inject
     lateinit var viewModelFactory: AnalyseDialogViewModel.Factory
@@ -37,7 +38,8 @@ class AnalyzeDialogFragment : BaseFragment() {
 
     private val peerId by lazy { arguments?.getInt(ARG_PEER_ID) ?: 0 }
 
-    override fun getLayoutId() = R.layout.fragment_analyse_dialog_all
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentAnalyseDialogAllBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,14 +56,18 @@ class AnalyzeDialogFragment : BaseFragment() {
     }
 
     private fun updateUser(data: Wrapper<User>) {
-        val text = tvData.text.toString()
-        tvData.text = text + "\n" + data.data
+        binding.apply {
+            val text = tvData.text.toString()
+            tvData.text = text + "\n" + data.data
+        }
     }
 
     private fun updateProgress(data: Wrapper<Pair<Int, Int>>) {
-        val text = tvData.text.toString()
-        if (data.data != null) {
-            tvData.text = text + "\n" + data.data.first + "/" + data.data.second
+        binding.apply {
+            val text = tvData.text.toString()
+            if (data.data != null) {
+                tvData.text = text + "\n" + data.data.first + "/" + data.data.second
+            }
         }
     }
 

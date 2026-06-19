@@ -146,7 +146,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.twoeightnine.root.xvii.provider"
+            android:authorities="com.twoeightnine.root.xviii.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

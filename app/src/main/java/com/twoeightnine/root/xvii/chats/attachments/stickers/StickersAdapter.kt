@@ -19,14 +19,13 @@
 package com.twoeightnine.root.xvii.chats.attachments.stickers
 
 import android.content.Context
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.ItemStickerBinding
 import com.twoeightnine.root.xvii.extensions.load
 import com.twoeightnine.root.xvii.model.attachments.Sticker
 import global.msnthrp.xvii.uikit.base.adapters.BaseAdapter
-import kotlinx.android.synthetic.main.item_sticker.view.*
 
 class StickersAdapter(
         context: Context,
@@ -35,19 +34,19 @@ class StickersAdapter(
 ) : BaseAdapter<Sticker, StickersAdapter.StickerViewHolder>(context) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            StickerViewHolder(inflater.inflate(R.layout.item_sticker, null))
+            StickerViewHolder(ItemStickerBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     override fun onBindViewHolder(holder: StickerViewHolder, position: Int) {
         holder.bind(items[position])
     }
 
-    inner class StickerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class StickerViewHolder(private val binding: ItemStickerBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Sticker) {
-            with(itemView) {
+            with(binding) {
                 ivSticker.load(item.photo256, placeholder = false)
-                setOnClickListener { onClick(items[adapterPosition]) }
-                setOnLongClickListener { onLongClick(items[adapterPosition]); true }
+                root.setOnClickListener { onClick(items[adapterPosition]) } // TODO: check if it works
+                root.setOnLongClickListener { onLongClick(items[adapterPosition]); true } // TODO: check if it works
             }
         }
     }

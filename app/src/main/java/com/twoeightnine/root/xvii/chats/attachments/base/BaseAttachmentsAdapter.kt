@@ -19,29 +19,31 @@
 package com.twoeightnine.root.xvii.chats.attachments.base
 
 import android.content.Context
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.twoeightnine.root.xvii.base.BaseReachAdapter
 
-abstract class BaseAttachmentsAdapter<T : Any, VH : BaseAttachmentsAdapter.BaseAttachmentViewHolder<T>>(
+abstract class BaseAttachmentsAdapter<T : Any, VB : ViewBinding, VH : BaseAttachmentsAdapter.BaseAttachmentViewHolder<T, VB>>(
         context: Context,
         loader: (Int) -> Unit
 ) : BaseReachAdapter<T, VH>(context, loader) {
 
-    abstract fun getViewHolder(view: View): BaseAttachmentViewHolder<T>
+    abstract fun getViewHolder(binding: VB): BaseAttachmentViewHolder<T, VB>
 
-    abstract fun getLayoutId(): Int
+    abstract fun inflateBinding(inflater: LayoutInflater, parent: ViewGroup, attachToParent: Boolean): VB
 
-    override fun createHolder(parent: ViewGroup, viewType: Int) =
-            getViewHolder(inflater.inflate(getLayoutId(), parent, false))
-
-    override fun bind(holder: VH, item: T) {
-        (holder as? BaseAttachmentViewHolder<T>)?.bind(item)
+    override fun createHolder(parent: ViewGroup, viewType: Int): VH {
+        val binding = inflateBinding(inflater, parent, false)
+        return getViewHolder(binding) as VH
     }
 
-    abstract class BaseAttachmentViewHolder<T>(view: View) : RecyclerView.ViewHolder(view) {
-        abstract fun bind(item: T)
+    override fun bind(holder: VH, item: T) {
+        (holder as? BaseAttachmentViewHolder<T, VB>)?.bind(item)
+    }
 
+    abstract class BaseAttachmentViewHolder<T, VB : ViewBinding>(private val binding: VB) : RecyclerView.ViewHolder(binding.root) {
+        abstract fun bind(item: T)
     }
 }

@@ -23,14 +23,11 @@ import android.content.Intent
 import android.graphics.Color
 import android.view.WindowManager
 import androidx.fragment.app.Fragment
-import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.ContentActivity
 import com.twoeightnine.root.xvii.model.User
 import global.msnthrp.xvii.data.dialogs.Dialog
 
 class SecretChatActivity : ContentActivity() {
-
-    override fun getLayoutId() = R.layout.activity_content
 
     override fun onResume() {
         super.onResume()
@@ -39,7 +36,11 @@ class SecretChatActivity : ContentActivity() {
 
     override fun createFragment(intent: Intent?): Fragment {
         val args = intent?.extras
-        val dialog = args?.getParcelable(DIALOG) ?: Dialog()
+        val dialog = args?.getParcelable(DIALOG) ?: Dialog(
+            0, 0, "", null, "", 0,
+            false, true, 0, false, false,
+            false, null
+        )
         return SecretChatMessagesFragment.newInstance(dialog)
     }
 
@@ -51,9 +52,19 @@ class SecretChatActivity : ContentActivity() {
         fun launch(context: Context?, userId: Int, title: String,
                    avatar: String? = null) {
             launch(context, Dialog(
-                    peerId = userId,
-                    title = title,
-                    photo = avatar
+                peerId = userId,
+                messageId = 0,
+                title = title,
+                photo = avatar,
+                text = "",
+                timeStamp = 0,
+                isOut = false,
+                isRead = true,
+                unreadCount = 0,
+                isOnline = false,
+                isMute = false,
+                isPinned = false,
+                alias = null
             ))
 
         }
@@ -69,9 +80,19 @@ class SecretChatActivity : ContentActivity() {
 
         fun launch(context: Context?, user: User) {
             launch(context, Dialog(
-                    peerId = user.id,
-                    title = user.fullName,
-                    photo = user.photo100
+                peerId = user.id,
+                messageId = 0,
+                title = user.fullName,
+                photo = user.photo100,
+                text = "",
+                timeStamp = 0,
+                isOut = false,
+                isRead = true,
+                unreadCount = 0,
+                isOnline = false,
+                isMute = false,
+                isPinned = false,
+                alias = null
             ))
         }
     }

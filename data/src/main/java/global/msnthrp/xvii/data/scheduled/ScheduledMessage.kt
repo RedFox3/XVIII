@@ -27,18 +27,18 @@ import androidx.room.PrimaryKey
 data class ScheduledMessage(
 
         @PrimaryKey(autoGenerate = true)
-        val id: Int = 0,
+        val id: Int,
 
         @ColumnInfo(name = "peer_id")
-        val peerId: Int = 0,
+        val peerId: Int,
 
         @ColumnInfo(name = "when_ms")
-        val whenMs: Long = 0L,
+        val whenMs: Long,
 
-        val text: String = "",
+        val text: String,
 
-        val attachments: String? = null,
+        val attachments: String?,
 
         @ColumnInfo(name = "fwd_messages")
-        val forwardedMessages: String? = null
+        val forwardedMessages: String?
 )

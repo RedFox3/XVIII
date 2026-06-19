@@ -63,9 +63,6 @@ import com.twoeightnine.root.xvii.utils.contextpopup.createContextPopup
 import com.twoeightnine.root.xvii.views.TextInputAlertDialog
 import global.msnthrp.xvii.uikit.extensions.*
 import global.msnthrp.xvii.uikit.utils.ExtensionUtils
-import kotlinx.android.synthetic.main.chat_input_panel.*
-import kotlinx.android.synthetic.main.fragment_chat.*
-import kotlinx.android.synthetic.main.view_chat_multiselect.*
 
 abstract class BaseChatMessagesFragment<VM : BaseChatMessagesViewModel> : BaseMessagesFragment<VM>() {
 
@@ -88,7 +85,7 @@ abstract class BaseChatMessagesFragment<VM : BaseChatMessagesViewModel> : BaseMe
         }
     }
     private val chatToolbarController by lazy {
-        ChatToolbarController(xviiToolbar)
+        ChatToolbarController(binding.xviiToolbar)
     }
     protected val stickersAdapter by lazy {
         StickersSuggestionAdapter(requireContext(), ::onSuggestedStickerClicked)
@@ -106,24 +103,24 @@ abstract class BaseChatMessagesFragment<VM : BaseChatMessagesViewModel> : BaseMe
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        inputController = ChatInputController(requireContext(), view, InputCallback())
-        swipeContainer.setOnRefreshListener { viewModel.loadMessages() }
-        xviiToolbar.forChat = true
+        inputController = ChatInputController(requireContext(), binding.inputPanel, InputCallback())
+        binding.swipeContainer.setOnRefreshListener { viewModel.loadMessages() }
+        binding.xviiToolbar.forChat = true
 
-        rvAttached.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
-        rvAttached.adapter = attachedAdapter
+        binding.rvAttached.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+        binding.rvAttached.adapter = attachedAdapter
 
-        rvMentionedMembers.layoutManager = LinearLayoutManager(context)
-        rvMentionedMembers.adapter = membersAdapter
+        binding.rvMentionedMembers.layoutManager = LinearLayoutManager(context)
+        binding.rvMentionedMembers.adapter = membersAdapter
 
         val swipeToReply = ItemTouchHelper(MessagesReplyItemCallback(::onSwipedToReply))
-        swipeToReply.attachToRecyclerView(rvChatList)
+        swipeToReply.attachToRecyclerView(binding.rvChatList)
         stylize()
         initContent()
         initMultiSelectMenu()
 
-        rvStickersSuggestion.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        rvStickersSuggestion.adapter = stickersAdapter
+        binding.rvStickersSuggestion.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        binding.rvStickersSuggestion.adapter = stickersAdapter
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -139,7 +136,7 @@ abstract class BaseChatMessagesFragment<VM : BaseChatMessagesViewModel> : BaseMe
         if (peerId.matchesChatId()) {
             viewModel.loadMembers()
         }
-        xviiToolbar?.onClick = {
+        binding.xviiToolbar.onClick = {
             activity?.let { hideKeyboard(it) }
             ChatOwnerFactory.launch(context, peerId)
         }
@@ -149,26 +146,26 @@ abstract class BaseChatMessagesFragment<VM : BaseChatMessagesViewModel> : BaseMe
         viewModel.getActivity().observe(viewLifecycleOwner, ::onActivityChanged)
         viewModel.mentionedMembers.observe(viewLifecycleOwner, ::showMentionedMembers)
 
-        ViewCompat.setOnApplyWindowInsetsListener(rlInputBack) { view, insets ->
-            view.setPadding(0, 0, 0, insets.systemWindowInsetBottom)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.inputPanel.root) { v, insets ->
+            v.setPadding(0, 0, 0, insets.systemWindowInsetBottom)
             insets
         }
-        ViewCompat.setOnApplyWindowInsetsListener(fabHasMore) { view, insets ->
-            (view.layoutParams as? FrameLayout.LayoutParams)?.apply {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.fabHasMore) { v, insets ->
+            (v.layoutParams as? FrameLayout.LayoutParams)?.apply {
                 val margin = context?.resources?.getDimensionPixelSize(R.dimen.chat_fab_more_bottom_margin) ?: 0
                 bottomMargin = margin + insets.systemWindowInsetBottom
             }
             insets
         }
-        ViewCompat.setOnApplyWindowInsetsListener(rvStickersSuggestion) { view, insets ->
-            (view.layoutParams as? FrameLayout.LayoutParams)?.apply {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.rvStickersSuggestion) { v, insets ->
+            (v.layoutParams as? FrameLayout.LayoutParams)?.apply {
                 val margin = context?.resources?.getDimensionPixelSize(R.dimen.chat_sticker_suggestions_bottom_margin) ?: 0
                 bottomMargin = margin + insets.systemWindowInsetBottom
             }
             insets
         }
-        ViewCompat.setOnApplyWindowInsetsListener(rvMentionedMembers) { view, insets ->
-            (view.layoutParams as? FrameLayout.LayoutParams)?.apply {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.rvMentionedMembers) { v, insets ->
+            (v.layoutParams as? FrameLayout.LayoutParams)?.apply {
                 val margin = context?.resources?.getDimensionPixelSize(R.dimen.chat_mentioned_members_bottom_margin) ?: 0
                 bottomMargin = margin + insets.systemWindowInsetBottom
             }
@@ -177,12 +174,12 @@ abstract class BaseChatMessagesFragment<VM : BaseChatMessagesViewModel> : BaseMe
     }
 
     private fun initMultiSelectMenu() {
-        ivReplyMulti.setOnClickListener {
+        binding.multiSelect.ivReplyMulti.setOnClickListener {
             attachedAdapter.fwdMessages = getSelectedMessageIds()
             attachedAdapter.isReply = true
             adapter.multiSelectMode = false
         }
-        ivDeleteMulti.setOnClickListener {
+        binding.multiSelect.ivDeleteMulti.setOnClickListener {
             val selectedMessages = adapter.multiSelect.map { it.message }
             val callback = { forAll: Boolean ->
                 viewModel.deleteMessages(getSelectedMessageIds(), forAll)
@@ -199,20 +196,22 @@ abstract class BaseChatMessagesFragment<VM : BaseChatMessagesViewModel> : BaseMe
                 }
             }
         }
-        ivMarkMulti.setOnClickListener {
+        binding.multiSelect.ivMarkMulti.setOnClickListener {
             viewModel.markAsImportant(getSelectedMessageIds())
             adapter.multiSelectMode = false
         }
     }
 
     private fun stylize() {
-        rlMultiAction.background?.paint(Munch.color.color20)
-        listOf(ivCancelMulti, ivMarkMulti, ivDeleteMulti, ivForwardMulti, ivReplyMulti)
-                .forEach { it.paint(Munch.color.colorDark(50)) }
+        binding.multiSelect.rlMultiAction.background?.paint(Munch.color.color20)
+        with(binding.multiSelect) {
+            listOf(ivCancelMulti, ivMarkMulti, ivDeleteMulti, ivForwardMulti, ivReplyMulti)
+                    .forEach { it.paint(Munch.color.colorDark(50)) }
+        }
 
         if (Prefs.chatBack.isNotEmpty()) {
             try {
-                flContainer.backgroundImage = Drawable.createFromPath(Prefs.chatBack)
+                binding.flContainer.backgroundImage = Drawable.createFromPath(Prefs.chatBack)
             } catch (e: Exception) {
                 Prefs.chatBack = ""
                 showError(activity, e.message ?: "background not found")
@@ -239,7 +238,7 @@ abstract class BaseChatMessagesFragment<VM : BaseChatMessagesViewModel> : BaseMe
             forwardedMessages?.also {
                 attachedAdapter.fwdMessages = it
             }
-            shareText?.also(etInput::setText)
+            shareText?.also(binding.inputPanel.etInput::setText)
             shareImages?.forEach { path ->
                 when {
                     ExtensionUtils.isImage(path) -> onImageSelected(path)
@@ -317,11 +316,11 @@ abstract class BaseChatMessagesFragment<VM : BaseChatMessagesViewModel> : BaseMe
 
     private fun onSuggestedStickerClicked(sticker: Sticker) {
         viewModel.sendSticker(sticker)
-        etInput.clear()
+        binding.inputPanel.etInput.clear()
     }
 
     private fun onCanWriteChanged(canWrite: CanWrite) {
-        rlCantWrite.setVisible(!canWrite.allowed)
+        binding.inputPanel.rlCantWrite.setVisible(!canWrite.allowed)
     }
 
     private fun onSwipedToReply(position: Int) {
@@ -377,13 +376,13 @@ abstract class BaseChatMessagesFragment<VM : BaseChatMessagesViewModel> : BaseMe
     }
 
     private fun showMentionedMembers(members: List<User>) {
-        if (members.isEmpty() && rvMentionedMembers.isShown) {
-            rvMentionedMembers.fadeOut(200L) {
-                rvMentionedMembers?.hide()
+        if (members.isEmpty() && binding.rvMentionedMembers.isShown) {
+            binding.rvMentionedMembers.fadeOut(200L) {
+                binding.rvMentionedMembers.hide()
             }
-        } else if (members.isNotEmpty() && !rvMentionedMembers.isShown) {
-            rvMentionedMembers.show()
-            rvMentionedMembers.fadeIn(200L)
+        } else if (members.isNotEmpty() && !binding.rvMentionedMembers.isShown) {
+            binding.rvMentionedMembers.show()
+            binding.rvMentionedMembers.fadeIn(200L)
         }
         if (members.size > MEMBERS_MAX) {
             membersAdapter.update(members.take(MEMBERS_MAX))
@@ -537,11 +536,11 @@ abstract class BaseChatMessagesFragment<VM : BaseChatMessagesViewModel> : BaseMe
             viewModel.scheduleMessage(
                     context = requireContext(),
                     whenMs = whenMs,
-                    text = etInput.asText(),
+                    text = binding.inputPanel.etInput.asText(),
                     attachments = attachedAdapter.asString(),
                     forwardedMessages = attachedAdapter.fwdMessages
             )
-            etInput.clear()
+            binding.inputPanel.etInput.clear()
             attachedAdapter.clear()
         }
 
@@ -580,13 +579,13 @@ abstract class BaseChatMessagesFragment<VM : BaseChatMessagesViewModel> : BaseMe
 
         override fun onStickersSuggested(stickers: List<Sticker>) {
             stickersAdapter.update(stickers)
-            if (stickers.isEmpty() && rvStickersSuggestion.isShown) {
-                rvStickersSuggestion.fadeOut(200L) {
-                    rvStickersSuggestion?.hide()
+            if (stickers.isEmpty() && binding.rvStickersSuggestion.isShown) {
+                binding.rvStickersSuggestion.fadeOut(200L) {
+                    binding.rvStickersSuggestion.hide()
                 }
-            } else if (stickers.isNotEmpty() && !rvStickersSuggestion.isShown) {
-                rvStickersSuggestion.show()
-                rvStickersSuggestion.fadeIn(200L)
+            } else if (stickers.isNotEmpty() && !binding.rvStickersSuggestion.isShown) {
+                binding.rvStickersSuggestion.show()
+                binding.rvStickersSuggestion.fadeIn(200L)
             }
         }
 
@@ -606,13 +605,13 @@ abstract class BaseChatMessagesFragment<VM : BaseChatMessagesViewModel> : BaseMe
                 null
             }
             viewModel.sendMessage(
-                    text = etInput.asText(),
+                    text = binding.inputPanel.etInput.asText(),
                     attachments = attachedAdapter.asString(),
                     forwardedMessages = forwarded,
                     replyTo = replyTo,
                     timeToLive = timeToLive
             )
-            etInput.clear()
+            binding.inputPanel.etInput.clear()
             attachedAdapter.clear()
         }
     }

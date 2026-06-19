@@ -20,6 +20,7 @@ package com.twoeightnine.root.xvii.report
 
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewPropertyAnimator
@@ -31,6 +32,7 @@ import androidx.core.view.updateMargins
 import androidx.fragment.app.viewModels
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
+import com.twoeightnine.root.xvii.databinding.FragmentReportBinding
 import com.twoeightnine.root.xvii.model.User
 import com.twoeightnine.root.xvii.model.WallPost
 import com.twoeightnine.root.xvii.model.attachments.Photo
@@ -41,11 +43,10 @@ import global.msnthrp.xvii.uikit.extensions.applyBottomInsetMargin
 import global.msnthrp.xvii.uikit.extensions.setVisible
 import global.msnthrp.xvii.uikit.extensions.setVisibleWithInvis
 import global.msnthrp.xvii.uikit.extensions.show
-import kotlinx.android.synthetic.main.fragment_report.*
 import kotlin.math.PI
 import kotlin.math.sin
 
-class ReportFragment : BaseFragment() {
+class ReportFragment : BaseFragment<FragmentReportBinding>() {
 
     private val viewModel by viewModels<ReportViewModel>()
 
@@ -59,8 +60,8 @@ class ReportFragment : BaseFragment() {
     private var animator: ViewPropertyAnimator? = null
     private var reportBlock: ((reason: ReportReason, comment: String) -> Unit)? = null
 
-    override fun getLayoutId(): Int = R.layout.fragment_report
-
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentReportBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -79,13 +80,13 @@ class ReportFragment : BaseFragment() {
         viewModel.sent.observe { isSent -> if (isSent) onSent() }
         viewModel.error.observe { showAlert(context, it) }
 
-        btnReport.setOnClickListener {
+        binding.btnReport.setOnClickListener {
             withSelectedReason { reason, comment ->
                 reportBlock?.invoke(reason, comment)
             }
         }
 
-        btnReport.applyBottomInsetMargin()
+        binding.btnReport.applyBottomInsetMargin()
     }
 
     private fun bindUser(user: User) {
@@ -93,8 +94,8 @@ class ReportFragment : BaseFragment() {
         reportBlock = { reason, comment ->
             viewModel.reportUser(user, reason, comment)
         }
-        tvCommentHint.show()
-        etComment.show()
+        binding.tvCommentHint.show()
+        binding.etComment.show()
     }
 
     private fun bindWallPost(wallPost: WallPost) {
@@ -112,8 +113,8 @@ class ReportFragment : BaseFragment() {
     }
 
     private fun onLoadingChanged(isLoading: Boolean) {
-        btnReport.setVisibleWithInvis(!isLoading)
-        loader.setVisible(isLoading)
+        binding.btnReport.setVisibleWithInvis(!isLoading)
+        binding.loader.setVisible(isLoading)
     }
 
     private fun onSent() {
@@ -121,7 +122,7 @@ class ReportFragment : BaseFragment() {
         onBackPressed()
     }
 
-    private fun withSelectedReason(block: (reason: ReportReason, comment: String) -> Unit) {
+    private fun withSelectedReason(block: (reason: ReportReason, comment: String) -> Unit) = with(binding) {
         val selectedRadioButton = rgReason.children
                 .filterIsInstance<RadioButton>()
                 .find { it.isChecked }
@@ -135,7 +136,7 @@ class ReportFragment : BaseFragment() {
     }
 
     private fun setReasons(reasons: Collection<ReportReason>) {
-        rgReason.removeAllViews()
+        binding.rgReason.removeAllViews()
         reasons.forEach { reason ->
             RadioButton(requireContext()).apply {
 
@@ -143,7 +144,7 @@ class ReportFragment : BaseFragment() {
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
                 tag = reason
 
-                rgReason.addView(this)
+                binding.rgReason.addView(this)
 
                 (layoutParams as? ViewGroup.MarginLayoutParams)
                         ?.updateMargins(
@@ -158,10 +159,10 @@ class ReportFragment : BaseFragment() {
 
     private fun animateEmptyRadioGroup() {
         animator?.cancel()
-        rgReason.translationX = 0f
+        binding.rgReason.translationX = 0f
 
         val n = 2
-        val animator = rgReason.animate()
+        val animator = binding.rgReason.animate()
                 .translationX(16f)
                 .setInterpolator { time -> sin(n * 2 * PI * time).toFloat() }
                 .setDuration(300L)

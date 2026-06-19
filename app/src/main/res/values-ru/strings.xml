@@ -59,7 +59,7 @@
     <string name="hphone">домашний телефон</string>
     <string name="important">важные сообщения</string>
     <string name="incorrect_pin">неверный</string>
-    <string name="join_us">подписывайтесь на официальную группу xvii вконтакте, чтобы получать свежие новости о приложении</string>
+    <string name="join_us">подписывайтесь на официальную группу xviii вконтакте, чтобы получать свежие новости о приложении</string>
     <string name="key_set">ключи установлены успешно</string>
     <string name="kilobytes">%s кб</string>
     <string name="last_seen">был(а): %s</string>
@@ -83,7 +83,7 @@
     <string name="reset_succ">сброшено успешно</string>
     <string name="restart_app">перезагрузка приложения..</string>
     <string name="settings">настройки</string>
-    <string name="share_on_wall">рассказать об xvii на стене</string>
+    <string name="share_on_wall">рассказать об xviii на стене</string>
     <string name="shared">успешно отправлено на стену</string>
     <string name="led_lights">цвет led</string>
     <string name="site">сайт</string>
@@ -107,12 +107,12 @@
 
     <string name="clear_cache">очистить кэш</string>
     <string name="wanna_logout">вы действительно хотите выйти?</string>
-    <string name="generation_dh_hint">убедитесь, что ваш собеседник установил и открыл xvii. это необходимо для обмена ключами</string>
+    <string name="generation_dh_hint">убедитесь, что ваш собеседник установил и открыл xviii. это необходимо для обмена ключами</string>
     <string name="decrypting_image">изображение расшифровывается</string>
     <string name="invalid_file">невозможно расшифровать файл</string>
     <string name="fingerprint">отпечаток</string>
     <string name="fingerprint_hint">это изображение и этот текст были получены из ключей шифрования. если они выглядят также на устройстве собеседника, и ключи были установлены, будьте уверены в приватности. в противном случае ваш диалог небезопасен!</string>
-    <string name="longpoll_explanation">начиная с android 8 (oreo), ос не позволяет запускать фоновые сервисы, за исключением сервисов google firebase. но api вконтакте не описывает собственный firebase, только longpoll, который требует постоянной работы фонового сервиса. xvii приходится постоянно показывать уведомление, чтобы сервис работал</string>
+    <string name="longpoll_explanation">начиная с android 8 (oreo), ос не позволяет запускать фоновые сервисы, за исключением сервисов google firebase. но api вконтакте не описывает собственный firebase, только longpoll, который требует постоянной работы фонового сервиса. xviii приходится постоянно показывать уведомление, чтобы сервис работал</string>
 
     <string name="longpoll_guide_title">как убрать это уведомление</string>
     <string name="longpoll_guide_step1">нажмите на кнопку \"открыть настройки уведомлений\"</string>
@@ -214,7 +214,7 @@
         <item> </item>
     </string-array>
 
-    <string name="aboutbig">xvii мессенджер (от twoeightnine)\nвер. %s от %s</string>
+    <string name="aboutbig">xviii мессенджер (от twoeightnine)\nвер. %s от %s</string>
     <string name="added_to_docs">успешно добавлено в документы</string>
 
 
@@ -241,7 +241,7 @@
     <string name="custom_key_type">пользовательский</string>
     <string name="random_key_type">случайный (dhe)</string>
     <string name="no_access_to_storage">нет доступа к хранилищу</string>
-    <string name="need_access_to_storage">xvii необходим доступ к хранилищу для прикрепления и скачивания файлов</string>
+    <string name="need_access_to_storage">xviii необходим доступ к хранилищу для прикрепления и скачивания файлов</string>
     <string name="details">подробнее</string>
     <string name="report_hint">это поможет решить проблему быстрее</string>
     <string name="mark_as_read">отметить прочитанным</string>
@@ -277,7 +277,7 @@
     <string name="unable_to_write">вы не можете писать сообщения этому пользователю</string>
     <string name="show_seconds">показывать секунды</string>
     <string name="longpoll_hint">нажмите здесь, чтобы скрыть уведомление</string>
-    <string name="xvii_longpoll">фоновый сервис xvii</string>
+    <string name="xvii_longpoll">фоновый сервис xviii</string>
     <string name="summary">всего</string>
     <string name="show_voice">показывать значок голосовых сообщений</string>
     <string name="show_stickers">показывать значок смайликов/стикеров</string>
@@ -551,9 +551,9 @@
     <string name="security_mask_voice">изменить мой голос (бета)</string>
     <string name="security_mask_voice_hint">ваш голос будет изменен в голосовых сообщениях</string>
     <string name="login_privacy_and_tos">входя, вы соглашаетесь с %s и %s</string>
-    <string name="login_oauth_hint">для вашей безопасности xvii использует стандартную форму входа вконтакте, что означает, что приложение не получит ваши логин и пароль</string>
+    <string name="login_oauth_hint">для вашей безопасности xviii использует стандартную форму входа вконтакте, что означает, что приложение не получит ваши логин и пароль</string>
     <string name="login_log_in">войти</string>
-    <string name="alert_privacy_and_tos">чтобы продолжить пользоваться xvii, вы должны согласиться с %s и %s</string>
+    <string name="alert_privacy_and_tos">чтобы продолжить пользоваться xviii, вы должны согласиться с %s и %s</string>
     <string name="alert_privacy_and_tos_agree">согласиться и продолжить</string>
     <string name="alert_privacy_and_tos_disagree">не согласиться и выйти</string>
     <string name="restart">перезапустить</string>

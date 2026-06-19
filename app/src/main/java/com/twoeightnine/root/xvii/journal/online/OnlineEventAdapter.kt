@@ -23,6 +23,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.ItemOfflineEventBinding
+import com.twoeightnine.root.xvii.databinding.ItemOnlineEventBinding
 import com.twoeightnine.root.xvii.journal.online.model.OnlineEvent
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.uikit.Munch
@@ -30,8 +32,6 @@ import com.twoeightnine.root.xvii.uikit.paint
 import com.twoeightnine.root.xvii.utils.getTime
 import global.msnthrp.xvii.uikit.base.adapters.BaseAdapter
 import global.msnthrp.xvii.uikit.extensions.setVisible
-import kotlinx.android.synthetic.main.item_offline_event.view.*
-import kotlinx.android.synthetic.main.item_online_event.view.*
 
 class OnlineEventAdapter(context: Context) : BaseAdapter<OnlineEvent, OnlineEventAdapter.OnlineEventViewHolder>(context) {
 
@@ -66,10 +66,11 @@ class OnlineEventAdapter(context: Context) : BaseAdapter<OnlineEvent, OnlineEven
     inner class OnlineEventViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bindOnline(event: OnlineEvent, prevEvent: OnlineEvent?) {
-            with(itemView) {
+            val binding = ItemOnlineEventBinding.bind(itemView)
+            with(binding) {
                 val time = getTime(event.time, withSeconds = Prefs.showSeconds)
                 val deviceName = com.twoeightnine.root.xvii.background.longpoll.models.events
-                        .OnlineEvent.getDeviceName(context.resources, event.deviceCode)
+                        .OnlineEvent.getDeviceName(root.context.resources, event.deviceCode)
                         .takeIf(String::isNotBlank)
                         ?.takeIf { event.isOnline }
                         ?.let { "\n$it" }
@@ -86,7 +87,8 @@ class OnlineEventAdapter(context: Context) : BaseAdapter<OnlineEvent, OnlineEven
         }
 
         fun bindOffline(event: OnlineEvent) {
-            with(itemView) {
+            val binding = ItemOfflineEventBinding.bind(itemView)
+            with(binding) {
                 val time = getTime(event.lastSeen, withSeconds = Prefs.showSeconds)
                 val timeOffline = getTime(event.time, withSeconds = Prefs.showSeconds)
                 tvTimeLastAction.text = time

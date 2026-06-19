@@ -19,17 +19,18 @@
 package com.twoeightnine.root.xvii.journal.online
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseBottomSheet
+import com.twoeightnine.root.xvii.databinding.FragmentJournalOnlineBinding
 import com.twoeightnine.root.xvii.journal.online.model.OnlineInfo
 import com.twoeightnine.root.xvii.managers.Prefs
 import global.msnthrp.xvii.uikit.extensions.lowerIf
-import kotlinx.android.synthetic.main.fragment_journal_online.*
 
-class JournalOnlineBottomSheet private constructor(): BaseBottomSheet() {
+class JournalOnlineBottomSheet private constructor(): BaseBottomSheet<FragmentJournalOnlineBinding>() {
 
     private val onlineInfo by lazy {
         arguments?.getParcelable<OnlineInfo>(ARG_DATA)
@@ -38,16 +39,19 @@ class JournalOnlineBottomSheet private constructor(): BaseBottomSheet() {
         OnlineEventAdapter(requireContext())
     }
 
-    override fun getLayout(): Int = R.layout.fragment_journal_online
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentJournalOnlineBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tvName.text = onlineInfo?.userName
-        tvName.lowerIf(Prefs.lowerTexts)
+        binding.apply {
+            tvName.text = onlineInfo?.userName
+            tvName.lowerIf(Prefs.lowerTexts)
 
-        rvEvents.layoutManager = LinearLayoutManager(requireContext())
+            rvEvents.layoutManager = LinearLayoutManager(requireContext())
                 .apply { stackFromEnd = true }
-        rvEvents.adapter = adapter
+            rvEvents.adapter = adapter
+        }
         onlineInfo?.events?.also(adapter::update)
     }
 

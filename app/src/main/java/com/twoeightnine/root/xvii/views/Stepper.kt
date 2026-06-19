@@ -20,15 +20,17 @@ package com.twoeightnine.root.xvii.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.TextView
 import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.ViewStepperBinding
 import com.twoeightnine.root.xvii.uikit.Munch
 import com.twoeightnine.root.xvii.uikit.paint
-import kotlinx.android.synthetic.main.view_stepper.view.*
 
 class Stepper(context: Context, attributeSet: AttributeSet) : FrameLayout(context, attributeSet) {
+
+    private val binding = ViewStepperBinding.inflate(LayoutInflater.from(context))
 
     private val tvValue: TextView
     private val tvName: TextView
@@ -84,9 +86,8 @@ class Stepper(context: Context, attributeSet: AttributeSet) : FrameLayout(contex
 //    constructor(context: Context) : super(context)
 
     init {
-        val view = View.inflate(context, R.layout.view_stepper, null)
-        addView(view)
-        with(view) {
+        addView(binding.root)
+        with(binding) {
             ivPlus.setOnClickListener {
                 if (value + step <= max) {
                     value += step
@@ -103,8 +104,8 @@ class Stepper(context: Context, attributeSet: AttributeSet) : FrameLayout(contex
         }
         initAttributes(attributeSet)
         invalidateValue()
-        ivMinus.paint(Munch.color.color)
-        ivPlus.paint(Munch.color.color)
+        binding.ivMinus.paint(Munch.color.color)
+        binding.ivPlus.paint(Munch.color.color)
     }
 
     private fun initAttributes(attributeSet: AttributeSet) {

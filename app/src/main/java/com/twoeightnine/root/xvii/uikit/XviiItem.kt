@@ -21,12 +21,15 @@ package com.twoeightnine.root.xvii.uikit
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.RelativeLayout
 import com.twoeightnine.root.xvii.R
-import kotlinx.android.synthetic.main.view_item.view.*
+import com.twoeightnine.root.xvii.databinding.ViewItemBinding
 
 class XviiItem(context: Context, attributeSet: AttributeSet) : RelativeLayout(context, attributeSet) {
+
+    private val binding = ViewItemBinding.inflate(LayoutInflater.from(context), this)
 
     private val itemHeight by lazy {
         context.resources.getDimensionPixelSize(R.dimen.item_height)
@@ -37,14 +40,13 @@ class XviiItem(context: Context, attributeSet: AttributeSet) : RelativeLayout(co
 //    private var hasDivider: Boolean = true
 
     init {
-        View.inflate(context, R.layout.view_item, this)
         setBackgroundResource(R.drawable.selector_rect)
         initAttributes(attributeSet)
 
-        tvTitle.text = title
+        binding.tvTitle.text = title
         icon?.apply {
             paint(Munch.color.color)
-            ivIcon.setImageDrawable(this)
+            binding.ivIcon.setImageDrawable(this)
         }
 //        vItemDivider.setVisible(hasDivider)
     }

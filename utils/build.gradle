@@ -25,6 +25,7 @@ plugins {
 apply from: "$project.rootDir/dependencies.gradle"
 
 android {
+    namespace "global.msnthrp.utils"
     compileSdkVersion androidVersions.compileSdkVersion
     buildToolsVersion androidVersions.buildToolsVersion
 
@@ -50,6 +51,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 }
 

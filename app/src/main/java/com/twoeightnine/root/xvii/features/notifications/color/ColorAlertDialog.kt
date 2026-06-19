@@ -19,13 +19,13 @@
 package com.twoeightnine.root.xvii.features.notifications.color
 
 import android.content.Context
-import android.view.View
+import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.DialogColorBinding
 import com.twoeightnine.root.xvii.utils.stylize
-import kotlinx.android.synthetic.main.dialog_color.view.*
 
 class ColorAlertDialog(
         context: Context,
@@ -37,9 +37,9 @@ class ColorAlertDialog(
     }
 
     init {
-        val view = View.inflate(context, R.layout.dialog_color, null)
-        initRecycler(view.rvColor)
-        setView(view)
+        val binding = DialogColorBinding.inflate(LayoutInflater.from(context))
+        initRecycler(binding.rvColor)
+        setView(binding.root)
     }
 
     override fun show() {

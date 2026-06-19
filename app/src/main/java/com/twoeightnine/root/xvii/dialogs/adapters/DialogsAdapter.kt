@@ -21,11 +21,11 @@ package com.twoeightnine.root.xvii.dialogs.adapters
 import android.content.Context
 import android.text.Html
 import android.text.SpannableStringBuilder
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseReachAdapter
+import com.twoeightnine.root.xvii.databinding.ItemDialogBinding
 import com.twoeightnine.root.xvii.extensions.getInitials
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.uikit.Munch
@@ -37,7 +37,6 @@ import global.msnthrp.xvii.data.dialogs.Dialog
 import global.msnthrp.xvii.uikit.extensions.lowerIf
 import global.msnthrp.xvii.uikit.extensions.setVisible
 import global.msnthrp.xvii.uikit.extensions.setVisibleWithInvis
-import kotlinx.android.synthetic.main.item_dialog.view.*
 
 class DialogsAdapter(
         context: Context,
@@ -54,21 +53,25 @@ class DialogsAdapter(
 
     var firstItemPadding = 0
 
-    override fun createStubLoadItem() = Dialog()
+    override fun createStubLoadItem() = Dialog(
+        0, 0, "", null, "", 0,
+        false, true, 0, false, false,
+        false, null
+    )
 
     override fun createHolder(parent: ViewGroup, viewType: Int)
-            = DialogViewHolder(inflater.inflate(R.layout.item_dialog, null))
+            = DialogViewHolder(ItemDialogBinding.inflate(inflater, parent, false))
 
     override fun bind(holder: DialogViewHolder, item: Dialog) {
         holder.bind(item, items[0] == item)
     }
 
-    inner class DialogViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class DialogViewHolder(private val binding: ItemDialogBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(dialog: Dialog, isFirst: Boolean) {
-            with(itemView) {
+            with(binding) {
                 val topPadding = if (isFirst) firstItemPadding else 0
-                setPadding(0, topPadding, 0, 0)
+                root.setPadding(0, topPadding, 0, 0)
 
                 civPhoto.load(dialog.photo, dialog.aliasOrTitle.getInitials(), id = dialog.peerId)
 

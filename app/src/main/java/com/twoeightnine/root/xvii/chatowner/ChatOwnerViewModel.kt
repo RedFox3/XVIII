@@ -179,7 +179,11 @@ class ChatOwnerViewModel : ViewModel() {
         appDb.dialogsDao()
                 .getDialogs(peerId)
                 .compose(applySingleSchedulers())
-                .onErrorReturnItem(Dialog())
+                .onErrorReturnItem(Dialog(
+                    0, 0, "", null, "", 0,
+                    false, true, 0, false, false,
+                    false, null
+                ))
                 .map { it.alias ?: "" }
                 .subscribe { alias ->
                     if (alias.isNotBlank()) {

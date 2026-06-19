@@ -19,45 +19,57 @@
 package com.twoeightnine.root.xvii.chatowner.fragments
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.FragmentPlacementActivity.Companion.startFragment
 import com.twoeightnine.root.xvii.chats.messages.chat.secret.SecretChatActivity
+import com.twoeightnine.root.xvii.databinding.FragmentChatOwnerUserBinding
 import com.twoeightnine.root.xvii.model.User
 import com.twoeightnine.root.xvii.model.Wrapper
 import com.twoeightnine.root.xvii.report.ReportFragment
 import com.twoeightnine.root.xvii.storage.SessionProvider
-import com.twoeightnine.root.xvii.utils.*
+import com.twoeightnine.root.xvii.utils.callIntent
+import com.twoeightnine.root.xvii.utils.formatBdate
+import com.twoeightnine.root.xvii.utils.formatDate
+import com.twoeightnine.root.xvii.utils.getDate
+import com.twoeightnine.root.xvii.utils.getRelation
+import com.twoeightnine.root.xvii.utils.shortifyNumber
+import com.twoeightnine.root.xvii.utils.showError
+import com.twoeightnine.root.xvii.utils.showWarnConfirm
 import global.msnthrp.xvii.uikit.extensions.applyTopInsetMargin
 import global.msnthrp.xvii.uikit.extensions.setVisible
-import kotlinx.android.synthetic.main.fragment_chat_owner_user.*
 
-class UserChatOwnerFragment : BaseChatOwnerFragment<User>() {
+class UserChatOwnerFragment : BaseChatOwnerFragment<User, FragmentChatOwnerUserBinding>() {
 
     private var menuItemBlock: MenuItem? = null
     private var menuItemUnblock: MenuItem? = null
 
-    override fun getLayoutId() = R.layout.fragment_chat_owner_user
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentChatOwnerUserBinding.inflate(inflater, container, false)
 
     override fun getChatOwnerClass() = User::class.java
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ivOverflow.apply {
-            setOnClickListener { xviiToolbar.showOverflowMenu() }
-            applyTopInsetMargin()
-        }
-        btnSecretChat.setOnClickListener {
-            getChatOwner()?.also {
-                SecretChatActivity.launch(context, it)
+        binding.apply {
+            ivOverflow.apply {
+                setOnClickListener { xviiToolbar.showOverflowMenu() }
+                applyTopInsetMargin()
+            }
+            btnSecretChat.setOnClickListener {
+                getChatOwner()?.also {
+                    SecretChatActivity.launch(context, it)
+                }
             }
         }
     }
 
-    override fun getBottomPaddableView(): View = vBottom
+    override fun getBottomPaddableView(): View = binding.vBottom
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -104,7 +116,7 @@ class UserChatOwnerFragment : BaseChatOwnerFragment<User>() {
     override fun bindChatOwner(chatOwner: User?) {
         val user = chatOwner ?: return
 
-        fabOpenChat.setVisible(user.canWriteThisUser)
+        binding.fabOpenChat.setVisible(user.canWriteThisUser)
         addValue(R.drawable.ic_quotation, user.status, null) {
             copy(user.status, R.string.status)
         }

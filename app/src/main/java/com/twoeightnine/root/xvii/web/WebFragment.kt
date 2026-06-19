@@ -19,24 +19,27 @@
 package com.twoeightnine.root.xvii.web
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
+import com.twoeightnine.root.xvii.databinding.FragmentWebBinding
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
-import kotlinx.android.synthetic.main.fragment_web.*
 
-class WebFragment : BaseFragment() {
+class WebFragment : BaseFragment<FragmentWebBinding>() {
 
     private val url by lazy { arguments?.getString(ARG_URL) }
     private val title by lazy { arguments?.getString(ARG_TITLE) }
 
-    override fun getLayoutId() = R.layout.fragment_web
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentWebBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        webView.webViewClient = object : WebViewClient() {
+        binding.webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                 // do your handling codes here, which url is the requested url
                 // probably you need to open that url rather than redirect:
@@ -44,13 +47,13 @@ class WebFragment : BaseFragment() {
                 return false // then it is not handled by default action
             }
         }
-        url?.also(webView::loadUrl)
+        url?.also(binding.webView::loadUrl)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        xviiToolbar.title = title ?: url ?: getString(R.string.app_name)
-        webView.applyBottomInsetPadding()
+        binding.xviiToolbar.title = title ?: url ?: getString(R.string.app_name)
+        binding.webView.applyBottomInsetPadding()
     }
 
     companion object {

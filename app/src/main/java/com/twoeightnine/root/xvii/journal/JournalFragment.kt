@@ -19,13 +19,16 @@
 package com.twoeightnine.root.xvii.journal
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
+import com.twoeightnine.root.xvii.databinding.FragmentJournalBinding
 import com.twoeightnine.root.xvii.journal.message.JournalMessageBottomSheet
 import com.twoeightnine.root.xvii.journal.message.model.MessageInfo
 import com.twoeightnine.root.xvii.journal.online.JournalOnlineBottomSheet
@@ -38,9 +41,8 @@ import global.msnthrp.xvii.core.journal.model.JournalEvent
 import global.msnthrp.xvii.core.journal.model.JournalEventWithPeer
 import global.msnthrp.xvii.core.journal.model.JournalFilter
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
-import kotlinx.android.synthetic.main.fragment_journal.*
 
-class JournalFragment : BaseFragment() {
+class JournalFragment : BaseFragment<FragmentJournalBinding>() {
 
     private val viewModel by viewModels<JournalViewModel>()
 
@@ -48,7 +50,8 @@ class JournalFragment : BaseFragment() {
         JournalAdapter(requireContext(), ::onClick)
     }
 
-    override fun getLayoutId(): Int = R.layout.fragment_journal
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentJournalBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -92,10 +95,10 @@ class JournalFragment : BaseFragment() {
     
     private fun onEventsLoaded(events: List<JournalEventWithPeer>) {
         adapter.update(events)
-        rvEvents.scrollToPosition(events.size - 1)
+        binding.rvEvents.scrollToPosition(events.size - 1)
     }
 
-    private fun initRecyclerView() {
+    private fun initRecyclerView() = with(binding) {
         rvEvents.layoutManager = LinearLayoutManager(requireContext())
                 .apply { stackFromEnd = true }
         rvEvents.adapter = adapter

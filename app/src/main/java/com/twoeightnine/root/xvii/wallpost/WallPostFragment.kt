@@ -20,6 +20,7 @@ package com.twoeightnine.root.xvii.wallpost
 
 import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +32,8 @@ import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
 import com.twoeightnine.root.xvii.base.FragmentPlacementActivity.Companion.startFragment
 import com.twoeightnine.root.xvii.chats.attachments.AttachmentsInflater
+import com.twoeightnine.root.xvii.databinding.ContentWallPostBinding
+import com.twoeightnine.root.xvii.databinding.FragmentWallPostBinding
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.model.Group
 import com.twoeightnine.root.xvii.model.WallPost
@@ -40,18 +43,19 @@ import com.twoeightnine.root.xvii.network.ApiService
 import com.twoeightnine.root.xvii.network.response.WallPostResponse
 import com.twoeightnine.root.xvii.report.ReportFragment
 import com.twoeightnine.root.xvii.uikit.XviiAvatar
-import com.twoeightnine.root.xvii.utils.*
+import com.twoeightnine.root.xvii.utils.ApiUtils
+import com.twoeightnine.root.xvii.utils.BrowsingUtils
+import com.twoeightnine.root.xvii.utils.PermissionHelper
+import com.twoeightnine.root.xvii.utils.getTime
+import com.twoeightnine.root.xvii.utils.showError
+import com.twoeightnine.root.xvii.utils.subscribeSmart
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
 import global.msnthrp.xvii.uikit.extensions.hide
 import global.msnthrp.xvii.uikit.extensions.lowerIf
 import global.msnthrp.xvii.uikit.extensions.show
-import kotlinx.android.synthetic.main.content_wall_post.view.*
-import kotlinx.android.synthetic.main.content_wall_post.view.civAvatar
-import kotlinx.android.synthetic.main.fragment_wall_post.*
-import kotlinx.android.synthetic.main.toolbar2.view.*
 import javax.inject.Inject
 
-class WallPostFragment : BaseFragment() {
+class WallPostFragment : BaseFragment<FragmentWallPostBinding>() {
 
     private val postId by lazy { arguments?.getString(ARG_POST_ID) }
     private lateinit var postResponse: WallPostResponse
@@ -70,10 +74,11 @@ class WallPostFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         App.appComponent?.inject(this)
         getWallPostRequest()
-        svContent.applyBottomInsetPadding()
+        binding.svContent.applyBottomInsetPadding()
     }
 
-    override fun getLayoutId() = R.layout.fragment_wall_post
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentWallPostBinding.inflate(inflater, container, false)
 
     override fun getMenu(): Int = R.menu.menu_wall_post
 
@@ -94,15 +99,14 @@ class WallPostFragment : BaseFragment() {
         else -> super.onOptionsItemSelected(item)
     }
 
-    private fun getWallPostRequest() {
+    private fun getWallPostRequest() = with(binding) {
         loader.show()
         api.getWallPostById(postId ?: "")
                 .subscribeSmart({ response ->
                     loader.hide()
                     postResponse = response
                     if (response.items.size > 0) {
-                        fillContent(llRoot)
-                        putViews(WallViewHolder(llRoot), response.items[0])
+                        putViews(WallViewHolder(fillContent(llRoot)), response.items[0])
                     } else {
                         showError(context, getString(R.string.error))
                     }
@@ -114,11 +118,17 @@ class WallPostFragment : BaseFragment() {
     private fun putViews(holder: WallViewHolder, post: WallPost, level: Int = 0) {
         val group = getGroup(-post.fromId)
         if (level == 0) {
-            xviiToolbar.tvChatTitle.text = group.name
-            xviiToolbar.tvChatTitle.lowerIf(Prefs.lowerTexts)
+            binding.apply {
+                val tvChatTitle = xviiToolbar.findViewById<TextView>(R.id.tvChatTitle)
+                val civAvatar = xviiToolbar.findViewById<XviiAvatar>(R.id.civAvatar)
+                val tvSubtitle = xviiToolbar.findViewById<TextView>(R.id.tvSubtitle)
 
-            xviiToolbar.civAvatar.load(group.photo100)
-            xviiToolbar.tvSubtitle.text = getTime(post.date, withSeconds = Prefs.showSeconds)
+                tvChatTitle.text = group.name
+                tvChatTitle.lowerIf(Prefs.lowerTexts)
+
+                civAvatar.load(group.photo100)
+                tvSubtitle.text = getTime(post.date, withSeconds = Prefs.showSeconds)
+            }
             holder.rlHeader.hide()
         } else {
             holder.tvTitle.text = group.name
@@ -132,8 +142,7 @@ class WallPostFragment : BaseFragment() {
                 .forEach(holder.llContainer::addView)
 
         if (post.copyHistory != null && post.copyHistory.size > 0) {
-            fillContent(holder.llContainer)
-            putViews(WallViewHolder(holder.llContainer), post.copyHistory[0], level + 1)
+            putViews(WallViewHolder(fillContent(holder.llContainer)), post.copyHistory[0], level + 1)
         }
     }
 
@@ -146,8 +155,10 @@ class WallPostFragment : BaseFragment() {
         return Group()
     }
 
-    private fun fillContent(root: ViewGroup) {
-        root.addView(View.inflate(context, R.layout.content_wall_post, null))
+    private fun fillContent(root: ViewGroup): ContentWallPostBinding {
+        val binding = ContentWallPostBinding.inflate(LayoutInflater.from(context))
+        root.addView(binding.root)
+        return binding
     }
 
     companion object {
@@ -167,14 +178,14 @@ class WallPostFragment : BaseFragment() {
         }
     }
 
-    private inner class WallViewHolder(view: View) {
+    private inner class WallViewHolder(val binding: ContentWallPostBinding) {
 
-        val rlHeader: RelativeLayout = view.rlHeader
-        val civAvatar: XviiAvatar = view.civAvatar
-        val tvTitle: TextView = view.tvTitle
-        val tvDate: TextView = view.tvDate
-        val tvPost: TextView = view.tvPost
-        val llContainer: LinearLayout = view.llContainer
+        val rlHeader: RelativeLayout = binding.rlHeader
+        val civAvatar: XviiAvatar = binding.civAvatar
+        val tvTitle: TextView = binding.tvTitle
+        val tvDate: TextView = binding.tvDate
+        val tvPost: TextView = binding.tvPost
+        val llContainer: LinearLayout = binding.llContainer
     }
 
     private inner class WallPostCallback(context: Context)

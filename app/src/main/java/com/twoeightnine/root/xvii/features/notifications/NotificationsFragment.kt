@@ -25,12 +25,14 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.CompoundButton
 import com.twoeightnine.root.xvii.BuildConfig
-import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
 import com.twoeightnine.root.xvii.base.FragmentPlacementActivity.Companion.startFragment
+import com.twoeightnine.root.xvii.databinding.FragmentNotificationsBinding
 import com.twoeightnine.root.xvii.egg.EggFragment
 import com.twoeightnine.root.xvii.features.notifications.color.ColorAlertDialog
 import com.twoeightnine.root.xvii.managers.Prefs
@@ -38,19 +40,19 @@ import com.twoeightnine.root.xvii.utils.NotificationChannels
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
 import global.msnthrp.xvii.uikit.extensions.hide
 import global.msnthrp.xvii.uikit.extensions.show
-import kotlinx.android.synthetic.main.fragment_notifications.*
 
 /**
  * Created by root on 2/2/17.
  */
 
-class NotificationsFragment : BaseFragment() {
+class NotificationsFragment : BaseFragment<FragmentNotificationsBinding>() {
 
     private var eggState = 0
 
-    override fun getLayoutId() = R.layout.fragment_notifications
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentNotificationsBinding.inflate(inflater, container, false)
 
-    private fun initSwitches() {
+    private fun initSwitches() = with(binding) {
         if (Prefs.showNotifs) {
             switchShowNotification.isChecked = true
             switchShowName.isChecked = Prefs.showName
@@ -124,10 +126,10 @@ class NotificationsFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        svContent.applyBottomInsetPadding()
+        binding.svContent.applyBottomInsetPadding()
     }
 
-    private fun saveSwitches() {
+    private fun saveSwitches() = with(binding) {
         Prefs.showNotifs = switchShowNotification.isChecked
         Prefs.showName = switchShowName.isEnabled && switchShowName.isChecked
         Prefs.vibrate = switchVibrate.isEnabled && switchVibrate.isChecked
@@ -154,34 +156,38 @@ class NotificationsFragment : BaseFragment() {
         initSwitches()
         initEgg()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            listOf(switchVibrate, switchSound, csLed,
-                    switchVibrateChats, switchSoundChats, csLedChats)
+        binding.apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                listOf(
+                    switchVibrate, switchSound, csLed,
+                    switchVibrateChats, switchSoundChats, csLedChats
+                )
                     .forEach { it.hide() }
-            listOf(btnSettingsPrivate, btnSettings, btnSettingsMentions)
+                listOf(btnSettingsPrivate, btnSettings, btnSettingsMentions)
                     .forEach { it.show() }
-            btnSettingsPrivate.setOnClickListener {
-                openChannelSettings(NotificationChannels.privateMessages.id)
-            }
-            btnSettingsOther.setOnClickListener {
-                openChannelSettings(NotificationChannels.otherMessages.id)
-            }
-            btnSettingsMentions.setOnClickListener {
-                openChannelSettings(NotificationChannels.mentions.id)
-            }
-            btnSettings.setOnClickListener {
-                openChannelSettings()
-            }
-        } else {
-            listOf(btnSettingsPrivate, btnSettingsOther, btnSettingsMentions)
+                btnSettingsPrivate.setOnClickListener {
+                    openChannelSettings(NotificationChannels.privateMessages.id)
+                }
+                btnSettingsOther.setOnClickListener {
+                    openChannelSettings(NotificationChannels.otherMessages.id)
+                }
+                btnSettingsMentions.setOnClickListener {
+                    openChannelSettings(NotificationChannels.mentions.id)
+                }
+                btnSettings.setOnClickListener {
+                    openChannelSettings()
+                }
+            } else {
+                listOf(btnSettingsPrivate, btnSettingsOther, btnSettingsMentions)
                     .forEach { it.hide() }
-            btnSettings.setOnClickListener {
-                openSettingsPreOreo()
+                btnSettings.setOnClickListener {
+                    openSettingsPreOreo()
+                }
             }
         }
     }
 
-    private fun initEgg() {
+    private fun initEgg() = with(binding) {
         if (Math.random() > 0.8 || BuildConfig.DEBUG) {
             val handler = Handler(Looper.getMainLooper())
             switchEgg.show()

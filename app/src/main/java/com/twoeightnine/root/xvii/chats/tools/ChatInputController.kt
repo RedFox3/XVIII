@@ -42,24 +42,27 @@ import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.chats.attachments.stickersemoji.StickersEmojiRepository
 import com.twoeightnine.root.xvii.chats.attachments.stickersemoji.StickersEmojiWindow
 import com.twoeightnine.root.xvii.chats.messages.chat.base.BaseChatMessagesViewModel
+import com.twoeightnine.root.xvii.databinding.ChatInputPanelBinding
 import com.twoeightnine.root.xvii.lg.L
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.model.User
 import com.twoeightnine.root.xvii.model.attachments.Sticker
 import com.twoeightnine.root.xvii.uikit.Munch
 import com.twoeightnine.root.xvii.uikit.paint
-import com.twoeightnine.root.xvii.utils.*
+import com.twoeightnine.root.xvii.utils.EmojiHelper
+import com.twoeightnine.root.xvii.utils.VibrationHelper
 import com.twoeightnine.root.xvii.utils.contextpopup.ContextPopupItem
 import com.twoeightnine.root.xvii.utils.contextpopup.createContextPopup
+import com.twoeightnine.root.xvii.utils.secToTime
+import com.twoeightnine.root.xvii.utils.time
 import global.msnthrp.xvii.data.stickersemoji.model.Emoji
 import global.msnthrp.xvii.data.utils.FileUtils
 import global.msnthrp.xvii.uikit.extensions.asText
 import global.msnthrp.xvii.uikit.extensions.hide
 import global.msnthrp.xvii.uikit.extensions.setVisible
 import global.msnthrp.xvii.uikit.extensions.show
-import kotlinx.android.synthetic.main.chat_input_panel.view.*
 import java.io.File
-import java.util.*
+import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -70,12 +73,12 @@ import kotlin.math.min
  */
 class ChatInputController(
         private val context: Context,
-        private val rootView: View,
+        private val binding: ChatInputPanelBinding,
         private val callback: ChatInputCallback
 ) {
 
     private val loadingQueue = arrayListOf<Any>()
-    private val stickerKeyboard = StickersEmojiWindow(rootView, context, ::onKeyboardClosed, callback::onStickerClicked, ::addEmoji)
+    private val stickerKeyboard = StickersEmojiWindow(binding.root, context, ::onKeyboardClosed, callback::onStickerClicked, ::addEmoji)
     private val voiceRecorder = ChatVoiceController(context, InputRecorderCallback())
     private val repo by lazy { StickersEmojiRepository() }
     private val stickers = arrayListOf<global.msnthrp.xvii.data.stickersemoji.model.Sticker>()
@@ -85,7 +88,7 @@ class ChatInputController(
     private var keyboardState = KeyboardState.TEXT
 
     init {
-        with(rootView) {
+        with(binding) {
             ivSend.setOnClickListener { callback.onSendClick() }
             ivSend.setOnLongClickListener { onSendLongClicked(); true }
             ivKeyboard.setOnClickListener { switchKeyboardState() }
@@ -143,22 +146,22 @@ class ChatInputController(
     fun setAttachedCount(count: Int) {
         attachedCount = count
         if (count == 0) {
-            rootView.rlAttachCount.hide()
-            if (rootView.etInput.asText().isBlank() && Prefs.showVoice) {
+            binding.rlAttachCount.hide()
+            if (binding.etInput.asText().isBlank() && Prefs.showVoice) {
                 switchToMic()
             } else {
                 switchToSend()
             }
         } else {
-            rootView.rlAttachCount.show()
+            binding.rlAttachCount.show()
             val text = if (count == 10) "+" else count.toString()
-            rootView.tvAttachCount.text = text
+            binding.tvAttachCount.text = text
             switchToSend()
         }
     }
 
     fun mentionUser(user: User) {
-        rootView.etInput.apply {
+        binding.etInput.apply {
             val input = text.toString()
             val mentionEnd = selectionStart
             var mentionStart = mentionEnd
@@ -185,12 +188,12 @@ class ChatInputController(
     }
 
     private fun addEmoji(emoji: Emoji) {
-        val start = rootView.etInput.selectionStart
-        val end = rootView.etInput.selectionEnd
+        val start = binding.etInput.selectionStart
+        val end = binding.etInput.selectionEnd
         if (start < 0) {
-            rootView.etInput.append(emoji.code)
+            binding.etInput.append(emoji.code)
         } else {
-            rootView.etInput.text?.replace(min(start, end),
+            binding.etInput.text?.replace(min(start, end),
                     max(start, end), emoji.code, 0,
                     emoji.code.length)
         }
@@ -200,7 +203,7 @@ class ChatInputController(
         when (keyboardState) {
             KeyboardState.TEXT -> {
                 keyboardState = KeyboardState.STICKERS
-                stickerKeyboard.showWithRequest(rootView.etInput)
+                stickerKeyboard.showWithRequest(binding.etInput)
             }
             KeyboardState.STICKERS -> {
                 keyboardState = KeyboardState.TEXT
@@ -217,21 +220,21 @@ class ChatInputController(
         }
         val d = ContextCompat.getDrawable(context, iconRes)
         d?.paint(Munch.color.color50)
-        rootView.ivKeyboard.setImageDrawable(d)
+        binding.ivKeyboard.setImageDrawable(d)
     }
 
     private fun invalidateProgress() {
-        rootView.pbAttach.setVisible(loadingQueue.isNotEmpty())
+        binding.pbAttach.setVisible(loadingQueue.isNotEmpty())
     }
 
     private fun switchToSend() {
-        rootView.ivSend.show()
-        rootView.ivMic.hide()
+        binding.ivSend.show()
+        binding.ivMic.hide()
     }
 
     private fun switchToMic() {
-        rootView.ivSend.hide()
-        rootView.ivMic.show()
+        binding.ivSend.hide()
+        binding.ivMic.show()
     }
 
     private fun onKeyboardClosed() {
@@ -273,93 +276,6 @@ class ChatInputController(
                             .sum() != 0
                 }
                 .map { Sticker(it.id) }
-    }
-
-    private fun onVoiceRecordingLocked() {
-        vibrate()
-        rootView.tvMicHint.setVisible(false)
-        rootView.ivLocked.setVisible(true)
-        rootView.rlLockedButtons.setVisible(true)
-    }
-
-    private fun onSendLongClicked() {
-        val items = listOf(
-                ContextPopupItem(
-                        iconRes = R.drawable.ic_calendar_popup,
-                        textRes = R.string.scheduled_messages_send,
-                        onClick = ::showDatePicker
-                ),
-                ContextPopupItem(
-                        iconRes = R.drawable.ic_clock,
-                        textRes = R.string.destructor_send,
-                        onClick = ::showDestructorDelay
-                )
-        )
-        createContextPopup(context, items).show()
-    }
-
-    private fun showDatePicker() {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-        DatePickerDialog(context, ::onDatePicked, year, month, day)
-                .show()
-    }
-
-    private fun onDatePicked(dp: DatePicker, year: Int, month: Int, day: Int) {
-        showTimePicker(year, month, day)
-    }
-
-    private fun showTimePicker(year: Int, month: Int, day: Int) {
-        val calendar = Calendar.getInstance()
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        val minute = calendar.get(Calendar.MINUTE)
-        val onPicked = { tp: TimePicker, h: Int, m: Int ->
-            onTimePicked(year, month, day, h, m)
-        }
-        TimePickerDialog(context, onPicked, hour, minute, true)
-                .show()
-    }
-
-    private fun onTimePicked(year: Int, month: Int, day: Int, hour: Int, minute: Int) {
-        val whenMs = Calendar.getInstance().run {
-            set(Calendar.YEAR, year)
-            set(Calendar.MONTH, month)
-            set(Calendar.DAY_OF_MONTH, day)
-            set(Calendar.HOUR_OF_DAY, hour)
-            set(Calendar.MINUTE, minute)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-
-            timeInMillis
-        }
-        callback.onScheduleClick(whenMs)
-    }
-
-    private fun showDestructorDelay() {
-        val ttls = listOf(1, 2, 3, 5, 10, 15, 20, 30, 60, 120)
-        val resources = listOf(
-                R.string.destructor_ttl_1,
-                R.string.destructor_ttl_2,
-                R.string.destructor_ttl_3,
-                R.string.destructor_ttl_5,
-                R.string.destructor_ttl_10,
-                R.string.destructor_ttl_15,
-                R.string.destructor_ttl_20,
-                R.string.destructor_ttl_30,
-                R.string.destructor_ttl_60,
-                R.string.destructor_ttl_120
-        )
-        val items = ttls.zip(resources)
-                .map { (ttl, stringRes) ->
-                    ContextPopupItem(
-                            iconRes = R.drawable.ic_clock,
-                            textRes = stringRes,
-                            onClick = { callback.onSelfDeletingClick(ttl) }
-                    )
-                }
-        createContextPopup(context, items).show()
     }
 
     private fun vibrate() = VibrationHelper.vibrateHaptic()
@@ -461,6 +377,13 @@ class ChatInputController(
         private fun shouldCancel(event: MotionEvent) = abs(xPress - event.x) > cancelThreshold
 
         private fun shouldLock(event: MotionEvent) = abs(yPress - event.y) > lockThreshold
+
+        private fun onVoiceRecordingLocked() {
+            vibrate()
+            binding.tvMicHint.setVisible(false)
+            binding.ivLocked.setVisible(true)
+            binding.rlLockedButtons.setVisible(true)
+        }
     }
 
     /**
@@ -536,16 +459,16 @@ class ChatInputController(
         private var lastVoiceInvoke = -5
 
         override fun onVoiceVisibilityChanged(visible: Boolean) {
-            rootView.rlVoice.setVisible(visible)
+            binding.rlVoice.setVisible(visible)
             if (!visible) {
-                rootView.tvMicHint.setVisible(true)
-                rootView.ivLocked.setVisible(false)
-                rootView.rlLockedButtons.setVisible(false)
+                binding.tvMicHint.setVisible(true)
+                binding.ivLocked.setVisible(false)
+                binding.rlLockedButtons.setVisible(false)
             }
         }
 
         override fun onVoiceTimeUpdated(time: Int) {
-            rootView.tvRecordTime.text = secToTime(time)
+            binding.tvRecordTime.text = secToTime(time)
             if (time - lastVoiceInvoke >= 5) {
                 callback.onVoiceRecordingInvoke()
                 lastVoiceInvoke = time
@@ -562,10 +485,10 @@ class ChatInputController(
 
         override fun onAmplitudeChanged(amplitude: Float) {
             val newScale = 1 + amplitude * .7f
-            val currentScale = rootView.vRecordIndicator.scaleX
+            val currentScale = binding.vRecordIndicator.scaleX
 
             ObjectAnimator.ofPropertyValuesHolder(
-                    rootView.vRecordIndicator,
+                    binding.vRecordIndicator,
                     PropertyValuesHolder.ofFloat(View.SCALE_X, currentScale, newScale),
                     PropertyValuesHolder.ofFloat(View.SCALE_Y, currentScale, newScale)
             ).apply {
@@ -574,6 +497,86 @@ class ChatInputController(
                 start()
             }
         }
+    }
+
+    private fun onSendLongClicked() {
+        val items = listOf(
+                ContextPopupItem(
+                        iconRes = R.drawable.ic_calendar_popup,
+                        textRes = R.string.scheduled_messages_send,
+                        onClick = ::showDatePicker
+                ),
+                ContextPopupItem(
+                        iconRes = R.drawable.ic_clock,
+                        textRes = R.string.destructor_send,
+                        onClick = ::showDestructorDelay
+                )
+        )
+        createContextPopup(context, items).show()
+    }
+
+    private fun showDatePicker() {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        DatePickerDialog(context, ::onDatePicked, year, month, day)
+                .show()
+    }
+
+    private fun onDatePicked(dp: DatePicker, year: Int, month: Int, day: Int) {
+        showTimePicker(year, month, day)
+    }
+
+    private fun showTimePicker(year: Int, month: Int, day: Int) {
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+        val onPicked = { tp: TimePicker, h: Int, m: Int ->
+            onTimePicked(year, month, day, h, m)
+        }
+        TimePickerDialog(context, onPicked, hour, minute, true)
+                .show()
+    }
+
+    private fun onTimePicked(year: Int, month: Int, day: Int, hour: Int, minute: Int) {
+        val whenMs = Calendar.getInstance().run {
+            set(Calendar.YEAR, year)
+            set(Calendar.MONTH, month)
+            set(Calendar.DAY_OF_MONTH, day)
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+
+            timeInMillis
+        }
+        callback.onScheduleClick(whenMs)
+    }
+
+    private fun showDestructorDelay() {
+        val ttls = listOf(1, 2, 3, 5, 10, 15, 20, 30, 60, 120)
+        val resources = listOf(
+                R.string.destructor_ttl_1,
+                R.string.destructor_ttl_2,
+                R.string.destructor_ttl_3,
+                R.string.destructor_ttl_5,
+                R.string.destructor_ttl_10,
+                R.string.destructor_ttl_15,
+                R.string.destructor_ttl_20,
+                R.string.destructor_ttl_30,
+                R.string.destructor_ttl_60,
+                R.string.destructor_ttl_120
+        )
+        val items = ttls.zip(resources)
+                .map { (ttl, stringRes) ->
+                    ContextPopupItem(
+                            iconRes = R.drawable.ic_clock,
+                            textRes = stringRes,
+                            onClick = { callback.onSelfDeletingClick(ttl) }
+                    )
+                }
+        createContextPopup(context, items).show()
     }
 
     private enum class KeyboardState {

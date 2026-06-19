@@ -19,12 +19,13 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
+    id 'kotlin-parcelize'
     id 'kotlin-kapt'
 }
 apply from: "$project.rootDir/dependencies.gradle"
 
 android {
+    namespace "global.msnthrp.xvii.data"
     compileSdkVersion androidVersions.compileSdkVersion
     buildToolsVersion androidVersions.buildToolsVersion
 
@@ -56,6 +57,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 }
 
@@ -92,8 +97,4 @@ dependencies {
 
 kapt {
     generateStubs = true
-}
-
-androidExtensions {
-    experimental = true
 }

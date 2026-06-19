@@ -20,7 +20,9 @@ package com.twoeightnine.root.xvii.chats.messages.deepforwarded
 
 import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.twoeightnine.root.xvii.App
@@ -31,6 +33,7 @@ import com.twoeightnine.root.xvii.chats.attachments.AttachmentsInflater
 import com.twoeightnine.root.xvii.chats.messages.Interaction
 import com.twoeightnine.root.xvii.chats.messages.base.BaseMessagesViewModel
 import com.twoeightnine.root.xvii.chats.messages.base.MessagesAdapter
+import com.twoeightnine.root.xvii.databinding.FragmentDeepForwardedBinding
 import com.twoeightnine.root.xvii.model.Wrapper
 import com.twoeightnine.root.xvii.model.attachments.Doc
 import com.twoeightnine.root.xvii.model.attachments.Video
@@ -41,10 +44,9 @@ import com.twoeightnine.root.xvii.utils.PermissionHelper
 import com.twoeightnine.root.xvii.utils.showError
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
 import global.msnthrp.xvii.uikit.extensions.hide
-import kotlinx.android.synthetic.main.fragment_deep_forwarded.*
 import javax.inject.Inject
 
-class DeepForwardedFragment : BaseFragment() {
+class DeepForwardedFragment : BaseFragment<FragmentDeepForwardedBinding>() {
 
     @Inject
     lateinit var viewModelFactory: BaseMessagesViewModel.Factory
@@ -61,17 +63,20 @@ class DeepForwardedFragment : BaseFragment() {
         )
     }
 
-    override fun getLayoutId() = R.layout.fragment_deep_forwarded
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentDeepForwardedBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         App.appComponent?.inject(this)
         viewModel = ViewModelProviders.of(this, viewModelFactory)[DeepForwardedViewModel::class.java]
 
-        rvForwarded.layoutManager = LinearLayoutManager(context)
-        rvForwarded.adapter = adapter
-        rvForwarded.addOnScrollListener(AppBarLifter(xviiToolbar))
-        rvForwarded.applyBottomInsetPadding()
+        binding.apply {
+            rvForwarded.layoutManager = LinearLayoutManager(context)
+            rvForwarded.adapter = adapter
+            rvForwarded.addOnScrollListener(AppBarLifter(xviiToolbar))
+            rvForwarded.applyBottomInsetPadding()
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -83,7 +88,7 @@ class DeepForwardedFragment : BaseFragment() {
     private fun onMessageLoaded(data: Wrapper<Interaction>) {
         if (data.data != null) {
             if (data.data.type == Interaction.Type.ADD) {
-                progressBar.hide()
+                binding.progressBar.hide()
                 adapter.add(data.data.messages.first())
             }
         } else {

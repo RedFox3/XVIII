@@ -19,13 +19,16 @@
 package com.twoeightnine.root.xvii.friends.fragments
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.twoeightnine.root.xvii.App
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
 import com.twoeightnine.root.xvii.chatowner.ChatOwnerFactory
+import com.twoeightnine.root.xvii.databinding.FragmentFriendsBinding
 import com.twoeightnine.root.xvii.friends.adapters.FriendsAdapter
 import com.twoeightnine.root.xvii.friends.viewmodel.FriendsViewModel
 import com.twoeightnine.root.xvii.model.User
@@ -35,10 +38,9 @@ import com.twoeightnine.root.xvii.utils.showError
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
 import global.msnthrp.xvii.uikit.extensions.hide
 import global.msnthrp.xvii.uikit.extensions.show
-import kotlinx.android.synthetic.main.fragment_friends.*
 import javax.inject.Inject
 
-class FriendsFragment : BaseFragment() {
+class FriendsFragment : BaseFragment<FragmentFriendsBinding>() {
 
     @Inject
     lateinit var viewModelFactory: FriendsViewModel.Factory
@@ -48,7 +50,8 @@ class FriendsFragment : BaseFragment() {
         FriendsAdapter(requireContext(), ::onClick, ::loadMore)
     }
 
-    override fun getLayoutId() = R.layout.fragment_friends
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentFriendsBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,17 +60,19 @@ class FriendsFragment : BaseFragment() {
 
         adapter.startLoading()
 
-        progressBar.show()
-        rvFriends.layoutManager = LinearLayoutManager(context)
-        rvFriends.adapter = adapter
-        rvFriends.addOnScrollListener(AppBarLifter(xviiToolbar))
+        binding.apply {
+            progressBar.show()
+            rvFriends.layoutManager = LinearLayoutManager(context)
+            rvFriends.adapter = adapter
+            rvFriends.addOnScrollListener(AppBarLifter(xviiToolbar))
 
-        swipeRefresh.setOnRefreshListener {
-            viewModel.loadFriends()
-            adapter.reset()
-            adapter.startLoading()
+            swipeRefresh.setOnRefreshListener {
+                viewModel.loadFriends()
+                adapter.reset()
+                adapter.startLoading()
+            }
+            rvFriends.applyBottomInsetPadding()
         }
-        rvFriends.applyBottomInsetPadding()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -77,8 +82,8 @@ class FriendsFragment : BaseFragment() {
     }
 
     private fun updateFriends(data: Wrapper<ArrayList<User>>) {
-        swipeRefresh.isRefreshing = false
-        progressBar.hide()
+        binding.swipeRefresh.isRefreshing = false
+        binding.progressBar.hide()
         if (data.data != null) {
             adapter.update(data.data)
         } else {

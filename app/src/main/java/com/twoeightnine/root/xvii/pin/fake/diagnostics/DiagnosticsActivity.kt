@@ -26,11 +26,10 @@ import android.os.Looper
 import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProviders
-import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseActivity
+import com.twoeightnine.root.xvii.databinding.ActivityDiagnosticsBinding
 import com.twoeightnine.root.xvii.main.MainActivity
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
-import kotlinx.android.synthetic.main.activity_diagnostics.*
 
 class DiagnosticsActivity : BaseActivity() {
 
@@ -38,42 +37,46 @@ class DiagnosticsActivity : BaseActivity() {
         ViewModelProviders.of(this)[DiagnosticsViewModel::class.java]
     }
 
+    private val binding by lazy { ActivityDiagnosticsBinding.inflate(layoutInflater) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_diagnostics)
-        viewModel.battery.observeInto(tvBatteryTest)
-        viewModel.cpu.observeInto(tvCpuTest)
-        viewModel.ram.observeInto(tvRamTest)
-        viewModel.network.observeInto(tvNetworkTest)
-        viewModel.display.observeInto(tvDisplayTest)
+        setContentView(binding.root)
+        binding.apply {
+            viewModel.battery.observeInto(tvBatteryTest)
+            viewModel.cpu.observeInto(tvCpuTest)
+            viewModel.ram.observeInto(tvRamTest)
+            viewModel.network.observeInto(tvNetworkTest)
+            viewModel.display.observeInto(tvDisplayTest)
 
-        btnDisplay.setOnClickListener {
-            viewModel.runDisplay(this)
-        }
-        btnNetwork.setOnClickListener {
-            viewModel.runNetwork()
-        }
-        btnCpu.setOnClickListener {
-            viewModel.runCpu()
-        }
-        btnRam.setOnClickListener {
-            viewModel.runRam()
-        }
-        btnBattery.setOnClickListener {
-            viewModel.runBattery(this)
-        }
+            btnDisplay.setOnClickListener {
+                viewModel.runDisplay(this@DiagnosticsActivity)
+            }
+            btnNetwork.setOnClickListener {
+                viewModel.runNetwork()
+            }
+            btnCpu.setOnClickListener {
+                viewModel.runCpu()
+            }
+            btnRam.setOnClickListener {
+                viewModel.runRam()
+            }
+            btnBattery.setOnClickListener {
+                viewModel.runBattery(this@DiagnosticsActivity)
+            }
 
-        btnBattery.setOnLongClickListener {
-            MainActivity.launch(this)
-            finish()
-            true
-        }
-        viewModel.runAll(this)
-        Handler(Looper.getMainLooper()).postDelayed({
-            tvStability.text = viewModel.getStability().toString()
-        }, 2000L)
+            btnBattery.setOnLongClickListener {
+                MainActivity.launch(this@DiagnosticsActivity)
+                finish()
+                true
+            }
+            viewModel.runAll(this@DiagnosticsActivity)
+            Handler(Looper.getMainLooper()).postDelayed({
+                tvStability.text = viewModel.getStability().toString()
+            }, 2000L)
 
-        svContent.applyBottomInsetPadding()
+            svContent.applyBottomInsetPadding()
+        }
     }
 
     override fun shouldRunService(): Boolean = false

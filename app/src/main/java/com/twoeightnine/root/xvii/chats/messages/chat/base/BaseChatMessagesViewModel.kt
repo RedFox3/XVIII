@@ -243,11 +243,12 @@ abstract class BaseChatMessagesViewModel(api: ApiService) : BaseMessagesViewMode
     fun scheduleMessage(context: Context, whenMs: Long, text: String,
                         attachments: String? = null, forwardedMessages: String? = null) {
         val scheduledMessage = ScheduledMessage(
-                peerId = peerId,
-                whenMs = whenMs,
-                text = text,
-                attachments = attachments,
-                forwardedMessages = forwardedMessages
+            id = 0,
+            peerId = peerId,
+            whenMs = whenMs,
+            text = text,
+            attachments = attachments,
+            forwardedMessages = forwardedMessages
         )
         appDb.scheduledMessagesDao()
                 .addScheduledMessage(scheduledMessage)

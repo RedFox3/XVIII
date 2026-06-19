@@ -21,7 +21,9 @@ package com.twoeightnine.root.xvii.features.appearance
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.core.content.ContextCompat
 import com.flask.colorpicker.ColorPickerView
@@ -29,57 +31,55 @@ import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
 import com.twoeightnine.root.xvii.chats.attachments.gallery.GalleryFragment
+import com.twoeightnine.root.xvii.databinding.FragmentAppearanceBinding
 import com.twoeightnine.root.xvii.extensions.load
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.uikit.Munch
 import com.twoeightnine.root.xvii.uikit.paint
 import com.twoeightnine.root.xvii.utils.*
 import com.twoeightnine.root.xvii.views.LoadingDialog
+import global.msnthrp.xvii.uikit.R as CommonR
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
 import global.msnthrp.xvii.uikit.extensions.hide
 import global.msnthrp.xvii.uikit.extensions.lowerIf
 import global.msnthrp.xvii.uikit.extensions.setVisible
 import global.msnthrp.xvii.uikit.utils.color.ColorUtils
-import kotlinx.android.synthetic.main.chat_input_panel.*
-import kotlinx.android.synthetic.main.fragment_appearance.*
-import kotlinx.android.synthetic.main.view_appearance_sample.*
-import kotlinx.android.synthetic.main.view_appearance_sample.view.*
 import java.io.File
 
-class AppearanceFragment : BaseFragment() {
+class AppearanceFragment : BaseFragment<FragmentAppearanceBinding>() {
 
     private val mainTextLight by lazy {
-        ContextCompat.getColor(requireContext(), R.color.main_text_light)
+        ContextCompat.getColor(requireContext(), CommonR.color.main_text_light)
     }
     private val otherTextLight by lazy {
-        ContextCompat.getColor(requireContext(), R.color.other_text_light)
+        ContextCompat.getColor(requireContext(), CommonR.color.other_text_light)
     }
     private val minorTextLight by lazy {
-        ContextCompat.getColor(requireContext(), R.color.minor_text_light)
+        ContextCompat.getColor(requireContext(), CommonR.color.minor_text_light)
     }
     private val mainTextDark by lazy {
-        ContextCompat.getColor(requireContext(), R.color.main_text_dark)
+        ContextCompat.getColor(requireContext(), CommonR.color.main_text_dark)
     }
     private val otherTextDark by lazy {
-        ContextCompat.getColor(requireContext(), R.color.other_text_dark)
+        ContextCompat.getColor(requireContext(), CommonR.color.other_text_dark)
     }
     private val minorTextDark by lazy {
-        ContextCompat.getColor(requireContext(), R.color.minor_text_dark)
+        ContextCompat.getColor(requireContext(), CommonR.color.minor_text_dark)
     }
     private val backgroundLight by lazy {
-        ContextCompat.getColor(requireContext(), R.color.background_light)
+        ContextCompat.getColor(requireContext(), CommonR.color.background_light)
     }
     private val backgroundDark by lazy {
-        ContextCompat.getColor(requireContext(), R.color.background_dark)
+        ContextCompat.getColor(requireContext(), CommonR.color.background_dark)
     }
     private val backgroundDarkLighter by lazy {
-        ContextCompat.getColor(requireContext(), R.color.background_dark_lighter)
+        ContextCompat.getColor(requireContext(), CommonR.color.background_dark_lighter)
     }
     private val messageBackgroundLight by lazy {
-        ContextCompat.getColor(requireContext(), R.color.background_message_light)
+        ContextCompat.getColor(requireContext(), CommonR.color.background_message_light)
     }
     private val messageBackgroundDark by lazy {
-        ContextCompat.getColor(requireContext(), R.color.background_message_dark)
+        ContextCompat.getColor(requireContext(), CommonR.color.background_message_dark)
     }
 
     private lateinit var bottomSheetHelper: BottomSheetHelper
@@ -91,7 +91,8 @@ class AppearanceFragment : BaseFragment() {
 
     var dialog: LoadingDialog? = null
 
-    override fun getLayoutId() = R.layout.fragment_appearance
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentAppearanceBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -99,25 +100,25 @@ class AppearanceFragment : BaseFragment() {
         currentColor = colorBefore
         initViews()
         invalidateSample()
-        rlHideBottom.paint(Munch.color.color)
-        pbAttach.hide()
-        rlAttachCount.hide()
+        binding.rlHideBottom.paint(Munch.color.color)
+        binding.sample.input.pbAttach.hide()
+        binding.sample.input.rlAttachCount.hide()
 
-        etInput.isClickable = false
-        etInput.isFocusable = false
+        binding.sample.input.etInput.isClickable = false
+        binding.sample.input.etInput.isFocusable = false
 
         bottomSheetHelper = BottomSheetHelper(
-                rlBottom,
-                rlHideBottom,
-                tvBottomTitle,
+                binding.rlBottom,
+                binding.rlHideBottom,
+                binding.tvBottomTitle,
                 R.id.flBottom,
                 childFragmentManager,
                 resources.getDimensionPixelSize(R.dimen.bottomsheet_height)
         )
         permissionHelper = PermissionHelper(this)
 
-        svContent.applyBottomInsetPadding()
-        rlBottom.applyBottomInsetPadding()
+        binding.svContent.applyBottomInsetPadding()
+        binding.rlBottom.applyBottomInsetPadding()
     }
 
     private fun invalidateSample() {
@@ -128,51 +129,53 @@ class AppearanceFragment : BaseFragment() {
 
     private fun applyColors() {
         val color = Munch.ColorScope(currentColor)
-        csThemeColor.color = currentColor
+        binding.csThemeColor.color = currentColor
 
-        arrayOf(ivMic, ivSend, ivBackSample, readStateDot).forEach { iv ->
-            iv.drawable.paint(color.color)
-        }
+        with(binding.sample) {
+            arrayOf(input.ivMic, input.ivSend, ivBackSample, readStateDot).forEach { iv ->
+                iv.drawable.paint(color.color)
+            }
 
-        if (switchLightTheme.isChecked) {
+            if (binding.switchLightTheme.isChecked) {
 
-            rlToolbar.setBackgroundColor(backgroundLight)
-            rlSampleRoot.setBackgroundColor(backgroundLight)
-            rlInputBack.setBackgroundColor(backgroundLight)
+                rlToolbar.setBackgroundColor(backgroundLight)
+                rlSampleRoot.setBackgroundColor(backgroundLight)
+                input.rlInputBack.setBackgroundColor(backgroundLight)
 
-            arrayOf(tvTitle, tvBodyIn, tvBodyOut, etInput).forEach { it.setTextColor(mainTextLight) }
-            arrayOf(tvDateIn, tvDateOut).forEach { it.setTextColor(otherTextLight) }
-            tvSubtitle.setTextColor(minorTextLight)
+                arrayOf(tvTitle, tvBodyIn, tvBodyOut, input.etInput).forEach { it.setTextColor(mainTextLight) }
+                arrayOf(tvDateIn, tvDateOut).forEach { it.setTextColor(otherTextLight) }
+                tvSubtitle.setTextColor(minorTextLight)
 
-            arrayOf(ivKeyboard, ivAttach).forEach { it.paint(color.colorWhite(50)) }
-            (llMessageIn.background as? GradientDrawable)
-                    ?.setColor(messageBackgroundLight)
-            (llMessageOut.background as? GradientDrawable)
-                    ?.setColor(color.color(Munch.UseCase.MESSAGES_OUT, Munch.Theme.WHITE))
-        } else {
+                arrayOf(input.ivKeyboard, input.ivAttach).forEach { it.paint(color.colorWhite(50)) }
+                (llMessageIn.background as? GradientDrawable)
+                        ?.setColor(messageBackgroundLight)
+                (llMessageOut.background as? GradientDrawable)
+                        ?.setColor(color.color(Munch.UseCase.MESSAGES_OUT, Munch.Theme.WHITE))
+            } else {
 
-            rlToolbar.setBackgroundColor(backgroundDark)
-            rlSampleRoot.setBackgroundColor(backgroundDark)
-            rlInputBack.setBackgroundColor(backgroundDarkLighter)
+                rlToolbar.setBackgroundColor(backgroundDark)
+                rlSampleRoot.setBackgroundColor(backgroundDark)
+                input.rlInputBack.setBackgroundColor(backgroundDarkLighter)
 
-            arrayOf(tvTitle, tvBodyIn, tvBodyOut, etInput).forEach { it.setTextColor(mainTextDark) }
-            arrayOf(tvDateIn, tvDateOut).forEach { it.setTextColor(otherTextDark) }
-            tvSubtitle.setTextColor(minorTextDark)
+                arrayOf(tvTitle, tvBodyIn, tvBodyOut, input.etInput).forEach { it.setTextColor(mainTextDark) }
+                arrayOf(tvDateIn, tvDateOut).forEach { it.setTextColor(otherTextDark) }
+                tvSubtitle.setTextColor(minorTextDark)
 
-            arrayOf(ivKeyboard, ivAttach).forEach { it.paint(color.colorDark(50)) }
-            (llMessageIn.background as? GradientDrawable)
-                    ?.setColor(messageBackgroundDark)
-            (llMessageOut.background as? GradientDrawable)
-                    ?.setColor(color.color(Munch.UseCase.MESSAGES_OUT, Munch.Theme.DARK))
+                arrayOf(input.ivKeyboard, input.ivAttach).forEach { it.paint(color.colorDark(50)) }
+                (llMessageIn.background as? GradientDrawable)
+                        ?.setColor(messageBackgroundDark)
+                (llMessageOut.background as? GradientDrawable)
+                        ?.setColor(color.color(Munch.UseCase.MESSAGES_OUT, Munch.Theme.DARK))
+            }
         }
     }
 
     private fun applyTexts() {
         val context = context ?: return
 
-        val useAppleEmojis = switchAppleEmojis.isChecked
-        val showSeconds = switchShowSeconds.isChecked
-        val inLower = switchLowerTexts.isChecked
+        val useAppleEmojis = binding.switchAppleEmojis.isChecked
+        val showSeconds = binding.switchShowSeconds.isChecked
+        val inLower = binding.switchLowerTexts.isChecked
 
         val sampleIn = getString(R.string.appearance_sample_in)
         val sampleOut = getString(R.string.appearance_sample_out)
@@ -186,90 +189,94 @@ class AppearanceFragment : BaseFragment() {
                 withSeconds = showSeconds
         )
 
-        tvBodyIn.text = when {
-            useAppleEmojis -> EmojiHelper.getEmojied(context, sampleIn, ignorePref = true)
-            else -> sampleIn
+        with(binding.sample) {
+            tvBodyIn.text = when {
+                useAppleEmojis -> EmojiHelper.getEmojied(context, sampleIn, ignorePref = true)
+                else -> sampleIn
+            }
+            tvBodyOut.text = when {
+                useAppleEmojis -> EmojiHelper.getEmojied(context, sampleOut, ignorePref = true)
+                else -> sampleOut
+            }
+
+            tvBodyIn.setTextSize(TypedValue.COMPLEX_UNIT_SP, binding.stMessageSize.value.toFloat())
+            tvBodyOut.setTextSize(TypedValue.COMPLEX_UNIT_SP, binding.stMessageSize.value.toFloat())
+            input.etInput.setTextSize(TypedValue.COMPLEX_UNIT_SP, binding.stMessageSize.value.toFloat() + 2)
+
+            tvDateIn.text = sampleDateIn
+            tvDateOut.text = sampleDateOut
+            tvSubtitle.text = sampleLastSeen
+
+            tvTitle.text = getString(R.string.appearance_sample_name)
+            input.etInput.setText(getString(R.string.appearance_sample_input))
+            tvTitle.lowerIf(inLower)
+            input.etInput.lowerIf(inLower)
         }
-        tvBodyOut.text = when {
-            useAppleEmojis -> EmojiHelper.getEmojied(context, sampleOut, ignorePref = true)
-            else -> sampleOut
-        }
-
-        tvBodyIn.setTextSize(TypedValue.COMPLEX_UNIT_SP, stMessageSize.value.toFloat())
-        tvBodyOut.setTextSize(TypedValue.COMPLEX_UNIT_SP, stMessageSize.value.toFloat())
-        etInput.setTextSize(TypedValue.COMPLEX_UNIT_SP, stMessageSize.value.toFloat() + 2)
-
-        tvDateIn.text = sampleDateIn
-        tvDateOut.text = sampleDateOut
-        tvSubtitle.text = sampleLastSeen
-
-        rlToolbar.tvTitle.text = getString(R.string.appearance_sample_name)
-        etInput.setText(getString(R.string.appearance_sample_input))
-        tvTitle.lowerIf(inLower)
-        etInput.lowerIf(inLower)
     }
 
     private fun applyVisibility() {
-        val showVoice = switchShowVoice.isChecked
-        val showStickers = switchShowStickers.isChecked
+        val showVoice = binding.switchShowVoice.isChecked
+        val showStickers = binding.switchShowStickers.isChecked
 
-        ivKeyboard.setVisible(showStickers)
-        ivMic.setVisible(showVoice)
-        ivSend.setVisible(!showVoice)
+        with(binding.sample.input) {
+            ivKeyboard.setVisible(showStickers)
+            ivMic.setVisible(showVoice)
+            ivSend.setVisible(!showVoice)
+        }
     }
 
     private fun initViews() {
         isLightBefore = Prefs.isLightTheme
-        switchLightTheme.onCheckedListener = CompoundButton.OnCheckedChangeListener { _, b ->
+        binding.switchLightTheme.onCheckedListener = CompoundButton.OnCheckedChangeListener { _, _ ->
             applyColors()
         }
-        switchLightTheme.isChecked = isLightBefore
+        binding.switchLightTheme.isChecked = isLightBefore
         if (Prefs.chatBack.isNotEmpty()) {
             updatePhoto(Prefs.chatBack)
         }
-        btnGallery.setOnClickListener { openGallery() }
-        csThemeColor.setOnClickListener {
+        binding.btnGallery.setOnClickListener { openGallery() }
+        binding.csThemeColor.setOnClickListener {
             showColorPicker(currentColor) { color ->
                 currentColor = color
                 applyColors()
             }
         }
 
-        switchChatBack.onCheckedListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
-            llCustomBack.setVisible(isChecked)
+        binding.switchChatBack.onCheckedListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
+            binding.llCustomBack.setVisible(isChecked)
             if (!isChecked) {
                 deletePhoto()
             }
         }
-        switchChatBack.isChecked = Prefs.chatBack.isNotBlank()
-        llCustomBack.setVisible(switchChatBack.isChecked)
-        btnColor.setOnClickListener {
+        binding.switchChatBack.isChecked = Prefs.chatBack.isNotBlank()
+        binding.llCustomBack.setVisible(binding.switchChatBack.isChecked)
+        binding.btnColor.setOnClickListener {
             showColorPicker(currentColor, ::convertColor)
         }
 
-        switchShowSeconds.isChecked = Prefs.showSeconds
-        switchLowerTexts.isChecked = Prefs.lowerTexts
-        switchAppleEmojis.isChecked = Prefs.appleEmojis
-        switchShowStickers.isChecked = Prefs.showStickers
-        switchShowVoice.isChecked = Prefs.showVoice
+        binding.switchShowSeconds.isChecked = Prefs.showSeconds
+        binding.switchLowerTexts.isChecked = Prefs.lowerTexts
+        binding.switchAppleEmojis.isChecked = Prefs.appleEmojis
+        binding.switchShowStickers.isChecked = Prefs.showStickers
+        binding.switchShowVoice.isChecked = Prefs.showVoice
 
         CompoundButton.OnCheckedChangeListener { _, _ ->
             applyTexts()
         }.apply {
-            switchAppleEmojis.onCheckedListener = this
-            switchLowerTexts.onCheckedListener = this
-            switchShowSeconds.onCheckedListener = this
+            binding.switchAppleEmojis.onCheckedListener = this
+            binding.switchLowerTexts.onCheckedListener = this
+            binding.switchShowSeconds.onCheckedListener = this
         }
 
         CompoundButton.OnCheckedChangeListener { _, _ ->
             applyVisibility()
         }.apply {
-            switchShowStickers.onCheckedListener = this
-            switchShowVoice.onCheckedListener = this
+            binding.switchShowStickers.onCheckedListener = this
+            binding.switchShowVoice.onCheckedListener = this
         }
 
-        stMessageSize.value = Prefs.messageTextSize
-        stMessageSize.onValueChangedListener = { applyTexts() }
+        binding.stMessageSize.value = Prefs.messageTextSize
+        binding.stMessageSize.onValueChangedListener = { applyTexts() }
     }
 
     private fun openGallery() {
@@ -290,7 +297,7 @@ class AppearanceFragment : BaseFragment() {
     }
 
     private fun deletePhoto() {
-        ivBackground.setImageBitmap(null)
+        binding.sample.ivBackground.setImageBitmap(null)
         deleteOldChatBack(Prefs.chatBack)
         Prefs.chatBack = ""
     }
@@ -322,7 +329,7 @@ class AppearanceFragment : BaseFragment() {
     }
 
     private fun updatePhoto(path: String) {
-        ivBackground.load("file://$path")
+        binding.sample.ivBackground.load("file://$path")
     }
 
     private fun deleteOldChatBack(prevChatBackPath: String) {
@@ -341,7 +348,7 @@ class AppearanceFragment : BaseFragment() {
     /**
      * for parent activity
      */
-    fun hasChanges() = isLightBefore != switchLightTheme.isChecked
+    fun hasChanges() = isLightBefore != binding.switchLightTheme.isChecked
             || currentColor != colorBefore
 
     /**
@@ -352,11 +359,11 @@ class AppearanceFragment : BaseFragment() {
             if (yes) {
                 Prefs.color = currentColor
                 Prefs.colorBetterWithWhite = ColorUtils.isColorBetterWithWhite(currentColor)
-                Prefs.isLightTheme = switchLightTheme.isChecked
+                Prefs.isLightTheme = binding.switchLightTheme.isChecked
                 savePreferences()
                 restartApp(context, getString(R.string.theme_changed))
             } else {
-                switchLightTheme.isChecked = isLightBefore
+                binding.switchLightTheme.isChecked = isLightBefore
                 currentColor = colorBefore
                 activity?.onBackPressed()
             }
@@ -379,12 +386,12 @@ class AppearanceFragment : BaseFragment() {
     }
 
     private fun savePreferences() {
-        Prefs.showSeconds = switchShowSeconds.isChecked
-        Prefs.lowerTexts = switchLowerTexts.isChecked
-        Prefs.appleEmojis = switchAppleEmojis.isChecked
-        Prefs.showStickers = switchShowStickers.isChecked
-        Prefs.showVoice = switchShowVoice.isChecked
-        Prefs.messageTextSize = stMessageSize.value
+        Prefs.showSeconds = binding.switchShowSeconds.isChecked
+        Prefs.lowerTexts = binding.switchLowerTexts.isChecked
+        Prefs.appleEmojis = binding.switchAppleEmojis.isChecked
+        Prefs.showStickers = binding.switchShowStickers.isChecked
+        Prefs.showVoice = binding.switchShowVoice.isChecked
+        Prefs.messageTextSize = binding.stMessageSize.value
     }
 
     companion object {

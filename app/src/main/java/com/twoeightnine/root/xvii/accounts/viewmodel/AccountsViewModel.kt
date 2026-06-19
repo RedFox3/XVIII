@@ -105,7 +105,7 @@ class AccountsViewModel(
 
     class Factory @Inject constructor(private val appDb: AppDb) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(AccountsViewModel::class.java)) {
                 return AccountsViewModel(LongPollStorage, appDb) as T
             }

@@ -21,17 +21,17 @@ package global.msnthrp.xvii.data.accounts
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(tableName = "accounts")
 data class AccountEntity(
         @PrimaryKey
-        val uid: String = "",
-        val token: String? = null,
-        val name: String? = null,
-        val photo: String? = null,
-        var isRunning: Boolean = false
+        val uid: String,
+        val token: String?,
+        val name: String?,
+        val photo: String?,
+        var isRunning: Boolean
 ) : Parcelable {
 
 //    fun toAccount() = Account(

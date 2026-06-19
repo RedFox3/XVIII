@@ -19,6 +19,7 @@
 package com.twoeightnine.root.xvii.chats.attachments.stickersemoji
 
 import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -27,6 +28,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.viewpager.widget.PagerAdapter
 import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.ItemStickerTabBinding
+import com.twoeightnine.root.xvii.databinding.ViewStickerPackBinding
 import com.twoeightnine.root.xvii.extensions.load
 import com.twoeightnine.root.xvii.uikit.Munch
 import com.twoeightnine.root.xvii.uikit.paint
@@ -35,8 +38,6 @@ import global.msnthrp.xvii.data.stickersemoji.model.EmojiPack
 import global.msnthrp.xvii.data.stickersemoji.model.Sticker
 import global.msnthrp.xvii.data.stickersemoji.model.StickerPack
 import global.msnthrp.xvii.uikit.extensions.lower
-import kotlinx.android.synthetic.main.item_sticker_tab.view.*
-import kotlinx.android.synthetic.main.view_sticker_pack.view.*
 
 class PacksPagerAdapter(
         private val context: Context,
@@ -100,20 +101,23 @@ class PacksPagerAdapter(
         }
     }
 
-    fun getTabView(position: Int): View? =
-            View.inflate(context, R.layout.item_sticker_tab, null)?.apply {
-                when (val url = getPreviewUrl(position)) {
-                    recentEmojisTitle -> {
-                        ivStickerTab.setIcon(R.drawable.ic_emoji_recent)
-                    }
-                    recentStickersTitle -> {
-                        ivStickerTab.setIcon(R.drawable.ic_sticker_recent)
-                    }
-                    else -> {
-                        ivStickerTab.load(url)
-                    }
+    fun getTabView(position: Int): View? {
+        val binding = ItemStickerTabBinding.inflate(LayoutInflater.from(context))
+        with(binding) {
+            when (val url = getPreviewUrl(position)) {
+                recentEmojisTitle -> {
+                    ivStickerTab.setIcon(R.drawable.ic_emoji_recent)
+                }
+                recentStickersTitle -> {
+                    ivStickerTab.setIcon(R.drawable.ic_sticker_recent)
+                }
+                else -> {
+                    ivStickerTab.load(url)
                 }
             }
+        }
+        return binding.root
+    }
 
     override fun getCount() = unions.size
 
@@ -123,23 +127,29 @@ class PacksPagerAdapter(
         setImageDrawable(drawable)
     }
 
-    private fun getView(pack: EmojiPack): View =
-            View.inflate(context, R.layout.view_sticker_pack, null).apply {
-                rvStickers.layoutManager =
-                        GridLayoutManager(this@PacksPagerAdapter.context, 7)
-                rvStickers.adapter = EmojisAdapter(context, callback::onEmojiClicked) {}.apply {
-                    addAll(pack.emojis.toMutableList())
-                }
+    private fun getView(pack: EmojiPack): View {
+        val binding = ViewStickerPackBinding.inflate(LayoutInflater.from(context))
+        with(binding) {
+            rvStickers.layoutManager =
+                    GridLayoutManager(this@PacksPagerAdapter.context, 7)
+            rvStickers.adapter = EmojisAdapter(context, callback::onEmojiClicked) {}.apply {
+                addAll(pack.emojis.toMutableList())
             }
+        }
+        return binding.root
+    }
 
-    private fun getView(pack: StickerPack): View =
-            View.inflate(context, R.layout.view_sticker_pack, null).apply {
-                rvStickers.layoutManager =
-                        GridLayoutManager(this@PacksPagerAdapter.context, 5)
-                rvStickers.adapter = StickersAdapter(context, callback::onStickerClicked) {}.apply {
-                    addAll(pack.stickers.toMutableList())
-                }
+    private fun getView(pack: StickerPack): View {
+        val binding = ViewStickerPackBinding.inflate(LayoutInflater.from(context))
+        with(binding) {
+            rvStickers.layoutManager =
+                    GridLayoutManager(this@PacksPagerAdapter.context, 5)
+            rvStickers.adapter = StickersAdapter(context, callback::onStickerClicked) {}.apply {
+                addAll(pack.stickers.toMutableList())
             }
+        }
+        return binding.root
+    }
 
     interface Callback {
 

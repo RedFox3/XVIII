@@ -20,7 +20,7 @@ package com.twoeightnine.root.xvii.photoviewer
 
 import android.view.View
 import androidx.viewpager.widget.ViewPager
-import kotlinx.android.synthetic.main.item_fullscreen_image.view.*
+import com.twoeightnine.root.xvii.databinding.ItemFullscreenImageBinding
 import kotlin.math.abs
 
 /**
@@ -29,8 +29,9 @@ import kotlin.math.abs
 class ImagePageTransformer : ViewPager.PageTransformer {
 
     override fun transformPage(page: View, position: Float) {
-        with(page) {
-            val absolutePosition = width * -position
+        val binding = ItemFullscreenImageBinding.bind(page)
+        with(binding) {
+            val absolutePosition = root.width * -position
             tivImage.translationX = absolutePosition * PARALLAX_COEFF
             val scale = SCALE_COEFF + (1 - SCALE_COEFF) * (1 - abs(position))
             tivImage.scaleX = scale

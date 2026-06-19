@@ -24,13 +24,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
+import androidx.viewbinding.ViewBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.twoeightnine.root.xvii.R
 
-abstract class BaseBottomSheet : BottomSheetDialogFragment() {
+abstract class BaseBottomSheet<VB: ViewBinding> : BottomSheetDialogFragment() {
 
-    abstract fun getLayout(): Int
+    private var _binding: VB? = null
+    protected val binding get() = _binding!!
+
+    abstract fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?): VB
 
     override fun getTheme(): Int = R.style.BottomSheetDialog
 
@@ -41,7 +45,10 @@ abstract class BaseBottomSheet : BottomSheetDialogFragment() {
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
-    ): View? = inflater.inflate(getLayout(), null)
+    ): View {
+        _binding = inflateBinding(inflater, container)
+        return binding.root
+    }
 
     fun show(fragmentManager: FragmentManager) {
         if (!isAdded) {

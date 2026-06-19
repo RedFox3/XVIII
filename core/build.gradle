@@ -23,6 +23,7 @@ plugins {
 apply from: "$project.rootDir/dependencies.gradle"
 
 android {
+    namespace "global.msnthrp.xvii.core"
     compileSdkVersion androidVersions.compileSdkVersion
     buildToolsVersion androidVersions.buildToolsVersion
 

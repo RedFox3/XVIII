@@ -19,12 +19,10 @@
 package com.twoeightnine.root.xvii.chats.attachments.stickers.preview
 
 import android.content.Context
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.ItemStickerKeywordBinding
 import global.msnthrp.xvii.uikit.base.adapters.BaseAdapter
-import kotlinx.android.synthetic.main.item_sticker_keyword.view.*
 
 class StickerKeywordsAdapter(
         context: Context
@@ -32,16 +30,22 @@ class StickerKeywordsAdapter(
 
     override fun onCreateViewHolder(
             parent: ViewGroup,
-            viewType: Int) = KeywordViewHolder(inflater.inflate(R.layout.item_sticker_keyword, parent, false))
+            viewType: Int
+    ): KeywordViewHolder {
+        val binding = ItemStickerKeywordBinding.inflate(inflater, parent, false)
+        return KeywordViewHolder(binding)
+    }
 
     override fun onBindViewHolder(holder: KeywordViewHolder, position: Int) {
         holder.bind(items[position])
     }
 
-    inner class KeywordViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class KeywordViewHolder(
+            private val binding: ItemStickerKeywordBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(keyword: String) {
-            with(itemView) {
+            with(binding) {
                 tvKeyword.text = keyword
 
                 ivRemove.setOnClickListener {

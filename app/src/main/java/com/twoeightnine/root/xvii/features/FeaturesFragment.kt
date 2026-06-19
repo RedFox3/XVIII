@@ -19,9 +19,11 @@
 package com.twoeightnine.root.xvii.features
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.ViewModelProviders
@@ -34,6 +36,7 @@ import com.twoeightnine.root.xvii.base.FragmentPlacementActivity.Companion.start
 import com.twoeightnine.root.xvii.chatowner.ChatOwnerFactory
 import com.twoeightnine.root.xvii.chats.messages.chat.usual.ChatActivity
 import com.twoeightnine.root.xvii.chats.messages.starred.StarredMessagesFragment
+import com.twoeightnine.root.xvii.databinding.FragmentFeaturesBinding
 import com.twoeightnine.root.xvii.extensions.load
 import com.twoeightnine.root.xvii.features.appearance.AppearanceActivity
 import com.twoeightnine.root.xvii.features.general.GeneralFragment
@@ -46,20 +49,29 @@ import com.twoeightnine.root.xvii.scheduled.ui.ScheduledMessagesFragment
 import com.twoeightnine.root.xvii.storage.SessionProvider
 import com.twoeightnine.root.xvii.uikit.Munch
 import com.twoeightnine.root.xvii.uikit.paint
-import com.twoeightnine.root.xvii.utils.*
+import com.twoeightnine.root.xvii.utils.BrowsingUtils
+import com.twoeightnine.root.xvii.utils.LastSeenUtils
+import com.twoeightnine.root.xvii.utils.LegalLinksUtils
+import com.twoeightnine.root.xvii.utils.rate
+import com.twoeightnine.root.xvii.utils.showError
+import com.twoeightnine.root.xvii.utils.showToast
+import com.twoeightnine.root.xvii.utils.stylize
+import com.twoeightnine.root.xvii.utils.time
 import global.msnthrp.xvii.core.accounts.model.Account
-import global.msnthrp.xvii.uikit.extensions.*
-import kotlinx.android.synthetic.main.fragment_features.*
-import java.util.*
+import global.msnthrp.xvii.uikit.extensions.applyHorizontalInsetPadding
+import global.msnthrp.xvii.uikit.extensions.fadeIn
+import global.msnthrp.xvii.uikit.extensions.fadeOut
+import global.msnthrp.xvii.uikit.extensions.lowerIf
 import javax.inject.Inject
 
-class FeaturesFragment : BaseFragment() {
+class FeaturesFragment : BaseFragment<FragmentFeaturesBinding>() {
 
     @Inject
     lateinit var viewModelFactory: FeaturesViewModel.Factory
     private lateinit var viewModel: FeaturesViewModel
 
-    override fun getLayoutId() = R.layout.fragment_features
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentFeaturesBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -67,49 +79,73 @@ class FeaturesFragment : BaseFragment() {
         App.appComponent?.inject(this)
         viewModel = ViewModelProviders.of(this, viewModelFactory)[FeaturesViewModel::class.java]
 
-        xiAnalyze.setOnClickListener { showToast(context, R.string.in_future_versions) }
-        xiStarred.setOnClickListener { startFragment<StarredMessagesFragment>() }
-        xiScheduledMessages.setOnClickListener { startFragment<ScheduledMessagesFragment>() }
-        xiJournal.setOnClickListener { startFragment<JournalFragment>() }
+        binding.apply {
+            xiAnalyze.setOnClickListener { showToast(context, R.string.in_future_versions) }
+            xiStarred.setOnClickListener { startFragment<StarredMessagesFragment>() }
+            xiScheduledMessages.setOnClickListener { startFragment<ScheduledMessagesFragment>() }
+            xiJournal.setOnClickListener { startFragment<JournalFragment>() }
 
-        ivProfileEdit.paint(Munch.color.color50)
-        ivProfileEdit.setOnClickListener { BrowsingUtils.openUrl(context, EDIT_PROFILE_URL) }
-        rlAccounts.setOnClickListener { ChatOwnerFactory.launch(context, SessionProvider.userId) }
-        xiAccounts.setOnClickListener { startFragment<AccountsFragment>() }
-        xiGeneral.setOnClickListener {
-            startFragment<GeneralFragment>()
-            suggestJoin()
-        }
-        xiNotifications.setOnClickListener {
-            startFragment<NotificationsFragment>()
-            suggestJoin()
-        }
-        xiAppearance.setOnClickListener {
-            AppearanceActivity.launch(context)
-            suggestJoin()
-        }
-        xiSecurity.setOnClickListener { startFragment<SecurityFragment>() }
+            ivProfileEdit.paint(Munch.color.color50)
+            ivProfileEdit.setOnClickListener { BrowsingUtils.openUrl(context, EDIT_PROFILE_URL) }
+            rlAccounts.setOnClickListener {
+                ChatOwnerFactory.launch(
+                    context,
+                    SessionProvider.userId
+                )
+            }
+            xiAccounts.setOnClickListener { startFragment<AccountsFragment>() }
+            xiGeneral.setOnClickListener {
+                startFragment<GeneralFragment>()
+                suggestJoin()
+            }
+            xiNotifications.setOnClickListener {
+                startFragment<NotificationsFragment>()
+                suggestJoin()
+            }
+            xiAppearance.setOnClickListener {
+                AppearanceActivity.launch(context)
+                suggestJoin()
+            }
+            xiSecurity.setOnClickListener { startFragment<SecurityFragment>() }
 
-        xiSupport.setOnClickListener { ChatActivity.launch(context, -App.GROUP, getString(R.string.app_name)) }
-        xiRate.setOnClickListener { context?.also { rate(it) } }
-        xiShare.setOnClickListener { share() }
-        xiPrivacy.setOnClickListener { BrowsingUtils.openUrl(context, LegalLinksUtils.getPrivacyPolicyUrl()) }
-        xiToS.setOnClickListener { BrowsingUtils.openUrl(context, LegalLinksUtils.getTermsOfServiceUrl()) }
-        xiSourceCode.setOnClickListener { BrowsingUtils.openUrl(context, GITHUB_URL) }
+            xiSupport.setOnClickListener {
+                ChatActivity.launch(
+                    context,
+                    -App.GROUP,
+                    getString(R.string.app_name)
+                )
+            }
+            xiRate.setOnClickListener { context?.also { rate(it) } }
+            xiShare.setOnClickListener { share() }
+            xiPrivacy.setOnClickListener {
+                BrowsingUtils.openUrl(
+                    context,
+                    LegalLinksUtils.getPrivacyPolicyUrl()
+                )
+            }
+            xiToS.setOnClickListener {
+                BrowsingUtils.openUrl(
+                    context,
+                    LegalLinksUtils.getTermsOfServiceUrl()
+                )
+            }
+            xiSourceCode.setOnClickListener { BrowsingUtils.openUrl(context, GITHUB_URL) }
 
-        tvAbout.text = getString(R.string.aboutbig, BuildConfig.VERSION_NAME, BuildConfig.BUILD_TIME)
-        tvAbout.setOnClickListener { showLogDialog() }
+            tvAbout.text =
+                getString(R.string.aboutbig, BuildConfig.VERSION_NAME, BuildConfig.BUILD_TIME)
+            tvAbout.setOnClickListener { showLogDialog() }
 
 //        rlRoot.stylizeAll()
-        svContent.setOnScrollChangeListener(ContentScrollListener())
-        svContent.applyHorizontalInsetPadding()
+            svContent.setOnScrollChangeListener(ContentScrollListener())
+            svContent.applyHorizontalInsetPadding()
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.getAccount().observe(viewLifecycleOwner, ::updateAccount)
         viewModel.lastSeen.observe(viewLifecycleOwner) { (isOnline, timeStamp, deviceCode) ->
-            tvLastSeen.text = LastSeenUtils.getFull(context, isOnline, timeStamp, deviceCode)
+            binding.tvLastSeen.text = LastSeenUtils.getFull(context, isOnline, timeStamp, deviceCode)
         }
         viewModel.loadAccount()
     }
@@ -125,10 +161,12 @@ class FeaturesFragment : BaseFragment() {
     }
 
     private fun updateAccount(account: Account) {
-        civPhoto.load(account.photo)
-        account.name.lowerIf(Prefs.lowerTexts).also { userName ->
-            tvName.text = userName
-            xviiToolbar.title = userName
+        binding.apply {
+            civPhoto.load(account.photo)
+            account.name.lowerIf(Prefs.lowerTexts).also { userName ->
+                tvName.text = userName
+                xviiToolbar.title = userName
+            }
         }
     }
 
@@ -176,22 +214,22 @@ class FeaturesFragment : BaseFragment() {
     private inner class ContentScrollListener : NestedScrollView.OnScrollChangeListener {
 
         private val toolbarHeight by lazy {
-            xviiToolbar.height
+            binding.xviiToolbar.height
         }
         private val accountsHolderHeight by lazy {
-            rlAccounts.height
+            binding.rlAccounts.height
         }
         private val threshold by lazy { accountsHolderHeight - toolbarHeight }
 
         private var lastHandledY = 0
 
-        override fun onScrollChange(v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int) {
+        override fun onScrollChange(v: NestedScrollView, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int) {
             val shouldShowToolbar = threshold in (lastHandledY + 1) until scrollY
             val shouldHideToolbar = threshold in (scrollY + 1) until lastHandledY
 
             when {
-                shouldShowToolbar -> xviiToolbar.fadeIn(200L)
-                shouldHideToolbar -> xviiToolbar.fadeOut(200L)
+                shouldShowToolbar -> binding.xviiToolbar.fadeIn(200L)
+                shouldHideToolbar -> binding.xviiToolbar.fadeOut(200L)
             }
             lastHandledY = scrollY
         }

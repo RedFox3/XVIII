@@ -23,11 +23,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.twoeightnine.root.xvii.App
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.chats.attachments.base.BaseAttachmentsFragment
+import com.twoeightnine.root.xvii.databinding.ItemAttachmentsLinkBinding
 import com.twoeightnine.root.xvii.model.attachments.Link
 import com.twoeightnine.root.xvii.utils.BrowsingUtils
 import com.twoeightnine.root.xvii.utils.showConfirm
 
-class LinkAttachmentsFragment : BaseAttachmentsFragment<Link>() {
+class LinkAttachmentsFragment : BaseAttachmentsFragment<Link, ItemAttachmentsLinkBinding>() {
 
     override val adapter by lazy {
         LinkAttachmentsAdapter(requireContext(), ::loadMore, ::onClick)

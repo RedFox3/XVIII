@@ -27,13 +27,19 @@ import androidx.core.content.ContextCompat
 import com.twoeightnine.root.xvii.App
 import com.twoeightnine.root.xvii.BuildConfig
 import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.ActivityExceptionBinding
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.model.attachments.Doc
 import com.twoeightnine.root.xvii.network.ApiService
-import com.twoeightnine.root.xvii.utils.*
+import com.twoeightnine.root.xvii.utils.applySchedulers
+import com.twoeightnine.root.xvii.utils.getTime
+import com.twoeightnine.root.xvii.utils.restartApp
+import com.twoeightnine.root.xvii.utils.showError
+import com.twoeightnine.root.xvii.utils.showToast
+import com.twoeightnine.root.xvii.utils.subscribeSmart
+import com.twoeightnine.root.xvii.utils.time
 import global.msnthrp.xvii.uikit.extensions.hide
 import global.msnthrp.xvii.uikit.extensions.show
-import kotlinx.android.synthetic.main.activity_exception.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -52,23 +58,27 @@ class ExceptionActivity : AppCompatActivity() {
     @Inject
     lateinit var api: ApiService
 
+    private val binding by lazy { ActivityExceptionBinding.inflate(layoutInflater) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_exception)
+        setContentView(binding.root)
         App.appComponent?.inject(this)
         var error = ""
-        intent.extras?.also { extras ->
-            error = extras.getString(ERROR) ?: ""
-            tvStack.text = error
-        }
-        switchSend.isChecked = Prefs.sendCrashDetails
-        btnRestart.setOnClickListener {
-            Prefs.sendCrashDetails = switchSend.isChecked
-            if (switchSend.isChecked) {
-                val file = generateReport(error)
-                sendError(file.absolutePath)
-            } else {
-                restartApp()
+        binding.apply {
+            intent.extras?.also { extras ->
+                error = extras.getString(ERROR) ?: ""
+                tvStack.text = error
+            }
+            switchSend.isChecked = Prefs.sendCrashDetails
+            btnRestart.setOnClickListener {
+                Prefs.sendCrashDetails = switchSend.isChecked
+                if (switchSend.isChecked) {
+                    val file = generateReport(error)
+                    sendError(file.absolutePath)
+                } else {
+                    restartApp()
+                }
             }
         }
         window.statusBarColor = ContextCompat.getColor(this, R.color.background)
@@ -85,7 +95,7 @@ class ExceptionActivity : AppCompatActivity() {
 
     @SuppressLint("CheckResult")
     private fun sendError(path: String) {
-        rlLoader.show()
+        binding.rlLoader.show()
         api.getDocUploadServer("doc")
                 .subscribeSmart({ uploadServer ->
                     val file = File(path)
@@ -101,7 +111,7 @@ class ExceptionActivity : AppCompatActivity() {
 
                                             api.sendMessage(-App.GROUP, getRandomId(), attachments = doc.getId())
                                                     .subscribeSmart({ response ->
-                                                        rlLoader.hide()
+                                                        binding.rlLoader.hide()
                                                         deleteReport(response)
                                                         deleteDoc(doc)
                                                         showToast(this, R.string.report_sent)
@@ -138,7 +148,7 @@ class ExceptionActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        Prefs.sendCrashDetails = switchSend.isChecked
+        Prefs.sendCrashDetails = binding.switchSend.isChecked
         super.onBackPressed()
         restartApp(this)
     }

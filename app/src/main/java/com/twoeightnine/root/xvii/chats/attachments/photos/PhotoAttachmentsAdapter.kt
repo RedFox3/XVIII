@@ -19,22 +19,23 @@
 package com.twoeightnine.root.xvii.chats.attachments.photos
 
 import android.content.Context
-import android.view.View
-import com.twoeightnine.root.xvii.R
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import com.twoeightnine.root.xvii.chats.attachments.base.BaseAttachmentsAdapter
+import com.twoeightnine.root.xvii.databinding.ItemPhotoAttachmentBinding
 import com.twoeightnine.root.xvii.extensions.load
 import com.twoeightnine.root.xvii.model.attachments.Photo
-import kotlinx.android.synthetic.main.item_photo_attachment.view.*
 
 class PhotoAttachmentsAdapter(
         context: Context,
         loader: (Int) -> Unit,
         private val onClick: (Photo) -> Unit
-) : BaseAttachmentsAdapter<Photo, PhotoAttachmentsAdapter.PhotoViewHolder>(context, loader) {
+) : BaseAttachmentsAdapter<Photo, ItemPhotoAttachmentBinding, PhotoAttachmentsAdapter.PhotoViewHolder>(context, loader) {
 
-    override fun getLayoutId() = R.layout.item_photo_attachment
+    override fun inflateBinding(inflater: LayoutInflater, parent: ViewGroup, attachToParent: Boolean) =
+        ItemPhotoAttachmentBinding.inflate(inflater, parent, attachToParent)
 
-    override fun getViewHolder(view: View) = PhotoViewHolder(view)
+    override fun getViewHolder(binding: ItemPhotoAttachmentBinding) = PhotoViewHolder(binding)
 
     override fun createStubLoadItem() = Photo()
 
@@ -46,13 +47,13 @@ class PhotoAttachmentsAdapter(
         const val SCALE_CHECK_DEFAULT = 0f
     }
 
-    inner class PhotoViewHolder(view: View) : BaseAttachmentViewHolder<Photo>(view) {
+    inner class PhotoViewHolder(private val binding: ItemPhotoAttachmentBinding) : BaseAttachmentViewHolder<Photo, ItemPhotoAttachmentBinding>(binding) {
 
         override fun bind(item: Photo) {
-            with(itemView) {
+            with(binding) {
                 invalidateCheck(item, animate = false)
                 ivPhoto.load(item.getMediumPhoto()?.url)
-                setOnClickListener {
+                root.setOnClickListener { // TODO: check does it work
                     if (multiSelectMode) {
                         val i = items[adapterPosition]
                         multiSelect(i)
@@ -65,7 +66,7 @@ class PhotoAttachmentsAdapter(
         }
 
         private fun invalidateCheck(item: Photo, animate: Boolean = true) {
-            with(itemView) {
+            with(binding) {
                 val selected = item in multiSelect
                 val scaleThumb = if (selected) SCALE_THUMB_SELECTED else SCALE_THUMB_DEFAULT
                 val scaleCheck = if (selected) SCALE_CHECK_SELECTED else SCALE_CHECK_DEFAULT

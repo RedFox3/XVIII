@@ -20,15 +20,15 @@ package com.twoeightnine.root.xvii.chats.attachments.stickers.preview
 
 import android.content.Context
 import android.content.DialogInterface
-import android.view.View
+import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.DialogStickerPreviewBinding
 import com.twoeightnine.root.xvii.extensions.load
 import com.twoeightnine.root.xvii.model.attachments.Sticker
 import com.twoeightnine.root.xvii.utils.stylize
 import com.twoeightnine.root.xvii.views.TextInputAlertDialog
-import kotlinx.android.synthetic.main.dialog_sticker_preview.view.*
 
 class StickerPreviewDialog(
         context: Context,
@@ -41,8 +41,9 @@ class StickerPreviewDialog(
     }
 
     init {
-        with(View.inflate(context, R.layout.dialog_sticker_preview, null)) {
-            setView(this)
+        val binding = DialogStickerPreviewBinding.inflate(LayoutInflater.from(context))
+        setView(binding.root)
+        with(binding) {
             ivSticker.load(sticker.photo512, placeholder = false)
 
             rvSuggestions.layoutManager = LinearLayoutManager(context)

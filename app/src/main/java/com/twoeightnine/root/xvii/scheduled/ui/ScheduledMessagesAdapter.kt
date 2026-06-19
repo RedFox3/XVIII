@@ -19,17 +19,17 @@
 package com.twoeightnine.root.xvii.scheduled.ui
 
 import android.content.Context
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.ItemScheduledMessageBinding
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.utils.getTime
 import global.msnthrp.xvii.data.scheduled.ScheduledMessage
 import global.msnthrp.xvii.uikit.base.adapters.BaseAdapter
 import global.msnthrp.xvii.uikit.extensions.lowerIf
 import global.msnthrp.xvii.uikit.extensions.setVisible
-import kotlinx.android.synthetic.main.item_scheduled_message.view.*
 
 class ScheduledMessagesAdapter(
         context: Context,
@@ -45,16 +45,16 @@ class ScheduledMessagesAdapter(
     override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
-    ) = ScheduledMessageViewHolder(inflater.inflate(R.layout.item_scheduled_message, parent, false))
+    ) = ScheduledMessageViewHolder(ItemScheduledMessageBinding.inflate(LayoutInflater.from(parent.context)))
 
     override fun onBindViewHolder(holder: ScheduledMessageViewHolder, position: Int) {
         holder.bind(items[position])
     }
 
-    inner class ScheduledMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ScheduledMessageViewHolder(private val binding: ItemScheduledMessageBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(scheduledMessage: ScheduledMessage) {
-            with(itemView) {
+            with(binding) {
                 tvPeer.text = peersMap[scheduledMessage.peerId] ?: "id${scheduledMessage.peerId}"
                 tvPeer.lowerIf(Prefs.lowerTexts)
 
@@ -67,7 +67,7 @@ class ScheduledMessagesAdapter(
                 tvInfo.setVisible(info != null)
                 tvInfo.text = info
 
-                setOnClickListener { onClick(items[adapterPosition]) }
+                root.setOnClickListener { onClick(items[adapterPosition]) }
             }
         }
 

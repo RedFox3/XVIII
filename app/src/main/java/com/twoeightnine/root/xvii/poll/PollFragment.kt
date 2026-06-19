@@ -19,22 +19,28 @@
 package com.twoeightnine.root.xvii.poll
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MenuItem
+import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.twoeightnine.root.xvii.App
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
+import com.twoeightnine.root.xvii.databinding.FragmentPollBinding
 import com.twoeightnine.root.xvii.model.Wrapper
 import com.twoeightnine.root.xvii.model.attachments.Poll
 import com.twoeightnine.root.xvii.utils.getTime
 import com.twoeightnine.root.xvii.utils.showAlert
-import global.msnthrp.xvii.uikit.extensions.*
-import kotlinx.android.synthetic.main.fragment_poll.*
+import global.msnthrp.xvii.uikit.extensions.applyBottomInsetMargin
+import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
+import global.msnthrp.xvii.uikit.extensions.hide
+import global.msnthrp.xvii.uikit.extensions.setVisibleWithInvis
+import global.msnthrp.xvii.uikit.extensions.show
 import javax.inject.Inject
 
-class PollFragment : BaseFragment() {
+class PollFragment : BaseFragment<FragmentPollBinding>() {
 
     @Inject
     lateinit var viewModelFactory: PollViewModel.Factory
@@ -49,7 +55,8 @@ class PollFragment : BaseFragment() {
 
     private lateinit var adapter: PollAnswersAdapter
 
-    override fun getLayoutId() = R.layout.fragment_poll
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentPollBinding.inflate(inflater, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -59,14 +66,16 @@ class PollFragment : BaseFragment() {
         viewModel.poll.observe(viewLifecycleOwner, Observer(::onPollLoaded))
         viewModel.loadPoll(pollId, ownerId)
 
-        btnVote.applyBottomInsetMargin()
-        rvVotes.applyBottomInsetPadding()
+        binding.apply {
+            btnVote.applyBottomInsetMargin()
+            rvVotes.applyBottomInsetPadding()
+        }
     }
 
     private fun onPollLoaded(data: Wrapper<Poll>) {
         if (data.data != null) {
             bindPoll(data.data)
-            rlLoader.hide()
+            binding.rlLoader.hide()
         } else {
             showAlert(context, data.error) {
                 activity?.finish()
@@ -74,7 +83,7 @@ class PollFragment : BaseFragment() {
         }
     }
 
-    private fun bindPoll(poll: Poll) {
+    private fun bindPoll(poll: Poll) = with(binding) {
         xviiToolbar.title = getString(if (poll.anonymous) {
             R.string.poll_anon
         } else {
@@ -107,7 +116,7 @@ class PollFragment : BaseFragment() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menu_clear_vote -> {
             viewModel.clearVotes()
-            rlLoader.show()
+            binding.rlLoader.show()
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -120,16 +129,18 @@ class PollFragment : BaseFragment() {
         adapter.update(poll.answers)
         adapter.invalidateSelected(poll.answerIds)
         adapter.multiListener = { isSomethingSelected ->
-            btnVote.setVisibleWithInvis(isSomethingSelected && poll.canVote && !poll.closed)
+            binding.btnVote.setVisibleWithInvis(isSomethingSelected && poll.canVote && !poll.closed)
         }
-        rvVotes.layoutManager = LinearLayoutManager(context)
-        rvVotes.adapter = adapter
+        binding.apply {
+            rvVotes.layoutManager = LinearLayoutManager(context)
+            rvVotes.adapter = adapter
+        }
     }
 
     private fun onVoteClick() {
         val answers = adapter.multiSelect
         if (answers.isNotEmpty()) {
-            rlLoader.show()
+            binding.rlLoader.show()
             viewModel.vote(answers)
         }
     }

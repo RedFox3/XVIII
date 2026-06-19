@@ -27,7 +27,6 @@ import global.msnthrp.xvii.uikit.extensions.hide
 import global.msnthrp.xvii.uikit.extensions.lowerIf
 import global.msnthrp.xvii.uikit.extensions.setVisibleWithInvis
 import global.msnthrp.xvii.uikit.extensions.show
-import kotlinx.android.synthetic.main.toolbar2.view.*
 import rx.Completable
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
@@ -35,34 +34,35 @@ import java.util.concurrent.TimeUnit
 
 class ChatToolbarController(private val xviiToolbar: XviiToolbar) {
 
+    private val binding = xviiToolbar.binding
     private var lastAction = 0
     private var actionSubscription: Subscription? = null
 
     fun setData(title: String, photo: String?, id: Int = 0) {
-        xviiToolbar.tvChatTitle.text = title
-        xviiToolbar.tvChatTitle.lowerIf(Prefs.lowerTexts)
+        binding.tvChatTitle.text = title
+        binding.tvChatTitle.lowerIf(Prefs.lowerTexts)
         if (id != -App.GROUP) {
-            xviiToolbar.civAvatar.load(photo, title.getInitials(), id = id)
+            binding.civAvatar.load(photo, title.getInitials(), id = id)
         }
     }
 
     @Deprecated("Use setData")
     fun setTitle(title: String) {
-        xviiToolbar.tvChatTitle.text = title
-        xviiToolbar.tvChatTitle.lowerIf(Prefs.lowerTexts)
+        binding.tvChatTitle.text = title
+        binding.tvChatTitle.lowerIf(Prefs.lowerTexts)
     }
 
     fun setSubtitle(subtitle: CharSequence) {
-        xviiToolbar.tvSubtitle.text = subtitle
+        binding.tvSubtitle.text = subtitle
     }
 
     @Deprecated("Use setData")
     fun setAvatar(photo: String?) {
-        xviiToolbar.civAvatar.load(photo)
+        binding.civAvatar.load(photo)
     }
 
     fun showActivity() {
-        with(xviiToolbar) {
+        with(binding) {
             typingView.show()
             tvSubtitle.setVisibleWithInvis(false)
         }
@@ -87,7 +87,7 @@ class ChatToolbarController(private val xviiToolbar: XviiToolbar) {
     }
 
     private fun hide() {
-        with(xviiToolbar) {
+        with(binding) {
             tvSubtitle.show()
             typingView.hide()
         }

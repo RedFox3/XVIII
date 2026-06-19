@@ -19,7 +19,9 @@
 package com.twoeightnine.root.xvii.chats.messages.base
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +30,7 @@ import com.twoeightnine.root.xvii.base.BaseFragment
 import com.twoeightnine.root.xvii.base.FragmentPlacementActivity.Companion.startFragment
 import com.twoeightnine.root.xvii.chats.attachments.AttachmentsInflater
 import com.twoeightnine.root.xvii.chats.messages.Interaction
+import com.twoeightnine.root.xvii.databinding.FragmentChatBinding
 import com.twoeightnine.root.xvii.dialogs.fragments.DialogsForwardFragment
 import com.twoeightnine.root.xvii.model.Wrapper
 import com.twoeightnine.root.xvii.utils.applyCompletableSchedulers
@@ -36,16 +39,17 @@ import com.twoeightnine.root.xvii.utils.showError
 import global.msnthrp.xvii.uikit.extensions.*
 import io.reactivex.Completable
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.fragment_chat.*
-import kotlinx.android.synthetic.main.view_chat_multiselect.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-abstract class BaseMessagesFragment<VM : BaseMessagesViewModel> : BaseFragment() {
+abstract class BaseMessagesFragment<VM : BaseMessagesViewModel> : BaseFragment<FragmentChatBinding>() {
 
     @Inject
     lateinit var viewModelFactory: BaseMessagesViewModel.Factory
     protected lateinit var viewModel: VM
+
+    private val dateScroller = RecyclerDateScroller()
+    private val listScrollListener = ListScrollListener()
 
     protected val adapter by lazy {
         MessagesAdapter(
@@ -55,6 +59,10 @@ abstract class BaseMessagesFragment<VM : BaseMessagesViewModel> : BaseFragment()
                 getAttachmentsCallback(),
                 getAdapterSettings()
         )
+    }
+
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentChatBinding {
+        return FragmentChatBinding.inflate(inflater, container, false)
     }
 
     abstract fun getViewModelClass(): Class<VM>
@@ -74,8 +82,6 @@ abstract class BaseMessagesFragment<VM : BaseMessagesViewModel> : BaseFragment()
      */
     protected open fun onScrolled(isAtBottom: Boolean) {}
 
-    override fun getLayoutId() = R.layout.fragment_chat
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
@@ -86,9 +92,9 @@ abstract class BaseMessagesFragment<VM : BaseMessagesViewModel> : BaseFragment()
         prepareViewModel()
         adapter.startLoading()
 
-        progressBar.show()
-        xviiToolbar.isLifted = true
-        swipeContainer.setOnRefreshListener {
+        binding.progressBar.show()
+        binding.xviiToolbar.isLifted = true
+        binding.swipeContainer.setOnRefreshListener {
             loadMore(0)
             adapter.reset()
             adapter.startLoading()
@@ -105,8 +111,8 @@ abstract class BaseMessagesFragment<VM : BaseMessagesViewModel> : BaseFragment()
             .joinToString(separator = ",", transform = { it.message.id.toString() })
 
     private fun updateMessages2(data: Wrapper<Interaction>) {
-        swipeContainer.isRefreshing = false
-        progressBar.hide()
+        binding.swipeContainer.isRefreshing = false
+        binding.progressBar.hide()
         if (data.data == null) {
             showError(context, data.error)
         }
@@ -119,7 +125,7 @@ abstract class BaseMessagesFragment<VM : BaseMessagesViewModel> : BaseFragment()
                 }
                 Interaction.Type.ADD -> {
                     val firstLoad = adapter.isEmpty
-                    val isAtEnd = adapter.isAtBottom(rvChatList.layoutManager as? LinearLayoutManager)
+                    val isAtEnd = adapter.isAtBottom(binding.rvChatList.layoutManager as? LinearLayoutManager)
                     adapter.addAll(interaction.messages.toMutableList(), interaction.position)
                     adapter.stopLoading(interaction.messages.isEmpty())
                     when {
@@ -132,10 +138,10 @@ abstract class BaseMessagesFragment<VM : BaseMessagesViewModel> : BaseFragment()
                                     break
                                 }
                             }
-                            rvChatList.scrollToPosition(unreadPos)
+                            binding.rvChatList.scrollToPosition(unreadPos)
                         }
                         isAtEnd -> {
-                            rvChatList.scrollToPosition(adapter.itemCount - 1)
+                            binding.rvChatList.scrollToPosition(adapter.itemCount - 1)
                         }
                     }
                 }
@@ -149,7 +155,7 @@ abstract class BaseMessagesFragment<VM : BaseMessagesViewModel> : BaseFragment()
         } catch (e: Exception) {
             e.printStackTrace()
             adapter.update(viewModel.getStoredMessages())
-            rvChatList.scrollToPosition(adapter.itemCount - 1)
+            binding.rvChatList.scrollToPosition(adapter.itemCount - 1)
         }
     }
 
@@ -158,34 +164,42 @@ abstract class BaseMessagesFragment<VM : BaseMessagesViewModel> : BaseFragment()
     }
 
     private fun initRecyclerView() {
-        rvChatList.layoutManager = LinearLayoutManager(context).apply {
+        binding.rvChatList.layoutManager = LinearLayoutManager(context).apply {
             stackFromEnd = true
         }
-        rvChatList.adapter = adapter
-        rvChatList.itemAnimator = null
+        binding.rvChatList.adapter = adapter
+        binding.rvChatList.itemAnimator = null
 
-        rvChatList.addOnScrollListener(RecyclerDateScroller())
+        binding.rvChatList.addOnScrollListener(dateScroller)
         adapter.multiSelectListener = ::onMultiSelectChanged
 
-        fabHasMore.setOnClickListener { rvChatList.scrollToPosition(adapter.itemCount - 1) }
-        rvChatList.addOnScrollListener(ListScrollListener())
+        binding.fabHasMore.setOnClickListener { binding.rvChatList.scrollToPosition(adapter.itemCount - 1) }
+        binding.rvChatList.addOnScrollListener(listScrollListener)
+    }
+
+    override fun onDestroyView() {
+        _binding?.rvChatList?.removeOnScrollListener(dateScroller)
+        _binding?.rvChatList?.removeOnScrollListener(listScrollListener)
+        dateScroller.dispose()
+        super.onDestroyView()
     }
 
     private fun onMultiSelectChanged(selectedCount: Int) {
-        rlMultiAction.setVisible(selectedCount > 0)
+        val binding = _binding ?: return
+        binding.multiSelect.rlMultiAction.setVisible(selectedCount > 0)
         if (selectedCount == 0 && adapter.multiSelectMode) {
             adapter.multiSelectMode = false
         }
-        tvSelectedCount.text = context?.resources
+        binding.multiSelect.tvSelectedCount.text = context?.resources
                 ?.getQuantityString(R.plurals.messages, selectedCount, selectedCount)
     }
 
     private fun initMultiAction() {
-        ivCancelMulti.setOnClickListener {
+        binding.multiSelect.ivCancelMulti.setOnClickListener {
             adapter.multiSelectMode = false
-            rlMultiAction.hide()
+            binding.multiSelect.rlMultiAction.hide()
         }
-        ivForwardMulti.setOnClickListener {
+        binding.multiSelect.ivForwardMulti.setOnClickListener {
             val messageIds = getSelectedMessageIds()
             adapter.multiSelectMode = false
             startFragment<DialogsForwardFragment>(
@@ -198,13 +212,14 @@ abstract class BaseMessagesFragment<VM : BaseMessagesViewModel> : BaseFragment()
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
 
-            if (fabHasMore.visibility != View.VISIBLE &&
-                    adapter.lastVisiblePosition(rvChatList.layoutManager) != adapter.itemCount - 1) {
-                fabHasMore.show()
+            val binding = _binding ?: return
+            if (binding.fabHasMore.visibility != View.VISIBLE &&
+                    adapter.lastVisiblePosition(binding.rvChatList.layoutManager) != adapter.itemCount - 1) {
+                binding.fabHasMore.show()
                 onScrolled(isAtBottom = false)
-            } else if (fabHasMore.visibility != View.INVISIBLE
-                    && adapter.lastVisiblePosition(rvChatList.layoutManager) == adapter.itemCount - 1) {
-                fabHasMore.hide()
+            } else if (binding.fabHasMore.visibility != View.INVISIBLE
+                    && adapter.lastVisiblePosition(binding.rvChatList.layoutManager) == adapter.itemCount - 1) {
+                binding.fabHasMore.hide()
                 onScrolled(isAtBottom = true)
             }
         }
@@ -215,6 +230,10 @@ abstract class BaseMessagesFragment<VM : BaseMessagesViewModel> : BaseFragment()
         private var lastHandledTopPosition = -1
         private var lastHandledBottomPosition = -1
         private var disposable: Disposable? = null
+
+        fun dispose() {
+            disposable?.dispose()
+        }
 
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
@@ -245,16 +264,17 @@ abstract class BaseMessagesFragment<VM : BaseMessagesViewModel> : BaseFragment()
         }
 
         private fun showDate(date: String) {
-            if (!tvDatePopup.isShown) {
-                tvDatePopup.fadeIn(200L)
-                tvDatePopup.show()
+            val binding = _binding ?: return
+            if (!binding.tvDatePopup.isShown) {
+                binding.tvDatePopup.fadeIn(200L)
+                binding.tvDatePopup.show()
             }
-            tvDatePopup.text = date
+            binding.tvDatePopup.text = date
         }
 
         private fun hideDate() {
-            tvDatePopup?.fadeOut(200L) {
-                tvDatePopup?.hide()
+            _binding?.tvDatePopup?.fadeOut(200L) {
+                _binding?.tvDatePopup?.hide()
             }
         }
     }

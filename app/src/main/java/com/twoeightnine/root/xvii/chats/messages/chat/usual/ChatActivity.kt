@@ -22,7 +22,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import androidx.fragment.app.Fragment
-import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.ContentActivity
 import com.twoeightnine.root.xvii.chatowner.model.ChatOwner
 import com.twoeightnine.root.xvii.model.User
@@ -30,17 +29,25 @@ import global.msnthrp.xvii.data.dialogs.Dialog
 
 class ChatActivity : ContentActivity() {
 
-    override fun getLayoutId() = R.layout.activity_content
-
     override fun createFragment(intent: Intent?): Fragment {
         val args = intent?.extras
         val forwarded = args?.getString(FORWARDED)
         val shareText = args?.getString(SHARE_TEXT)
         val shareImages = args?.getStringArrayList(SHARE_IMAGE) ?: emptyList<String>()
         val dialog = args?.getParcelable(DIALOG) ?: Dialog(
-                peerId = args?.getInt(PEER_ID) ?: 0,
-                title = args?.getString(TITLE) ?: "",
-                photo = args?.getString(AVATAR)
+            peerId = args?.getInt(PEER_ID) ?: 0,
+            messageId = 0,
+            title = args?.getString(TITLE) ?: "",
+            photo = args?.getString(AVATAR),
+            text = "",
+            timeStamp = 0,
+            isOut = false,
+            isRead = true,
+            unreadCount = 0,
+            isOnline = false,
+            isMute = false,
+            isPinned = false,
+            alias = null
         )
         return ChatMessagesFragment.newInstance(dialog, forwarded, shareText, shareImages)
     }
@@ -60,18 +67,38 @@ class ChatActivity : ContentActivity() {
 
         fun launch(context: Context?, chatOwner: ChatOwner) {
             launch(context, Dialog(
-                    peerId = chatOwner.getPeerId(),
-                    title = chatOwner.getTitle(),
-                    photo = chatOwner.getAvatar()
+                peerId = chatOwner.getPeerId(),
+                messageId = 0,
+                title = chatOwner.getTitle(),
+                photo = chatOwner.getAvatar(),
+                text = "",
+                timeStamp = 0,
+                isOut = false,
+                isRead = true,
+                unreadCount = 0,
+                isOnline = false,
+                isMute = false,
+                isPinned = false,
+                alias = null
             ))
         }
 
         fun launch(context: Context?, userId: Int, title: String,
                    avatar: String? = null, forwarded: String = "") {
             launch(context, Dialog(
-                    peerId = userId,
-                    title = title,
-                    photo = avatar
+                peerId = userId,
+                messageId = 0,
+                title = title,
+                photo = avatar,
+                text = "",
+                timeStamp = 0,
+                isOut = false,
+                isRead = true,
+                unreadCount = 0,
+                isOnline = false,
+                isMute = false,
+                isPinned = false,
+                alias = null
             ), forwarded)
         }
 
@@ -97,9 +124,19 @@ class ChatActivity : ContentActivity() {
 
         fun launch(context: Context?, user: User) {
             launch(context, Dialog(
-                    peerId = user.id,
-                    title = user.fullName,
-                    photo = user.photo100
+                peerId = user.id,
+                messageId = 0,
+                title = user.fullName,
+                photo = user.photo100,
+                text = "",
+                timeStamp = 0,
+                isOut = false,
+                isRead = true,
+                unreadCount = 0,
+                isOnline = false,
+                isMute = false,
+                isPinned = false,
+                alias = null
             ))
         }
     }

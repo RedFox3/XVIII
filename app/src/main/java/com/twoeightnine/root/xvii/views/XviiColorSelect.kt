@@ -22,19 +22,22 @@ import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.RelativeLayout
 import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.ViewColorSelectBinding
 import global.msnthrp.xvii.uikit.extensions.hide
-import kotlinx.android.synthetic.main.view_color_select.view.*
 
 
 class XviiColorSelect(context: Context, attributeSet: AttributeSet) : RelativeLayout(context, attributeSet) {
 
+    private val binding = ViewColorSelectBinding.inflate(LayoutInflater.from(context), this)
+
     var color: Int = Color.WHITE
         set(value) {
             field = value
-            ivColor.setBackgroundColor(value)
+            binding.ivColor.setBackgroundColor(value)
         }
 
     init {
@@ -49,10 +52,12 @@ class XviiColorSelect(context: Context, attributeSet: AttributeSet) : RelativeLa
         val hint = ta.getText(1)
         ta.recycle()
 
-        tvTitle.text = text
-        tvHint.text = hint
-        if (hint.isNullOrEmpty()) {
-            tvHint.hide()
+        binding.apply {
+            tvTitle.text = text
+            tvHint.text = hint
+            if (hint.isNullOrEmpty()) {
+                tvHint.hide()
+            }
         }
 
         val outValue = TypedValue()

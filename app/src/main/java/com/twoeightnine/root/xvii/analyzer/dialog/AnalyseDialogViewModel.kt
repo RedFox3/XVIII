@@ -99,7 +99,7 @@ class AnalyseDialogViewModel(private val api: ApiService) : ViewModel() {
     class Factory @Inject constructor(private val api: ApiService) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass == AnalyseDialogViewModel::class.java) {
                 return AnalyseDialogViewModel(api) as T
             }

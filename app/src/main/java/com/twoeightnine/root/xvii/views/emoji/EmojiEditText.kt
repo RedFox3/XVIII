@@ -93,7 +93,7 @@ class EmojiEditText : AppCompatEditText {
     override fun onCreateInputConnection(editorInfo: EditorInfo): InputConnection {
         val ic = super.onCreateInputConnection(editorInfo)
         EditorInfoCompat.setContentMimeTypes(editorInfo, MIME_TYPES)
-        return InputConnectionCompat.createWrapper(ic, editorInfo,
+        return InputConnectionCompat.createWrapper(ic!!, editorInfo,
                 InputConnectionCompat.OnCommitContentListener { inputContentInfo, flags, opts ->
                     if (SDK_INT >= N_MR1 && (flags and InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION != 0)) {
                         try {

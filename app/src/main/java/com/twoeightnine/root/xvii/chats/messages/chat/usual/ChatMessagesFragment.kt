@@ -40,7 +40,6 @@ import com.twoeightnine.root.xvii.utils.matchesUserId
 import com.twoeightnine.root.xvii.utils.time
 import global.msnthrp.xvii.data.dialogs.Dialog
 import global.msnthrp.xvii.uikit.extensions.asText
-import kotlinx.android.synthetic.main.chat_input_panel.*
 import java.io.File
 
 class ChatMessagesFragment : BaseChatMessagesFragment<ChatMessagesViewModel>() {
@@ -53,12 +52,12 @@ class ChatMessagesFragment : BaseChatMessagesFragment<ChatMessagesViewModel>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getMessageText()?.also { etInput.setText(it) }
+        viewModel.getMessageText()?.also { binding.inputPanel.etInput.setText(it) }
     }
 
     override fun onPause() {
         super.onPause()
-        viewModel.invalidateMessageText(etInput.asText())
+        viewModel.invalidateMessageText(binding.inputPanel.etInput.asText())
     }
 
     override fun onEncryptedDocClicked(doc: Doc) {

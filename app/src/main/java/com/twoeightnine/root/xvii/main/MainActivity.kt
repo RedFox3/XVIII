@@ -33,6 +33,7 @@ import com.twoeightnine.root.xvii.base.BaseActivity
 import com.twoeightnine.root.xvii.base.FragmentPlacementActivity.Companion.startFragment
 import com.twoeightnine.root.xvii.chatowner.ChatOwnerFactory
 import com.twoeightnine.root.xvii.chats.messages.chat.usual.ChatActivity
+import com.twoeightnine.root.xvii.databinding.ActivityMainBinding
 import com.twoeightnine.root.xvii.dialogs.fragments.DialogsForwardFragment
 import com.twoeightnine.root.xvii.dialogs.fragments.DialogsFragment
 import com.twoeightnine.root.xvii.features.FeaturesFragment
@@ -42,13 +43,19 @@ import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.search.SearchFragment
 import com.twoeightnine.root.xvii.uikit.Munch
 import com.twoeightnine.root.xvii.uikit.paint
-import com.twoeightnine.root.xvii.utils.*
+import com.twoeightnine.root.xvii.utils.ApiUtils
+import com.twoeightnine.root.xvii.utils.AsyncUtils
+import com.twoeightnine.root.xvii.utils.CacheFileUtils
+import com.twoeightnine.root.xvii.utils.DefaultPeerResolver
+import com.twoeightnine.root.xvii.utils.StatTool
 import com.twoeightnine.root.xvii.utils.deeplink.DeepLinkParser
+import com.twoeightnine.root.xvii.utils.goHome
+import com.twoeightnine.root.xvii.utils.launchActivity
+import com.twoeightnine.root.xvii.utils.startNotificationAlarm
 import global.msnthrp.xvii.data.utils.FileUtils
 import global.msnthrp.xvii.uikit.extensions.applyTopInsetMargin
 import global.msnthrp.xvii.uikit.extensions.isVisible
 import global.msnthrp.xvii.uikit.extensions.setVisible
-import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
 class MainActivity : BaseActivity() {
@@ -61,32 +68,36 @@ class MainActivity : BaseActivity() {
     }
     private val deepLinkHandler by lazy { DeepLinkHandler() }
 
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
         App.appComponent?.inject(this)
         initFragments()
-        bottomNavView.setOnNavigationItemSelectedListener(BottomViewListener())
-        bottomNavView.selectedItemId = R.id.menu_dialogs
+        binding.apply {
+            bottomNavView.setOnNavigationItemSelectedListener(BottomViewListener())
+            bottomNavView.selectedItemId = R.id.menu_dialogs
 
-        startNotificationAlarm(this)
-        apiUtils.trackVisitor()
-        bottomNavView.paint(Munch.color.color)
-        StatTool.get()?.incLaunch()
+            startNotificationAlarm(this@MainActivity)
+            apiUtils.trackVisitor()
+            bottomNavView.paint(Munch.color.color)
+            StatTool.get()?.incLaunch()
 
-        ivSearch.setOnClickListener {
-            startFragment<SearchFragment>()
-        }
-        ivSearch.paint(Munch.color.color)
-        ivSearch.applyTopInsetMargin()
-
-        ViewCompat.setOnApplyWindowInsetsListener(bottomNavView) { view, insets ->
-            view.updatePadding(bottom = insets.systemWindowInsetBottom)
-            view.layoutParams.apply {
-                height = bottomNavViewHeight + insets.systemWindowInsetBottom
-                view.layoutParams = this
+            ivSearch.setOnClickListener {
+                startFragment<SearchFragment>()
             }
-            insets
+            ivSearch.paint(Munch.color.color)
+            ivSearch.applyTopInsetMargin()
+
+            ViewCompat.setOnApplyWindowInsetsListener(bottomNavView) { view, insets ->
+                view.updatePadding(bottom = insets.systemWindowInsetBottom)
+                view.layoutParams.apply {
+                    height = bottomNavViewHeight + insets.systemWindowInsetBottom
+                    view.layoutParams = this
+                }
+                insets
+            }
         }
     }
 
@@ -107,7 +118,7 @@ class MainActivity : BaseActivity() {
                 .commit()
     }
 
-    private fun showFragment(menuId: Int) {
+    private fun showFragment(menuId: Int) = with(binding) {
         flFriends.setVisible(menuId == R.id.menu_friends)
         flDialogs.setVisible(menuId == R.id.menu_dialogs)
         flFeatures.setVisible(menuId == R.id.menu_features)
@@ -121,7 +132,7 @@ class MainActivity : BaseActivity() {
     override fun getThemeId() = R.style.AppTheme_Main
 
     override fun onBackPressed() {
-        if (flDialogs.isVisible()) {
+        if (binding.flDialogs.isVisible()) {
             try {
                 goHome(this)
             } catch (e: Exception) {
@@ -129,7 +140,7 @@ class MainActivity : BaseActivity() {
                 super.onBackPressed()
             }
         } else {
-            bottomNavView.selectedItemId = R.id.menu_dialogs
+            binding.bottomNavView.selectedItemId = R.id.menu_dialogs
         }
     }
 

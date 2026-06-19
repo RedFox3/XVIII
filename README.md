@@ -1,6 +1,6 @@
-# xvii messenger for vk
+# xviii messenger for vk
 
-xvii is a messenger for those who want to be online on the go! no feed, no stories, no walls, no likes, no clips. only messaging and features that are necessary!
+xviii is a messenger for those who want to be online on the go! no feed, no stories, no walls, no likes, no clips. only messaging and features that are necessary!
 
 extra features:
 
@@ -31,7 +31,7 @@ border="0" cellpadding="0" cellspacing="0">
 <table>
     <tr>
         <td>
-            <a href="https://play.google.com/store/apps/details?id=com.twoeightnine.root.xvii" target="_blank">
+            <a href="https://play.google.com/store/apps/details?id=com.twoeightnine.root.xviii" target="_blank">
                 <img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="60"/>
             </a>
         </td>
@@ -41,7 +41,7 @@ border="0" cellpadding="0" cellspacing="0">
             </a>
         </td>
         <td>
-            <a href="https://f-droid.org/packages/com.twoeightnine.root.xvii" target="_blank">
+            <a href="https://f-droid.org/packages/com.twoeightnine.root.xviii" target="_blank">
                 <img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="60"/>
             </a>
         </td>
@@ -54,7 +54,7 @@ border="0" cellpadding="0" cellspacing="0">
 
 ### license
 ```
-xvii - messenger for vk
+xviii - messenger for vk
 Copyright (C) 2021  TwoEightNine
 
 This program is free software: you can redistribute it and/or modify

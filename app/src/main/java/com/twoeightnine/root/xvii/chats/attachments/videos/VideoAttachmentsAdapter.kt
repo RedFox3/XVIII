@@ -19,37 +19,38 @@
 package com.twoeightnine.root.xvii.chats.attachments.videos
 
 import android.content.Context
-import android.view.View
-import com.twoeightnine.root.xvii.R
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import com.twoeightnine.root.xvii.chats.attachments.base.BaseAttachmentsAdapter
+import com.twoeightnine.root.xvii.databinding.ItemAttachmentsVideoBinding
 import com.twoeightnine.root.xvii.extensions.load
 import com.twoeightnine.root.xvii.model.attachments.Video
 import com.twoeightnine.root.xvii.utils.secToTime
 import global.msnthrp.xvii.uikit.extensions.setVisible
-import kotlinx.android.synthetic.main.item_attachments_video.view.*
 
 class VideoAttachmentsAdapter(
         context: Context,
         loader: (Int) -> Unit,
         private val onClick: (Video) -> Unit
-) : BaseAttachmentsAdapter<Video, VideoAttachmentsAdapter.VideoViewHolder>(context, loader) {
+) : BaseAttachmentsAdapter<Video, ItemAttachmentsVideoBinding, VideoAttachmentsAdapter.VideoViewHolder>(context, loader) {
 
-    override fun getViewHolder(view: View) = VideoViewHolder(view)
+    override fun getViewHolder(binding: ItemAttachmentsVideoBinding) = VideoViewHolder(binding)
 
-    override fun getLayoutId() = R.layout.item_attachments_video
+    override fun inflateBinding(inflater: LayoutInflater, parent: ViewGroup, attachToParent: Boolean) =
+        ItemAttachmentsVideoBinding.inflate(inflater, parent, attachToParent)
 
     override fun createStubLoadItem() = Video()
 
-    inner class VideoViewHolder(view: View)
-        : BaseAttachmentsAdapter.BaseAttachmentViewHolder<Video>(view) {
+    inner class VideoViewHolder(private val binding: ItemAttachmentsVideoBinding)
+        : BaseAttachmentViewHolder<Video, ItemAttachmentsVideoBinding>(binding) {
 
         override fun bind(item: Video) {
-            with(itemView) {
+            with(binding) {
                 tvDuration.setVisible(item.duration != 0)
                 tvDuration.text = secToTime(item.duration)
                 ivVideo.load(item.maxPhoto)
                 tvTitle.text = item.title
-                setOnClickListener { onClick(item) }
+                root.setOnClickListener { onClick(item) } // TODO: check does it work
             }
         }
     }

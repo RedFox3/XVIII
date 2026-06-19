@@ -40,8 +40,6 @@ import global.msnthrp.xvii.uikit.extensions.hide
 import global.msnthrp.xvii.uikit.extensions.setVisible
 import global.msnthrp.xvii.uikit.extensions.show
 import global.msnthrp.xvii.uikit.utils.ExtensionUtils
-import kotlinx.android.synthetic.main.chat_input_panel.*
-import kotlinx.android.synthetic.main.fragment_chat.*
 
 class SecretChatMessagesFragment : BaseChatMessagesFragment<SecretChatViewModel>() {
 
@@ -75,20 +73,20 @@ class SecretChatMessagesFragment : BaseChatMessagesFragment<SecretChatViewModel>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        rlNoKeys.setVisible(viewModel.isKeyRequired())
+        binding.inputPanel.rlNoKeys.setVisible(viewModel.isKeyRequired())
         if (viewModel.isKeyRequired()) {
             showKeysDialog()
         }
-        rlNoKeys.setOnClickListener {
+        binding.inputPanel.rlNoKeys.setOnClickListener {
             showKeysDialog()
         }
-        ivKeyPattern.show()
+        binding.ivKeyPattern.show()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.getKeysSet().observe(viewLifecycleOwner) {
-            rlNoKeys.setVisible(!it)
+            binding.inputPanel.rlNoKeys.setVisible(!it)
             viewModel.loadMessages()
         }
     }
@@ -143,7 +141,7 @@ class SecretChatMessagesFragment : BaseChatMessagesFragment<SecretChatViewModel>
             } else {
                 viewModel.setKey(userKey)
                 showToast(activity, getString(R.string.key_set))
-                rlNoKeys.hide()
+                binding.inputPanel.rlNoKeys.hide()
                 viewModel.loadMessages()
             }
         }.show()

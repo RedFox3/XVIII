@@ -149,7 +149,7 @@ class DialogsViewModel(
         val dialog = dialogsLiveData.value?.data
                 ?.find { it.peerId == d.peerId } ?: return
 
-        dialog.alias = if (alias.isNotEmpty()) alias else null
+        dialog.alias = alias.ifEmpty { null }
         notifyDialogsChanged()
         saveDialogAsync(dialog)
     }
@@ -396,7 +396,7 @@ class DialogsViewModel(
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(DialogsViewModel::class.java)) {
                 return DialogsViewModel(api, appDb) as T
             }

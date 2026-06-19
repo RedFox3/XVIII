@@ -20,21 +20,24 @@ package com.twoeightnine.root.xvii.base
 
 import android.os.Bundle
 import android.view.*
-import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.viewbinding.ViewBinding
+import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.lg.L
 import com.twoeightnine.root.xvii.uikit.Munch
+import com.twoeightnine.root.xvii.uikit.XviiToolbar
 import com.twoeightnine.root.xvii.uikit.paint
-import kotlinx.android.synthetic.main.fragment_ui_kit.*
 
-abstract class BaseFragment : Fragment() {
+abstract class BaseFragment<VB : ViewBinding> : Fragment() {
 
-    @LayoutRes
-    abstract fun getLayoutId(): Int
+    abstract fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?): VB
+
+    protected var _binding: VB? = null
+    protected val binding get() = _binding!!
 
     private val baseActivity
         get() = activity as? BaseActivity
@@ -48,18 +51,17 @@ abstract class BaseFragment : Fragment() {
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
-    ): View = View.inflate(activity, getLayoutId(), null)
+    ): View {
+        _binding = inflateBinding(inflater, container)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         l("onViewCreated")
         ViewCompat.requestApplyInsets(view)
-    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        l("onActivityCreated")
-        xviiToolbar?.apply {
+        view.findViewById<XviiToolbar>(R.id.xviiToolbar)?.apply {
             baseActivity?.also(::setupWith)
         }
     }
@@ -76,6 +78,7 @@ abstract class BaseFragment : Fragment() {
 
     override fun onDestroyView() {
         l("onDestroyView")
+        _binding = null
         super.onDestroyView()
     }
 

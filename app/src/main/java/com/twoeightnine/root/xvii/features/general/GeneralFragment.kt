@@ -19,38 +19,43 @@
 package com.twoeightnine.root.xvii.features.general
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.fragment.app.viewModels
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
+import com.twoeightnine.root.xvii.databinding.FragmentGeneralBinding
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.utils.getSize
 import com.twoeightnine.root.xvii.utils.showToast
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
 import global.msnthrp.xvii.uikit.extensions.setVisible
-import kotlinx.android.synthetic.main.fragment_general.*
 
 /**
  * Created by root on 2/2/17.
  */
 
-class GeneralFragment : BaseFragment() {
+class GeneralFragment : BaseFragment<FragmentGeneralBinding>() {
 
     private val viewModel by viewModels<GeneralViewModel>()
 
-    override fun getLayoutId() = R.layout.fragment_general
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentGeneralBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initSwitches()
-        btnClearCache.setOnClickListener {
-            viewModel.clearCache()
+        binding.apply {
+            btnClearCache.setOnClickListener {
+                viewModel.clearCache()
+            }
+            btnRefreshStickers.setOnClickListener {
+                viewModel.refreshStickers()
+            }
+            svContent.applyBottomInsetPadding()
         }
-        btnRefreshStickers.setOnClickListener {
-            viewModel.refreshStickers()
-        }
-        svContent.applyBottomInsetPadding()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -59,11 +64,11 @@ class GeneralFragment : BaseFragment() {
 
         viewModel.cacheSize.observe(viewLifecycleOwner) { size ->
             context?.resources?.also {
-                tvCacheSize.text = getString(R.string.cache_size, getSize(it, size.toInt()))
+                binding.tvCacheSize.text = getString(R.string.cache_size, getSize(it, size.toInt()))
             }
         }
         viewModel.stickersRefreshing.observe(viewLifecycleOwner) { loading ->
-            btnRefreshStickers.setVisible(!loading)
+            binding.btnRefreshStickers.setVisible(!loading)
             if (!loading) {
                 showToast(context, R.string.stickers_refreshed)
             }
@@ -71,48 +76,52 @@ class GeneralFragment : BaseFragment() {
     }
 
     private fun initSwitches() {
-        switchOffline.isChecked = Prefs.beOffline
-        switchOnline.isChecked = Prefs.beOnline
-        switchHideStatus.isChecked = Prefs.hideStatus
-        switchRead.isChecked = Prefs.markAsRead
-        switchTyping.isChecked = Prefs.showTyping
-        switchSendByEnter.isChecked = Prefs.sendByEnter
-        switchStickerSuggestions.isChecked = Prefs.stickerSuggestions
-        switchExactSuggestions.isChecked = Prefs.exactSuggestions
-        switchSwipeToBack.isChecked = Prefs.enableSwipeToBack
-        switchStoreKeys.isChecked = Prefs.storeCustomKeys
-        switchLiftKeyboard.isChecked = Prefs.liftKeyboard
-        switchSuggestPeople.isChecked = Prefs.suggestPeople
-        tvStealthCommonHint.setVisible(Prefs.beOffline)
+        binding.apply {
+            switchOffline.isChecked = Prefs.beOffline
+            switchOnline.isChecked = Prefs.beOnline
+            switchHideStatus.isChecked = Prefs.hideStatus
+            switchRead.isChecked = Prefs.markAsRead
+            switchTyping.isChecked = Prefs.showTyping
+            switchSendByEnter.isChecked = Prefs.sendByEnter
+            switchStickerSuggestions.isChecked = Prefs.stickerSuggestions
+            switchExactSuggestions.isChecked = Prefs.exactSuggestions
+            switchSwipeToBack.isChecked = Prefs.enableSwipeToBack
+            switchStoreKeys.isChecked = Prefs.storeCustomKeys
+            switchLiftKeyboard.isChecked = Prefs.liftKeyboard
+            switchSuggestPeople.isChecked = Prefs.suggestPeople
+            tvStealthCommonHint.setVisible(Prefs.beOffline)
 
-        switchOffline.onCheckedListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
-            if (isChecked) switchOnline.isChecked = false
-            tvStealthCommonHint.setVisible(isChecked)
-        }
-        switchOnline.onCheckedListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
-            if (isChecked) switchOffline.isChecked = false
-        }
-        switchHideStatus.onCheckedListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
-            viewModel.setHideMyStatus(isChecked)
-        }
-        switchStickerSuggestions.onCheckedListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
-            switchExactSuggestions.setVisible(isChecked)
+            switchOffline.onCheckedListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
+                if (isChecked) switchOnline.isChecked = false
+                tvStealthCommonHint.setVisible(isChecked)
+            }
+            switchOnline.onCheckedListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
+                if (isChecked) switchOffline.isChecked = false
+            }
+            switchHideStatus.onCheckedListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
+                viewModel.setHideMyStatus(isChecked)
+            }
+            switchStickerSuggestions.onCheckedListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
+                switchExactSuggestions.setVisible(isChecked)
+            }
         }
     }
 
     private fun saveSwitches() {
-        Prefs.beOffline = switchOffline.isChecked
-        Prefs.beOnline = switchOnline.isChecked
-        Prefs.hideStatus = switchHideStatus.isChecked
-        Prefs.markAsRead = switchRead.isChecked
-        Prefs.showTyping = switchTyping.isChecked
-        Prefs.sendByEnter = switchSendByEnter.isChecked
-        Prefs.stickerSuggestions = switchStickerSuggestions.isChecked
-        Prefs.exactSuggestions = switchExactSuggestions.isChecked
-        Prefs.enableSwipeToBack = switchSwipeToBack.isChecked
-        Prefs.storeCustomKeys = switchStoreKeys.isChecked
-        Prefs.liftKeyboard = switchLiftKeyboard.isChecked
-        Prefs.suggestPeople = switchSuggestPeople.isChecked
+        binding.apply {
+            Prefs.beOffline = switchOffline.isChecked
+            Prefs.beOnline = switchOnline.isChecked
+            Prefs.hideStatus = switchHideStatus.isChecked
+            Prefs.markAsRead = switchRead.isChecked
+            Prefs.showTyping = switchTyping.isChecked
+            Prefs.sendByEnter = switchSendByEnter.isChecked
+            Prefs.stickerSuggestions = switchStickerSuggestions.isChecked
+            Prefs.exactSuggestions = switchExactSuggestions.isChecked
+            Prefs.enableSwipeToBack = switchSwipeToBack.isChecked
+            Prefs.storeCustomKeys = switchStoreKeys.isChecked
+            Prefs.liftKeyboard = switchLiftKeyboard.isChecked
+            Prefs.suggestPeople = switchSuggestPeople.isChecked
+        }
     }
 
     override fun onStop() {

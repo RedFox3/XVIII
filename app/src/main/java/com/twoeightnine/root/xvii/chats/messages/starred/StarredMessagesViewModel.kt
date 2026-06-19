@@ -43,8 +43,10 @@ class StarredMessagesViewModel(api: ApiService) : BaseMessagesViewModel(api) {
                     if (response.getOrNull(0) == message.id) {
 //                        messagesLiveData.value?.data?.remove(message)
 //                        messagesLiveData.value = Wrapper(messagesLiveData.value?.data)
-                        val pos = messages.indexOf(message)
-                        messages.remove(message)
+                        val pos = messages.indexOfFirst { it.message.id == message.id }
+                        if (pos != -1) {
+                            messages.removeAt(pos)
+                        }
                         interactionsLiveData.value = Wrapper(Interaction(Interaction.Type.REMOVE, pos))
                     }
                 }, ::onErrorOccurred)

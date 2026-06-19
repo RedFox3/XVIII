@@ -23,14 +23,14 @@ import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import com.twoeightnine.root.xvii.App
 import com.twoeightnine.root.xvii.chats.attachments.base.BaseAttachFragment
+import com.twoeightnine.root.xvii.databinding.ItemPhotoAttachmentBinding
 import com.twoeightnine.root.xvii.model.attachments.Attachment
 import com.twoeightnine.root.xvii.model.attachments.Photo
 import global.msnthrp.xvii.uikit.extensions.setVisible
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.fragment_attachments.*
 
-class PhotoAttachFragment : BaseAttachFragment<Photo>() {
+class PhotoAttachFragment : BaseAttachFragment<Photo, ItemPhotoAttachmentBinding>() {
 
     override val adapter by lazy {
         PhotoAttachmentsAdapter(requireContext(), viewModel::loadAttach) {}
@@ -47,8 +47,8 @@ class PhotoAttachFragment : BaseAttachFragment<Photo>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter.multiSelectMode = true
-        adapter.multiListener = fabDone::setVisible
-        fabDone.setOnClickListener {
+        adapter.multiListener = binding.fabDone::setVisible
+        binding.fabDone.setOnClickListener {
             selectedSubject.onNext(adapter.multiSelect.map { Attachment(it) })
             adapter.clearMultiSelect()
         }

@@ -19,34 +19,35 @@
 package com.twoeightnine.root.xvii.chats.attachments.links
 
 import android.content.Context
-import android.view.View
-import com.twoeightnine.root.xvii.R
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import com.twoeightnine.root.xvii.chats.attachments.base.BaseAttachmentsAdapter
+import com.twoeightnine.root.xvii.databinding.ItemAttachmentsLinkBinding
 import com.twoeightnine.root.xvii.extensions.load
 import com.twoeightnine.root.xvii.model.attachments.Link
-import kotlinx.android.synthetic.main.item_attachments_link.view.*
 
 class LinkAttachmentsAdapter(
         context: Context,
         loader: (Int) -> Unit,
         private val onClick: (Link) -> Unit
-) : BaseAttachmentsAdapter<Link, LinkAttachmentsAdapter.LinkAttachmentsViewHolder>(context, loader) {
+) : BaseAttachmentsAdapter<Link, ItemAttachmentsLinkBinding, LinkAttachmentsAdapter.LinkAttachmentsViewHolder>(context, loader) {
 
-    override fun getViewHolder(view: View) = LinkAttachmentsViewHolder(view)
+    override fun getViewHolder(binding: ItemAttachmentsLinkBinding) = LinkAttachmentsViewHolder(binding)
 
-    override fun getLayoutId() = R.layout.item_attachments_link
+    override fun inflateBinding(inflater: LayoutInflater, parent: ViewGroup, attachToParent: Boolean) =
+        ItemAttachmentsLinkBinding.inflate(inflater, parent, attachToParent)
 
     override fun createStubLoadItem() = Link()
 
-    inner class LinkAttachmentsViewHolder(view: View)
-        : BaseAttachmentsAdapter.BaseAttachmentViewHolder<Link>(view) {
+    inner class LinkAttachmentsViewHolder(private val binding: ItemAttachmentsLinkBinding)
+        : BaseAttachmentViewHolder<Link, ItemAttachmentsLinkBinding>(binding) {
 
         override fun bind(item: Link) {
-            with(itemView) {
+            with(binding) {
                 tvTitle.text = item.title
                 tvCaption.text = item.caption
                 ivPhoto.load(item.photo?.getSmallPhoto()?.url)
-                setOnClickListener { onClick(items[adapterPosition]) }
+                root.setOnClickListener { onClick(items[adapterPosition]) } // TODO: check does it work
             }
         }
     }

@@ -19,22 +19,21 @@
 package com.twoeightnine.root.xvii.views
 
 import android.content.Context
-import android.view.View
+import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
-import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.DialogFingerprintBinding
 import com.twoeightnine.root.xvii.extensions.load
 import com.twoeightnine.root.xvii.utils.stylize
-import kotlinx.android.synthetic.main.dialog_fingerprint.view.*
 
 class FingerPrintAlertDialog(context: Context,
                              fingerprint: String) : AlertDialog(context) {
 
     init {
-        View.inflate(context, R.layout.dialog_fingerprint, null).apply {
-            setView(this)
+        DialogFingerprintBinding.inflate(LayoutInflater.from(context)).apply {
+            setView(root)
             tvPrint.text = getUiFriendlyHash(fingerprint)
             ivGravatar.load("https://www.gravatar.com/avatar/$fingerprint?s=256&d=identicon&r=PG")
-            setOnClickListener { dismiss() }
+            root.setOnClickListener { dismiss() }
         }
     }
 

@@ -48,7 +48,7 @@ import io.github.inflationx.viewpump.ViewPumpContextWrapper
 abstract class BaseActivity : AppCompatActivity() {
 
     private val almostTransparent by lazy {
-        ContextCompat.getColor(this, R.color.almost_transparent)
+        ContextCompat.getColor(this, global.msnthrp.xvii.uikit.R.color.almost_transparent)
     }
     private val navBarColor by lazy {
         ContextCompat.getColor(this, R.color.navigation_bar)

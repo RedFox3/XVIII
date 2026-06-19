@@ -19,11 +19,10 @@
 package com.twoeightnine.root.xvii.friends.adapters
 
 import android.content.Context
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseReachAdapter
+import com.twoeightnine.root.xvii.databinding.ItemUserBinding
 import com.twoeightnine.root.xvii.extensions.getInitials
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.model.User
@@ -32,7 +31,6 @@ import com.twoeightnine.root.xvii.uikit.paint
 import com.twoeightnine.root.xvii.utils.LastSeenUtils
 import global.msnthrp.xvii.uikit.extensions.lowerIf
 import global.msnthrp.xvii.uikit.extensions.setVisible
-import kotlinx.android.synthetic.main.item_user.view.*
 
 class FriendsAdapter(context: Context,
                      private val onClick: (User) -> Unit,
@@ -42,7 +40,7 @@ class FriendsAdapter(context: Context,
     var firstItemPadding = 0
 
     override fun createHolder(parent: ViewGroup, viewType: Int) =
-            FriendViewHolder(inflater.inflate(R.layout.item_user, null))
+            FriendViewHolder(ItemUserBinding.inflate(inflater, parent, false))
 
 
     override fun bind(holder: FriendViewHolder, item: User) {
@@ -51,12 +49,12 @@ class FriendsAdapter(context: Context,
 
     override fun createStubLoadItem() = User()
 
-    inner class FriendViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+    inner class FriendViewHolder(private val binding: ItemUserBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(user: User, isFirst: Boolean) {
-            with(view) {
+            with(binding) {
                 val topPadding = if (isFirst) firstItemPadding else 0
-                setPadding(0, topPadding, 0, 0)
+                root.setPadding(0, topPadding, 0, 0)
 
                 civPhoto.load(user.photo100, user.fullName.getInitials(), id = user.id)
                 ivOnlineDot.setVisible(user.isOnline)
@@ -67,7 +65,7 @@ class FriendsAdapter(context: Context,
                 user.lastSeen?.also {
                     tvInfo.text = LastSeenUtils.getFull(context, user.isOnline, it.time, it.platform)
                 }
-                setOnClickListener {
+                root.setOnClickListener {
                     items.getOrNull(adapterPosition)?.also(onClick)
                 }
             }

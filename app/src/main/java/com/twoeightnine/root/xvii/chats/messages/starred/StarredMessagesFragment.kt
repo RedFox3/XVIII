@@ -44,8 +44,6 @@ import com.twoeightnine.root.xvii.utils.copyToClip
 import com.twoeightnine.root.xvii.utils.showError
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
 import global.msnthrp.xvii.uikit.extensions.hideInvis
-import kotlinx.android.synthetic.main.fragment_chat.*
-import kotlinx.android.synthetic.main.view_chat_multiselect.*
 
 class StarredMessagesFragment : BaseMessagesFragment<StarredMessagesViewModel>() {
 
@@ -57,20 +55,22 @@ class StarredMessagesFragment : BaseMessagesFragment<StarredMessagesViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (rlInput.layoutParams as? RelativeLayout.LayoutParams)?.height = 0
-        ivReplyMulti.hideInvis()
-        ivDeleteMulti.hideInvis()
-        ivMarkMulti.hideInvis()
+        (binding.rlInput.layoutParams as? RelativeLayout.LayoutParams)?.height = 0
+        binding.multiSelect.ivReplyMulti.hideInvis()
+        binding.multiSelect.ivDeleteMulti.hideInvis()
+        binding.multiSelect.ivMarkMulti.hideInvis()
 
-        rlMultiAction.background?.paint(Munch.color.color20)
-        listOf(ivCancelMulti, ivMarkMulti, ivDeleteMulti, ivForwardMulti, ivReplyMulti)
-                .forEach { it.paint(Munch.color.colorDark(50)) }
+        binding.multiSelect.rlMultiAction.background?.paint(Munch.color.color20)
+        with(binding.multiSelect) {
+            listOf(ivCancelMulti, ivMarkMulti, ivDeleteMulti, ivForwardMulti, ivReplyMulti)
+                    .forEach { it.paint(Munch.color.colorDark(50)) }
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        xviiToolbar.title = getString(R.string.important)
-        rvChatList.applyBottomInsetPadding()
+        binding.xviiToolbar.title = getString(R.string.important)
+        binding.rvChatList.applyBottomInsetPadding()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

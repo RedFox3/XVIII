@@ -20,11 +20,12 @@ package com.twoeightnine.root.xvii.chats.attachments.stickers
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import com.twoeightnine.root.xvii.App
-import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.chats.attachments.stickers.preview.StickerPreviewDialog
+import com.twoeightnine.root.xvii.databinding.FragmentAttachmentsBinding
 import com.twoeightnine.root.xvii.model.attachments.Sticker
 import com.twoeightnine.root.xvii.network.ApiService
 import com.twoeightnine.root.xvii.utils.applyCompletableSchedulers
@@ -37,7 +38,6 @@ import global.msnthrp.xvii.uikit.extensions.show
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.fragment_attachments.view.*
 import javax.inject.Inject
 
 class StickersWindow(
@@ -52,6 +52,8 @@ class StickersWindow(
 
     private var disposable: Disposable? = null
 
+    private var binding: FragmentAttachmentsBinding? = null
+
     private val availableStorage by lazy {
         StickersStorage(context, StickersStorage.Type.AVAILABLE)
     }
@@ -65,8 +67,10 @@ class StickersWindow(
     }
 
     override fun createView(): View {
-        val view = View.inflate(context, R.layout.fragment_attachments, null)
-        with(view) {
+        val attachmentsBinding = FragmentAttachmentsBinding.inflate(LayoutInflater.from(context))
+        binding = attachmentsBinding
+
+        with(attachmentsBinding) {
             rvAttachments.layoutManager = GridLayoutManager(context, 5)
             rvAttachments.adapter = adapter
 
@@ -75,18 +79,21 @@ class StickersWindow(
                 loadStickers(forceFetch = true)
             }
         }
-        return view
+        return attachmentsBinding.root
     }
 
     override fun onViewCreated() {
         super.onViewCreated()
         App.appComponent?.inject(this)
         loadStickers()
-        setOnDismissListener { disposable?.dispose() }
+        setOnDismissListener {
+            disposable?.dispose()
+            binding = null
+        }
     }
 
     private fun updateList(data: List<Sticker>) {
-        with(contentView) {
+        binding?.apply {
             swipeRefresh.isRefreshing = false
             progressBar.hide()
         }

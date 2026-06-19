@@ -34,14 +34,26 @@ import androidx.viewpager.widget.ViewPager
 import com.twoeightnine.root.xvii.App
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.FragmentPlacementActivity.Companion.startFragment
+import com.twoeightnine.root.xvii.databinding.ActivityImageViewerBinding
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.model.attachments.Photo
 import com.twoeightnine.root.xvii.report.ReportFragment
-import com.twoeightnine.root.xvii.utils.*
-import global.msnthrp.xvii.uikit.extensions.*
+import com.twoeightnine.root.xvii.utils.ApiUtils
+import com.twoeightnine.root.xvii.utils.DownloadUtils
+import com.twoeightnine.root.xvii.utils.PermissionHelper
+import com.twoeightnine.root.xvii.utils.addToGallery
+import com.twoeightnine.root.xvii.utils.getTime
+import com.twoeightnine.root.xvii.utils.getUriForFile
+import com.twoeightnine.root.xvii.utils.getUriName
+import global.msnthrp.xvii.uikit.extensions.SimpleBitmapTarget
+import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
+import global.msnthrp.xvii.uikit.extensions.applyTopInsetPadding
+import global.msnthrp.xvii.uikit.extensions.hide
+import global.msnthrp.xvii.uikit.extensions.load
+import global.msnthrp.xvii.uikit.extensions.setVisible
+import global.msnthrp.xvii.uikit.extensions.toggle
 import global.msnthrp.xvii.uikit.utils.DisplayUtils
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
-import kotlinx.android.synthetic.main.activity_image_viewer.*
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -54,6 +66,7 @@ class ImageViewerActivity : AppCompatActivity() {
     private val adapter by lazy {
         FullScreenImageAdapter(this, getUrlList(), ImageInteractionCallback(), getSizesOrNull())
     }
+    private val binding by lazy { ActivityImageViewerBinding.inflate(layoutInflater) }
 
     private val downloadingQueue = hashMapOf<Long, String>()
     private val actionDownloadedReceiver = ActionDownloadedReceiver()
@@ -71,12 +84,12 @@ class ImageViewerActivity : AppCompatActivity() {
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
         DisplayUtils.initIfNot(this)
-        setContentView(R.layout.activity_image_viewer)
+        setContentView(binding.root)
         App.appComponent?.inject(this)
 
         initData()
         setPosition(position)
-        with(vpImage) {
+        with(binding.vpImage) {
             adapter = this@ImageViewerActivity.adapter
             addOnPageChangeListener(ImageViewerPageListener())
             pageMargin = 30
@@ -85,21 +98,23 @@ class ImageViewerActivity : AppCompatActivity() {
         }
         initButtons()
         if (mode == MODE_ONE_PATH) {
-            rlControls.hide()
+            binding.rlControls.hide()
         }
         registerReceiver(actionDownloadedReceiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
 
-        ivBack.setOnClickListener { onBackPressed() }
-        rlTop.applyTopInsetPadding()
-        rlBottom.applyBottomInsetPadding()
+        binding.apply {
+            ivBack.setOnClickListener { onBackPressed() }
+            rlTop.applyTopInsetPadding()
+            rlBottom.applyBottomInsetPadding()
+        }
     }
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase))
     }
 
-    private fun initButtons() {
+    private fun initButtons() = with(binding) {
         btnDownload.setOnClickListener {
             if (photos.isEmpty()) return@setOnClickListener
             permissionHelper.doOrRequest(
@@ -115,7 +130,7 @@ class ImageViewerActivity : AppCompatActivity() {
                     fileName = fileName.split('?')[0]
                 }
                 val file = File(SAVE_FILE, fileName)
-                val downloadId = DownloadUtils.download(this, file, url)
+                val downloadId = DownloadUtils.download(this@ImageViewerActivity, file, url)
                 downloadingQueue[downloadId] = file.absolutePath
             }
 
@@ -124,13 +139,13 @@ class ImageViewerActivity : AppCompatActivity() {
             if (photos.isEmpty()) return@setOnClickListener
 
             val photo = currentPhoto() ?: return@setOnClickListener
-            apiUtils.saveToAlbum(this, photo.ownerId, photo.id, photo.accessKey)
+            apiUtils.saveToAlbum(this@ImageViewerActivity, photo.ownerId, photo.id, photo.accessKey)
         }
         btnShare.setOnClickListener {
             if (photos.isEmpty()) return@setOnClickListener
 
             val photo = currentPhoto() ?: return@setOnClickListener
-            shareImage(this, tryToGetUrl(photo))
+            shareImage(this@ImageViewerActivity, tryToGetUrl(photo))
         }
         btnReport.setOnClickListener {
             if (photos.isEmpty()) return@setOnClickListener
@@ -197,7 +212,7 @@ class ImageViewerActivity : AppCompatActivity() {
         else -> null
     }
 
-    private fun setPosition(position: Int) {
+    private fun setPosition(position: Int) = with(binding) {
         tvPosition.text = "${position + 1}/${photos.size}"
         val currentPhoto = currentPhoto()
         if (mode == MODE_PHOTOS_LIST && currentPhoto != null) {
@@ -208,7 +223,7 @@ class ImageViewerActivity : AppCompatActivity() {
         }
     }
 
-    private fun currentPhoto(): Photo? = photos.getOrNull(vpImage.currentItem)
+    private fun currentPhoto(): Photo? = photos.getOrNull(binding.vpImage.currentItem)
 
     private fun getUrlsFromPhotos(photos: ArrayList<Photo>) = ArrayList(photos.mapNotNull { tryToGetUrl(it) })
 
@@ -263,7 +278,7 @@ class ImageViewerActivity : AppCompatActivity() {
 
         override fun onTap() {
             if (mode == MODE_ONE_PATH) return
-            rlControls.toggle()
+            binding.rlControls.toggle()
         }
 
         override fun onDoubleTap() {

@@ -19,44 +19,48 @@
 package com.twoeightnine.root.xvii.egg
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import com.twoeightnine.root.xvii.R
+import android.view.ViewGroup
 import com.twoeightnine.root.xvii.base.BaseFragment
+import com.twoeightnine.root.xvii.databinding.FragmentEggBinding
 import com.twoeightnine.root.xvii.extensions.load
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetMargin
 import global.msnthrp.xvii.uikit.extensions.show
-import kotlinx.android.synthetic.main.fragment_egg.*
 
 /**
  * Created by chuck palahniuk on 8/18/17.
  */
 
-class EggFragment : BaseFragment() {
+class EggFragment : BaseFragment<FragmentEggBinding>() {
 
     private val egg by lazy {
         arguments?.getSerializable(ARG_EGG) as? Egg
     }
 
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentEggBinding.inflate(inflater, container, false)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         when (val egg = egg ?: Egg.getRandomEgg()) {
             is Egg.ImageEgg -> {
-                ivImage.load(egg.imageUrl, placeholder = false) {
+                binding.ivImage.load(egg.imageUrl, placeholder = false) {
                     fitCenter()
                 }
             }
             is Egg.ImageAndTextEgg -> {
-                ivImage.load(egg.imageUrl, placeholder = false) {
-                    centerCrop()
+                binding.apply {
+                    ivImage.load(egg.imageUrl, placeholder = false) {
+                        centerCrop()
+                    }
+                    tvText.applyBottomInsetMargin()
+                    tvText.show()
+                    tvText.setText(egg.textRes)
                 }
-                tvText.applyBottomInsetMargin()
-                tvText.show()
-                tvText.setText(egg.textRes)
             }
         }
     }
-
-    override fun getLayoutId() = R.layout.fragment_egg
 
     companion object {
 

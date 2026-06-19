@@ -19,11 +19,12 @@
 package com.twoeightnine.root.xvii.accounts.adapters
 
 import android.content.Context
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.ItemAccountBinding
 import com.twoeightnine.root.xvii.extensions.getInitials
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.uikit.paint
@@ -31,7 +32,6 @@ import global.msnthrp.xvii.core.accounts.model.Account
 import global.msnthrp.xvii.uikit.base.adapters.BaseAdapter
 import global.msnthrp.xvii.uikit.extensions.lowerIf
 import global.msnthrp.xvii.uikit.extensions.setVisible
-import kotlinx.android.synthetic.main.item_account.view.*
 
 class AccountsAdapter(
         context: Context,
@@ -41,16 +41,16 @@ class AccountsAdapter(
 ) : BaseAdapter<Account, AccountsAdapter.AccountsViewHolder>(context) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            AccountsViewHolder(inflater.inflate(R.layout.item_account, parent, false))
+            AccountsViewHolder(ItemAccountBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     override fun onBindViewHolder(holder: AccountsViewHolder, position: Int) {
         holder.bind(items[position])
     }
 
-    inner class AccountsViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+    inner class AccountsViewHolder(private val binding: ItemAccountBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(account: Account) {
-            with(view) {
+            with(binding) {
                 val accountType = getAccountTypeResId(adapterPosition)
                         .takeIf { it != 0 }
                         ?.let(context::getString)

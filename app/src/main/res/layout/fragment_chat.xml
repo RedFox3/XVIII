@@ -45,7 +45,9 @@
             android:layout_height="wrap_content"
             app:alwaysLifted="true" />
 
-        <include layout="@layout/view_chat_multiselect" />
+        <include
+            android:id="@+id/multiSelect"
+            layout="@layout/view_chat_multiselect" />
 
         <com.twoeightnine.root.xvii.views.XviiSwipeRefreshLayout
             android:id="@+id/swipeContainer"
@@ -81,7 +83,9 @@
             android:background="@color/background"
             android:elevation="10dp">
 
-            <include layout="@layout/chat_input_panel" />
+            <include
+                android:id="@+id/inputPanel"
+                layout="@layout/chat_input_panel" />
 
         </RelativeLayout>
 

@@ -19,37 +19,38 @@
 package com.twoeightnine.root.xvii.chats.attachments.docs
 
 import android.content.Context
-import android.view.View
-import com.twoeightnine.root.xvii.R
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import com.twoeightnine.root.xvii.chats.attachments.base.BaseAttachmentsAdapter
+import com.twoeightnine.root.xvii.databinding.ItemAttachmentsDocBinding
 import com.twoeightnine.root.xvii.extensions.load
 import com.twoeightnine.root.xvii.model.attachments.Doc
 import com.twoeightnine.root.xvii.uikit.Munch
 import com.twoeightnine.root.xvii.utils.getSize
 import global.msnthrp.xvii.uikit.extensions.setVisible
 import global.msnthrp.xvii.uikit.utils.color.DocColors
-import kotlinx.android.synthetic.main.item_attachments_doc.view.*
 
 class DocAttachmentsAdapter(
         context: Context,
         loader: (Int) -> Unit,
         private val onClick: (Doc) -> Unit
-) : BaseAttachmentsAdapter<Doc, DocAttachmentsAdapter.DocViewHolder>(context, loader) {
+) : BaseAttachmentsAdapter<Doc, ItemAttachmentsDocBinding, DocAttachmentsAdapter.DocViewHolder>(context, loader) {
 
-    override fun getViewHolder(view: View) = DocViewHolder(view)
+    override fun getViewHolder(binding: ItemAttachmentsDocBinding) = DocViewHolder(binding)
 
-    override fun getLayoutId() = R.layout.item_attachments_doc
+    override fun inflateBinding(inflater: LayoutInflater, parent: ViewGroup, attachToParent: Boolean) =
+        ItemAttachmentsDocBinding.inflate(inflater, parent, attachToParent)
 
     override fun createStubLoadItem() = Doc()
 
-    inner class DocViewHolder(view: View) : BaseAttachmentViewHolder<Doc>(view) {
+    inner class DocViewHolder(private val binding: ItemAttachmentsDocBinding) : BaseAttachmentViewHolder<Doc, ItemAttachmentsDocBinding>(binding) {
 
         override fun bind(item: Doc) {
-            with(itemView) {
+            with(binding) {
                 val extSafe = item.ext ?: ""
                 tvExt.text = prettifyExt(extSafe)
                 tvTitle.text = item.title
-                tvSize.text = getSize(resources, item.size)
+                tvSize.text = getSize(root.context.resources, item.size) // TODO: check does it work
 
                 val preview = item.preview?.photo?.getSmallPreview()?.src
                 val hasPreview = preview != null
@@ -65,7 +66,7 @@ class DocAttachmentsAdapter(
                 cvDocPreview.setCardBackgroundColor(
                         DocColors.getColorByExtension(extSafe) ?: Munch.color.color
                 )
-                setOnClickListener { onClick(items[adapterPosition]) }
+                root.setOnClickListener { onClick(items[adapterPosition]) } // TODO: check does it work
             }
         }
 

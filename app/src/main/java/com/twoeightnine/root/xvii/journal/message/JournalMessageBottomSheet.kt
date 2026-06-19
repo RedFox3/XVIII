@@ -19,17 +19,18 @@
 package com.twoeightnine.root.xvii.journal.message
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseBottomSheet
+import com.twoeightnine.root.xvii.databinding.FragmentJournalMessageBinding
 import com.twoeightnine.root.xvii.journal.message.model.MessageInfo
 import com.twoeightnine.root.xvii.managers.Prefs
 import global.msnthrp.xvii.uikit.extensions.lowerIf
-import kotlinx.android.synthetic.main.fragment_journal_online.*
 
-class JournalMessageBottomSheet private constructor(): BaseBottomSheet() {
+class JournalMessageBottomSheet private constructor(): BaseBottomSheet<FragmentJournalMessageBinding>() {
 
     private val messageInfo by lazy {
         arguments?.getParcelable<MessageInfo>(ARG_DATA)
@@ -38,16 +39,19 @@ class JournalMessageBottomSheet private constructor(): BaseBottomSheet() {
         MessageEventAdapter(requireContext())
     }
 
-    override fun getLayout(): Int = R.layout.fragment_journal_message
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentJournalMessageBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tvName.text = messageInfo?.fromName
-        tvName.lowerIf(Prefs.lowerTexts)
+        binding.apply {
+            tvName.text = messageInfo?.fromName
+            tvName.lowerIf(Prefs.lowerTexts)
 
-        rvEvents.layoutManager = LinearLayoutManager(requireContext())
+            rvEvents.layoutManager = LinearLayoutManager(requireContext())
                 .apply { stackFromEnd = true }
-        rvEvents.adapter = adapter
+            rvEvents.adapter = adapter
+        }
         messageInfo?.events?.also(adapter::update)
     }
 

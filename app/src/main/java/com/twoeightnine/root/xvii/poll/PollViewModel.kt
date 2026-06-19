@@ -80,7 +80,7 @@ class PollViewModel(private val api: ApiService) : ViewModel() {
 
     class Factory @Inject constructor(private val api: ApiService) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>) = PollViewModel(api) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>) = PollViewModel(api) as T
     }
 
 }

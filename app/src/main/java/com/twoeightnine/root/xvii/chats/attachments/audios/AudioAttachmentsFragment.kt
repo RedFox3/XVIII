@@ -25,10 +25,11 @@ import com.twoeightnine.root.xvii.App
 import com.twoeightnine.root.xvii.background.music.models.Track
 import com.twoeightnine.root.xvii.background.music.services.MusicService
 import com.twoeightnine.root.xvii.chats.attachments.base.BaseAttachmentsFragment
+import com.twoeightnine.root.xvii.databinding.ItemAttachmentsTrackBinding
 import com.twoeightnine.root.xvii.storage.SessionProvider
 import com.twoeightnine.root.xvii.utils.showDeleteDialog
 
-class AudioAttachmentsFragment : BaseAttachmentsFragment<Track>() {
+class AudioAttachmentsFragment : BaseAttachmentsFragment<Track, ItemAttachmentsTrackBinding>() {
 
     private val audioViewModel: AudioAttachmentsViewModel
         get() = viewModel as AudioAttachmentsViewModel

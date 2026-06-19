@@ -19,8 +19,10 @@
 package com.twoeightnine.root.xvii.chatowner.fragments
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.twoeightnine.root.xvii.R
@@ -28,6 +30,8 @@ import com.twoeightnine.root.xvii.base.FragmentPlacementActivity.Companion.start
 import com.twoeightnine.root.xvii.chatowner.ChatOwnerFactory
 import com.twoeightnine.root.xvii.chatowner.MembersAdapter
 import com.twoeightnine.root.xvii.chats.messages.deepforwarded.DeepForwardedFragment
+import com.twoeightnine.root.xvii.databinding.FragmentChatOwnerConversationBinding
+import com.twoeightnine.root.xvii.databinding.ItemPinnedMessageFieldBinding
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.model.Conversation
 import com.twoeightnine.root.xvii.model.User
@@ -36,24 +40,24 @@ import com.twoeightnine.root.xvii.uikit.paint
 import com.twoeightnine.root.xvii.utils.showWarnConfirm
 import com.twoeightnine.root.xvii.utils.wrapMentions
 import com.twoeightnine.root.xvii.views.TextInputAlertDialog
-import global.msnthrp.xvii.uikit.extensions.*
-import kotlinx.android.synthetic.main.fragment_chat_owner_conversation.*
-import kotlinx.android.synthetic.main.item_chat_owner_field.view.*
-import kotlinx.android.synthetic.main.item_chat_owner_field.view.ivIcon
-import kotlinx.android.synthetic.main.item_chat_owner_field.view.tvValue
-import kotlinx.android.synthetic.main.item_pinned_message_field.view.*
+import global.msnthrp.xvii.uikit.extensions.applyTopInsetMargin
+import global.msnthrp.xvii.uikit.extensions.hide
+import global.msnthrp.xvii.uikit.extensions.lowerIf
+import global.msnthrp.xvii.uikit.extensions.setVisible
+import global.msnthrp.xvii.uikit.extensions.show
 
-class ConversationChatOwnerFragment : BaseChatOwnerFragment<Conversation>() {
+class ConversationChatOwnerFragment : BaseChatOwnerFragment<Conversation, FragmentChatOwnerConversationBinding>() {
 
     private val adapter by lazy {
         MembersAdapter(context ?: return@lazy null, ::onUserClick, ::onUserLongClick)
     }
 
-    override fun getLayoutId() = R.layout.fragment_chat_owner_conversation
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentChatOwnerConversationBinding.inflate(inflater, container, false)
 
     override fun getChatOwnerClass() = Conversation::class.java
 
-    override fun bindChatOwner(chatOwner: Conversation?) {
+    override fun bindChatOwner(chatOwner: Conversation?) = with(binding) {
         val conversation = chatOwner ?: return
 
         fabOpenChat.setVisible(conversation.canWrite?.allowed != false)
@@ -66,14 +70,16 @@ class ConversationChatOwnerFragment : BaseChatOwnerFragment<Conversation>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        rvUsers.layoutManager = LinearLayoutManager(context)
-        rvUsers.adapter = adapter
+        binding.apply {
+            rvUsers.layoutManager = LinearLayoutManager(context)
+            rvUsers.adapter = adapter
 
-        ivEdit.setOnClickListener { showTitleDialog() }
-        ivEdit.paint(Munch.color.color50)
+            ivEdit.setOnClickListener { showTitleDialog() }
+            ivEdit.paint(Munch.color.color50)
+        }
     }
 
-    override fun getBottomPaddableView(): View = vBottom
+    override fun getBottomPaddableView(): View = binding.vBottom
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -97,7 +103,7 @@ class ConversationChatOwnerFragment : BaseChatOwnerFragment<Conversation>() {
 
         val participantsCount = profiles.size
         if (participantsCount > PROFILES_LIMIT) {
-            tvShowAllUsers.apply {
+            binding.tvShowAllUsers.apply {
                 show()
 
                 val participantsFormatted = requireContext().resources
@@ -142,7 +148,9 @@ class ConversationChatOwnerFragment : BaseChatOwnerFragment<Conversation>() {
             wrapMentions(requireContext(), it, addClickable = true)
         } ?: return
 
-        with(View.inflate(context, R.layout.item_pinned_message_field, null)) {
+        val itemMessageField = ItemPinnedMessageFieldBinding.inflate(LayoutInflater.from(context), binding.llContainer, false)
+
+        with(itemMessageField) {
             ivIcon.paint(Munch.color.color)
             tvValue.text = pinnedMessage
             clItem.setOnClickListener {
@@ -150,7 +158,7 @@ class ConversationChatOwnerFragment : BaseChatOwnerFragment<Conversation>() {
                     startFragment<DeepForwardedFragment>(DeepForwardedFragment.createArgs(id))
                 }
             }
-            llContainer.addView(this)
+            binding.llContainer.addView(root)
         }
     }
 

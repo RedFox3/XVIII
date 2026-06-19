@@ -24,17 +24,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseActivity
+import com.twoeightnine.root.xvii.databinding.FragmentUiKitBinding
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
-import kotlinx.android.synthetic.main.fragment_ui_kit.*
 
 class UiKitFragment : Fragment() {
 
-//    override fun getLayoutId(): Int = R.layout.fragment_ui_kit
+    private var _binding: FragmentUiKitBinding? = null
+    private val binding get() = _binding!!
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_ui_kit, null)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentUiKitBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,8 +65,8 @@ class UiKitFragment : Fragment() {
 //        addText("extra color")
 //        addColor(Munch.extraColor)
 
-        (activity as? BaseActivity)?.also(xviiToolbar::setupWith)
-        svContent.applyBottomInsetPadding()
+        (activity as? BaseActivity)?.also(binding.xviiToolbar::setupWith)
+        binding.svContent.applyBottomInsetPadding()
     }
 
 //    private fun addColor(colorScope: Munch.ColorScope) {
@@ -92,6 +93,6 @@ class UiKitFragment : Fragment() {
                 ViewGroup.LayoutParams.WRAP_CONTENT
         )
         view.text = text
-        llColors.addView(view)
+        binding.llColors.addView(view)
     }
 }

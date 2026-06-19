@@ -19,9 +19,11 @@
 package com.twoeightnine.root.xvii.chats.attachments.attachments
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import android.view.ViewGroup
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
 import com.twoeightnine.root.xvii.chats.attachments.audios.AudioAttachmentsFragment
@@ -29,10 +31,10 @@ import com.twoeightnine.root.xvii.chats.attachments.docs.DocAttachmentsFragment
 import com.twoeightnine.root.xvii.chats.attachments.links.LinkAttachmentsFragment
 import com.twoeightnine.root.xvii.chats.attachments.photos.PhotoAttachmentsFragment
 import com.twoeightnine.root.xvii.chats.attachments.videos.VideoAttachmentsFragment
+import com.twoeightnine.root.xvii.databinding.FragmentAttachmentsHistoryBinding
 import global.msnthrp.xvii.uikit.base.adapters.BasePagerAdapter
-import kotlinx.android.synthetic.main.fragment_attachments_history.*
 
-class AttachmentsFragment : BaseFragment() {
+class AttachmentsFragment : BaseFragment<FragmentAttachmentsHistoryBinding>() {
 
     private val adapter by lazy {
         BasePagerAdapter(childFragmentManager)
@@ -40,7 +42,8 @@ class AttachmentsFragment : BaseFragment() {
 
     private val peerId by lazy { arguments?.getInt(ARG_PEER_ID) ?: 0 }
 
-    override fun getLayoutId() = R.layout.fragment_attachments_history
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentAttachmentsHistoryBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,8 +58,10 @@ class AttachmentsFragment : BaseFragment() {
             add(LinkAttachmentsFragment.newInstance(peerId), getString(R.string.links))
             add(DocAttachmentsFragment.newInstance(peerId), getString(R.string.docs))
         }
-        viewPager.adapter = adapter
-        xviiToolbar.setupWith(viewPager)
+        binding.apply {
+            viewPager.adapter = adapter
+            xviiToolbar.setupWith(viewPager)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

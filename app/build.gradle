@@ -18,11 +18,12 @@
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-kapt'
 apply from: "$project.rootDir/dependencies.gradle"
 
 android {
+    namespace "com.twoeightnine.root.xvii"
     compileSdkVersion androidVersions.compileSdkVersion
     buildToolsVersion androidVersions.buildToolsVersion
 
@@ -35,7 +36,7 @@ android {
         versionName androidApp.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        project.ext.set("archivesBaseName", "xvii" + defaultConfig.versionName)
+        project.ext.set("archivesBaseName", "xviii" + defaultConfig.versionName)
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -78,6 +79,7 @@ android {
     }
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
 }
 
@@ -142,10 +144,6 @@ dependencies {
 
 kapt {
     generateStubs = true
-}
-
-androidExtensions {
-    experimental = true
 }
 
 repositories {

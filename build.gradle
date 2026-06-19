@@ -20,15 +20,14 @@
 
 buildscript {
     ext {
-        kotlinVersion = '1.4.10'
+        kotlinVersion = '1.9.24'
     }
     repositories {
-        jcenter()
         google()
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.1'
-        classpath "com.neenbedankt.gradle.plugins:android-apt:1.8"
+        classpath 'com.android.tools.build:gradle:8.5.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -38,9 +37,9 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
-        maven { url "https://jitpack.io" }
         google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
     }
 }
 

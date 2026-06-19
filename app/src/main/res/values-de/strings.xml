@@ -21,7 +21,7 @@
     <string name="about_app">über</string>
     <string name="settings">einstellungen</string>
     <string name="addons">add-ons</string>
-    <string name="share_on_wall">xvii auf meiner pinnwand teilen</string>
+    <string name="share_on_wall">xviii auf meiner pinnwand teilen</string>
     <string name="share">teilen</string>
     <string name="share_image">das bild teilen</string>
 
@@ -63,7 +63,7 @@
     <string name="unpin">unstecken</string>
     <string name="alias">alias</string>
     <string name="unmark">unmarkieren</string>
-    <string name="join_us">folgen sie die offizielle gruppe von xvii, um die frischeste neuigkeiten über die anwendung zu bekommen</string>
+    <string name="join_us">folgen sie die offizielle gruppe von xviii, um die frischeste neuigkeiten über die anwendung zu bekommen</string>
     <string name="download">herunterladen</string>
     <string name="add_to_saved">in fotos speichern</string>
     <string name="added_to_saved">das foto wurde ins album heruntergeladen</string>
@@ -154,7 +154,7 @@
     <string name="delete_only_for_me">nur für mich löschen</string>
     <string name="wanna_delete_messages">do you really want to delete these messages?</string>
     <string name="unable_to_add_to_gallery">unable to add to gallery. it will be added automatically later</string>
-    <string name="generation_dh_hint">make sure your interlocutor has installed xvii and opened the secret chat with you. it is necessary for key exchange</string>
+    <string name="generation_dh_hint">make sure your interlocutor has installed xviii and opened the secret chat with you. it is necessary for key exchange</string>
     <string name="fingerprint">fingerabdruck</string>
     <string name="decrypting_image">image is being decrypted</string>
     <string name="invalid_file">unable to decrypt this file</string>
@@ -190,8 +190,8 @@
     <string name="wanna_rate">möchten sie die app bewerten</string>
 
     <string name="no_access_to_storage">kein zugang zum speicher</string>
-    <string name="need_access_to_storage">xvii needs an access to the storage to provide the feature of attaching and saving media files</string>
-    <string name="tap_to_provide_permissions">tap here to allow xvii to use your storage</string>
+    <string name="need_access_to_storage">xviii needs an access to the storage to provide the feature of attaching and saving media files</string>
+    <string name="tap_to_provide_permissions">tap here to allow xviii to use your storage</string>
     <string name="vote">das votum senden</string>
     <string name="unable_to_vote">unfähig das votum zu hinzufügen</string>
     <string name="vote_added">das votum ist hinzufügt</string>
@@ -248,9 +248,9 @@
     <string name="gift_for_you">geschenk</string>
     <string name="unable_to_pick_file">unable to pick this file. try to select other one or write in support</string>
 
-    <string name="xvii_longpoll">xvii background service</string>
+    <string name="xvii_longpoll">xviii background service</string>
     <string name="longpoll_hint">tap here to hide this notification</string>
-    <string name="longpoll_explanation">since android 8 (oreo) the os doesn\'t allow to run background services and the only exception is firebase services. but vk administration didn\'t publish api for its own firebase cloud messaging. vk\'s longpoll requires a custom service and xvii needs to show this notification all the time to keep the background service running</string>
+    <string name="longpoll_explanation">since android 8 (oreo) the os doesn\'t allow to run background services and the only exception is firebase services. but vk administration didn\'t publish api for its own firebase cloud messaging. vk\'s longpoll requires a custom service and xviii needs to show this notification all the time to keep the background service running</string>
 
     <string name="longpoll_guide_title">how to remove this notification</string>
     <string name="longpoll_guide_button_settings">open notification settings</string>
@@ -458,7 +458,7 @@
         <item quantity="other">%s stimmen</item>
     </plurals>
 
-    <string name="aboutbig">xvii messenger (von twoeightnine)\nver. %s seit %s</string>
+    <string name="aboutbig">xviii messenger (von twoeightnine)\nver. %s seit %s</string>
 
     <string name="other">anderes</string>
     <string name="recent">neuestes</string>

@@ -51,7 +51,7 @@ class XviiButton(context: Context, attributeSet: AttributeSet) : AppCompatButton
         val infoColor = when {
             warn -> Color.WHITE
             Prefs.colorBetterWithWhite -> Color.WHITE
-            else -> ContextCompat.getColor(context, R.color.main_text_light)
+            else -> ContextCompat.getColor(context, global.msnthrp.xvii.uikit.R.color.main_text_light)
         }
         setTextColor(infoColor)
         compoundDrawableTintList = ColorStateList.valueOf(infoColor)

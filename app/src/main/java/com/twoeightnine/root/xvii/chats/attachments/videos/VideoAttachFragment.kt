@@ -21,12 +21,13 @@ package com.twoeightnine.root.xvii.chats.attachments.videos
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.twoeightnine.root.xvii.App
 import com.twoeightnine.root.xvii.chats.attachments.base.BaseAttachFragment
+import com.twoeightnine.root.xvii.databinding.ItemAttachmentsVideoBinding
 import com.twoeightnine.root.xvii.model.attachments.Attachment
 import com.twoeightnine.root.xvii.model.attachments.Video
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 
-class VideoAttachFragment : BaseAttachFragment<Video>() {
+class VideoAttachFragment : BaseAttachFragment<Video, ItemAttachmentsVideoBinding>() {
 
     override val adapter by lazy {
         VideoAttachmentsAdapter(requireContext(), ::loadMore, ::onClick)

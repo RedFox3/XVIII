@@ -69,7 +69,7 @@ class App : Application() {
                 .addInterceptor(CalligraphyInterceptor(
                         CalligraphyConfig.Builder()
                                 .setDefaultFontPath("fonts/usual.ttf")
-                                .setFontAttrId(R.attr.fontPath)
+                                .setFontAttrId(io.github.inflationx.calligraphy3.R.attr.fontPath)
                                 .build()
                 ))
                 .build())

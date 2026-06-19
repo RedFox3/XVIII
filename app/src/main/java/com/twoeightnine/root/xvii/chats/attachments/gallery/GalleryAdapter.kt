@@ -19,18 +19,17 @@
 package com.twoeightnine.root.xvii.chats.attachments.gallery
 
 import android.content.Context
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseReachAdapter
 import com.twoeightnine.root.xvii.chats.attachments.gallery.model.DeviceItem
+import com.twoeightnine.root.xvii.databinding.ItemGalleryBinding
 import com.twoeightnine.root.xvii.extensions.load
 import com.twoeightnine.root.xvii.uikit.Munch
 import com.twoeightnine.root.xvii.uikit.paint
 import com.twoeightnine.root.xvii.utils.secToTime
 import global.msnthrp.xvii.uikit.extensions.setVisible
-import kotlinx.android.synthetic.main.item_gallery.view.*
 
 class GalleryAdapter(
         context: Context,
@@ -48,7 +47,7 @@ class GalleryAdapter(
     }
 
     override fun createHolder(parent: ViewGroup, viewType: Int) =
-            GalleryViewHolder(inflater.inflate(R.layout.item_gallery, null))
+        GalleryViewHolder(ItemGalleryBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     override fun bind(holder: GalleryViewHolder, item: DeviceItem) {
         holder.bind(item)
@@ -69,10 +68,10 @@ class GalleryAdapter(
         const val SCALE_CHECK_DEFAULT = 0f
     }
 
-    inner class GalleryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class GalleryViewHolder(private val binding: ItemGalleryBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: DeviceItem) {
-            with(itemView) {
+            with(binding) {
                 tvDuration.setVisible(item.type == DeviceItem.Type.VIDEO)
                 tvDuration.text = secToTime((item.duration / 1000L).toInt())
                 if (item.thumbnail != null) {
@@ -82,7 +81,7 @@ class GalleryAdapter(
                     }
                 }
                 invalidateCheck(item, animate = false)
-                setOnClickListener {
+                root.setOnClickListener {
                     val deviceItem = items.getOrNull(adapterPosition) ?: return@setOnClickListener
                     if (deviceItem.type == DeviceItem.Type.PHOTO && item !in multiSelect) {
                         onClick(deviceItem)
@@ -102,7 +101,7 @@ class GalleryAdapter(
         }
 
         private fun invalidateCheck(item: DeviceItem, animate: Boolean = true) {
-            with(itemView) {
+            with(binding) {
                 val selected = item in multiSelect
                 val scaleThumb = if (selected) SCALE_THUMB_SELECTED else SCALE_THUMB_DEFAULT
                 val scaleCheck = if (selected) SCALE_CHECK_SELECTED else SCALE_CHECK_DEFAULT

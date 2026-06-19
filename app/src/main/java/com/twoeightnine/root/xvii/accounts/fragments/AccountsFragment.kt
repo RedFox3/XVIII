@@ -19,7 +19,9 @@
 package com.twoeightnine.root.xvii.accounts.fragments
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.twoeightnine.root.xvii.App
@@ -29,6 +31,7 @@ import com.twoeightnine.root.xvii.accounts.viewmodel.AccountsViewModel
 import com.twoeightnine.root.xvii.background.longpoll.services.NotificationService
 import com.twoeightnine.root.xvii.base.BaseFragment
 import com.twoeightnine.root.xvii.chatowner.ChatOwnerFactory
+import com.twoeightnine.root.xvii.databinding.FragmentAccountsBinding
 import com.twoeightnine.root.xvii.login.LoginActivity
 import com.twoeightnine.root.xvii.utils.FakeData
 import com.twoeightnine.root.xvii.utils.restartApp
@@ -38,10 +41,9 @@ import global.msnthrp.xvii.core.accounts.model.Account
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
 import global.msnthrp.xvii.uikit.extensions.fadeIn
 import global.msnthrp.xvii.uikit.extensions.show
-import kotlinx.android.synthetic.main.fragment_accounts.*
 import javax.inject.Inject
 
-class AccountsFragment : BaseFragment() {
+class AccountsFragment : BaseFragment<FragmentAccountsBinding>() {
 
     @Inject
     lateinit var viewModelFactory: AccountsViewModel.Factory
@@ -51,7 +53,8 @@ class AccountsFragment : BaseFragment() {
         AccountsAdapter(requireContext(), ::onDeleteClick, ::onViewClick, ::onActivateClick)
     }
 
-    override fun getLayoutId() = R.layout.fragment_accounts
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentAccountsBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -60,11 +63,14 @@ class AccountsFragment : BaseFragment() {
         App.appComponent?.inject(this)
         viewModel = ViewModelProviders.of(this, viewModelFactory)[AccountsViewModel::class.java]
 
-        btnAddAccount.setOnClickListener {
-            LoginActivity.launchForNewAccount(context)
+        binding.apply {
+            btnAddAccount.setOnClickListener {
+                LoginActivity.launchForNewAccount(context)
+            }
+            btnLogOutAll.setOnClickListener { onLogOutAll() }
+            nsvContent.applyBottomInsetPadding()
         }
-        btnLogOutAll.setOnClickListener { onLogOutAll() }
-        nsvContent.applyBottomInsetPadding()
+
     }
 
     private fun updateAccounts(accounts: List<Account>) {
@@ -73,13 +79,17 @@ class AccountsFragment : BaseFragment() {
         } else {
             adapter.update(accounts)
         }
-        llContent.show()
-        llContent.fadeIn(200L)
+        binding.apply {
+            llContent.show()
+            llContent.fadeIn(200L)
+        }
     }
 
     private fun initRecyclerView() {
-        rvAccounts.layoutManager = LinearLayoutManager(context)
-        rvAccounts.adapter = adapter
+        binding.apply {
+            rvAccounts.layoutManager = LinearLayoutManager(context)
+            rvAccounts.adapter = adapter
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -26,6 +26,7 @@ import android.text.method.LinkMovementMethod
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -36,6 +37,8 @@ import com.twoeightnine.root.xvii.base.BaseReachAdapter
 import com.twoeightnine.root.xvii.base.FragmentPlacementActivity.Companion.startFragment
 import com.twoeightnine.root.xvii.chats.attachments.AttachmentsInflater
 import com.twoeightnine.root.xvii.chats.messages.deepforwarded.DeepForwardedFragment
+import com.twoeightnine.root.xvii.databinding.ItemMessageInChatBinding
+import com.twoeightnine.root.xvii.databinding.ItemMessageRepliedBinding
 import com.twoeightnine.root.xvii.extensions.getInitials
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.model.attachments.getAudios
@@ -46,23 +49,6 @@ import com.twoeightnine.root.xvii.uikit.XviiAvatar
 import com.twoeightnine.root.xvii.uikit.paint
 import com.twoeightnine.root.xvii.utils.*
 import global.msnthrp.xvii.uikit.extensions.*
-import kotlinx.android.synthetic.main.item_message_in_chat.view.*
-import kotlinx.android.synthetic.main.item_message_in_chat.view.rlDateSeparator
-import kotlinx.android.synthetic.main.item_message_out.view.*
-import kotlinx.android.synthetic.main.item_message_replied.view.*
-import kotlinx.android.synthetic.main.item_message_wtf.view.*
-import kotlinx.android.synthetic.main.item_message_wtf.view.civPhoto
-import kotlinx.android.synthetic.main.item_message_wtf.view.llMessage
-import kotlinx.android.synthetic.main.item_message_wtf.view.llMessageContainer
-import kotlinx.android.synthetic.main.item_message_wtf.view.rlBack
-import kotlinx.android.synthetic.main.item_message_wtf.view.tvBody
-import kotlinx.android.synthetic.main.item_message_wtf.view.tvDateAttachmentsEmbedded
-import kotlinx.android.synthetic.main.item_message_wtf.view.tvDateAttachmentsOverlay
-import kotlinx.android.synthetic.main.item_message_wtf.view.tvDateSeparator
-import kotlinx.android.synthetic.main.item_message_wtf.view.tvDateText
-import kotlinx.android.synthetic.main.item_message_wtf.view.tvDateTextInlined
-import kotlinx.android.synthetic.main.item_message_wtf.view.tvName
-
 
 /**
  * definitely it waits for refactoring
@@ -151,6 +137,23 @@ class MessagesAdapter(context: Context,
 
     inner class MessageViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
+        private val tvBody: TextView? = itemView.findViewById(R.id.tvBody)
+        private val rlBack: View? = itemView.findViewById(R.id.rlBack)
+        private val llMessage: ViewGroup? = itemView.findViewById(R.id.llMessage)
+        private val llMessageContainer: ViewGroup? = itemView.findViewById(R.id.llMessageContainer)
+        private val tvDateSeparator: TextView? = itemView.findViewById(R.id.tvDateSeparator)
+        private val rlDateSeparator: View? = itemView.findViewById(R.id.rlDateSeparator)
+        private val tvDateAttachmentsOverlay: TextView? = itemView.findViewById(R.id.tvDateAttachmentsOverlay)
+        private val tvDateAttachmentsEmbedded: TextView? = itemView.findViewById(R.id.tvDateAttachmentsEmbedded)
+        private val tvDateTextInlined: TextView? = itemView.findViewById(R.id.tvDateTextInlined)
+        private val tvDateText: TextView? = itemView.findViewById(R.id.tvDateText)
+        private val rlName: View? = itemView.findViewById(R.id.rlName)
+        private val tvName: TextView? = itemView.findViewById(R.id.tvName)
+        private val civPhoto: XviiAvatar? = itemView.findViewById(R.id.civPhoto)
+        private val ivSendingIcon: ImageView? = itemView.findViewById(R.id.ivSendingIcon)
+        private val ivReadDot: ImageView? = itemView.findViewById(R.id.ivReadDot)
+        private val tvSystem: TextView? = itemView.findViewById(R.id.tvSystem)
+
         fun bind(wrappedMessage: WrappedMessage, prevWrappedMessage: WrappedMessage?, level: Int = 0) {
             val message = wrappedMessage.message
 
@@ -159,19 +162,17 @@ class MessagesAdapter(context: Context,
             } else {
                 val isOutgoingStack = wrappedMessage.message.isOut() || !wrappedMessage.sent
                 putViews(itemView, wrappedMessage, prevWrappedMessage, level, isOutgoingStack)
-                with(itemView) {
-                    rlBack.setOnClickListener {
-                        items.getOrNull(adapterPosition)?.also(::onClick)
-                    }
-                    rlBack.setOnLongClickListener {
-                        items.getOrNull(adapterPosition)?.let(::onLongClick) == true
-                    }
-                    tvBody.setOnClickListener {
-                        items.getOrNull(adapterPosition)?.also(::onClick)
-                    }
-                    tvBody.setOnLongClickListener {
-                        items.getOrNull(adapterPosition)?.let(::onLongClick) == true
-                    }
+                rlBack?.setOnClickListener {
+                    items.getOrNull(adapterPosition)?.also(::onClick)
+                }
+                rlBack?.setOnLongClickListener {
+                    items.getOrNull(adapterPosition)?.let(::onLongClick) == true
+                }
+                tvBody?.setOnClickListener {
+                    items.getOrNull(adapterPosition)?.also(::onClick)
+                }
+                tvBody?.setOnLongClickListener {
+                    items.getOrNull(adapterPosition)?.let(::onLongClick) == true
                 }
             }
         }
@@ -196,24 +197,20 @@ class MessagesAdapter(context: Context,
         }
 
         private fun invalidateBackground(message: WrappedMessage, view: View = itemView, level: Int = 0) {
-            with(view) {
-                rlBack.setBackgroundColor(if (level == 0 && message in multiSelect) {
-                    ContextCompat.getColor(context, R.color.selected_mess)
-                } else {
-                    Color.TRANSPARENT
-                })
-            }
+            rlBack?.setBackgroundColor(if (level == 0 && message in multiSelect) {
+                ContextCompat.getColor(context, R.color.selected_mess)
+            } else {
+                Color.TRANSPARENT
+            })
         }
 
         private fun bindSystemMessage(view: View, message: Message) {
-            with(view) {
-                tvSystem.text = message.action?.getSystemMessage(context)
-                var userId = message.action?.memberId
-                if (userId == 0 || userId == null) {
-                    userId = message.fromId
-                }
-                tvSystem.setOnClickListener { messageCallback.onUserClicked(userId) }
+            tvSystem?.text = message.action?.getSystemMessage(context)
+            var userId = message.action?.memberId
+            if (userId == 0 || userId == null) {
+                userId = message.fromId
             }
+            tvSystem?.setOnClickListener { messageCallback.onUserClicked(userId) }
         }
 
         private fun putViews(
@@ -228,102 +225,96 @@ class MessagesAdapter(context: Context,
             val isNotSent = !wrappedMessage.sent
             val hasAttachmentsOrForwarded = wrappedMessage.hasAttachmentsOrForwarded
 
-            with(view) {
-                //
-                // block of common fields
-                //
-                invalidateBackground(wrappedMessage, this, level)
+            //
+            // block of common fields
+            //
+            invalidateBackground(wrappedMessage, view, level)
 
-                bindMessageText(tvBody, message.text)
-                bindMessageDate(message, prevMessage, level, rlDateSeparator, tvDateSeparator)
-                bindMessageTime(
-                        context,
-                        message,
-                        tvDateAttachmentsOverlay,
-                        tvDateAttachmentsEmbedded,
-                        tvDateTextInlined,
-                        tvDateText,
-                        tvBody,
-                        level
-                )
+            tvBody?.also { bindMessageText(it, message.text) }
+            bindMessageDate(message, prevMessage, level)
+            bindMessageTime(
+                    context,
+                    message,
+                    level
+            )
 
-                //
-                // block of optional fields
-                //
-                bindName(message, prevMessage, rlName, tvName, civPhoto)
+            //
+            // block of optional fields
+            //
+            bindName(message, prevMessage)
 
-                ivSendingIcon?.setVisible(isNotSent)
-                ivSendingIcon?.paint(Munch.color.color)
+            ivSendingIcon?.setVisible(isNotSent)
+            ivSendingIcon?.paint(Munch.color.color)
 
-                ivReadDot?.apply {
-                    paint(Munch.color.color)
-                    setVisibleWithInvis(!message.read && message.isOut() && !isNotSent)
-                }
+            ivReadDot?.apply {
+                paint(Munch.color.color)
+                setVisibleWithInvis(!message.read && message.isOut() && !isNotSent)
+            }
 
-                val paintDelta = if (isOutgoingStack) 1 else 0
-                llMessage.stylizeAsMessage(
-                        level + paintDelta,
-                        hide = message.run { isSticker() || isGraffiti() || isGift() }
-                )
-                llMessageContainer.removeAllViews()
+            val paintDelta = if (isOutgoingStack) 1 else 0
+            llMessage?.stylizeAsMessage(
+                    level + paintDelta,
+                    hide = message.run { isSticker() || isGraffiti() || isGift() }
+            )
+            llMessageContainer?.removeAllViews()
 
-                if (isNotSent && hasAttachmentsOrForwarded) {
-                    llMessageContainer.addView(messageInflater.getViewLoader())
-                }
+            if (isNotSent && hasAttachmentsOrForwarded) {
+                llMessageContainer?.addView(messageInflater.getViewLoader())
+            }
 
-                llMessage.layoutParams.width = messageInflater.getMessageWidth(message, settings.fullDeepness, level)
-                val hasAttachments = !message.attachments.isNullOrEmpty()
-                val hasForwarded = !message.fwdMessages.isNullOrEmpty()
-                val hasReplied = message.replyMessage != null
-                val hasContent = hasAttachments || hasForwarded || hasReplied
-                llMessageContainer.setVisible(hasContent)
+            llMessage?.layoutParams?.width = messageInflater.getMessageWidth(message, settings.fullDeepness, level)
+            val hasAttachments = !message.attachments.isNullOrEmpty()
+            val hasForwarded = !message.fwdMessages.isNullOrEmpty()
+            val hasReplied = message.replyMessage != null
+            val hasContent = hasAttachments || hasForwarded || hasReplied
+            llMessageContainer?.setVisible(hasContent)
 
-                message.replyMessage
-                        ?.let(messageInflater::getRepliedMessageView)
-                        ?.also(llMessageContainer::addView)
-                        ?.also { it.llRepliedMessage.stylizeAsMessage(level + paintDelta + 1) }
+            message.replyMessage
+                    ?.let(messageInflater::getRepliedMessageView)
+                    ?.also(llMessageContainer!!::addView)
+                    ?.also { ItemMessageRepliedBinding.bind(it).llRepliedMessage.stylizeAsMessage(level + paintDelta + 1) }
 
-                if (hasAttachments) {
-                    messageInflater
-                            .createViewsFor(message, level)
-                            .forEach(llMessageContainer::addView)
-                }
+            if (hasAttachments) {
+                messageInflater
+                        .createViewsFor(message, level)
+                        .forEach(llMessageContainer!!::addView)
+            }
 
-                if (!message.fwdMessages.isNullOrEmpty()) {
-                    rlBack.setPadding(rlBack.paddingLeft, rlBack.paddingTop, 6, rlBack.paddingBottom)
-                    message.fwdMessages.forEachIndexed { index, innerMessage ->
-                        val included = inflater.inflate(R.layout.item_message_in_chat, llMessageContainer, false)
-                        val maxWidth = messageInflater.getMessageMaxWidth(settings.fullDeepness, level + 1)
-                        (included.llMessage.layoutParams as? ConstraintLayout.LayoutParams)
-                                ?.matchConstraintMaxWidth = maxWidth
-                        with(included.rlBack) {
-                            setPadding(paddingLeft, paddingTop, 6, paddingBottom)
-                        }
-                        if (level < ALLOWED_DEEPNESS || settings.fullDeepness) {
-                            val wrappedInnerMessage = WrappedMessage(innerMessage)
-                            val wrappedPrevInnerMessage = message.fwdMessages
-                                    .getOrNull(index - 1)
-                                    ?.let(::WrappedMessage)
-                            putViews(included, wrappedInnerMessage, wrappedPrevInnerMessage, level + 1, isOutgoingStack)
-                        } else {
-                            with(included) {
-                                tvBody.text = resources.getString(R.string.too_deep_forwarding)
-                                tvBody.paint(Munch.color.color)
-                                tvBody.paintFlags = tvBody.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-                                rlName?.hide()
-                                setOnClickListener {
-                                    val messageId = items
-                                            .getOrNull(adapterPosition)
-                                            ?.message?.id
-                                            ?: return@setOnClickListener
-                                    context.startFragment<DeepForwardedFragment>(
-                                            DeepForwardedFragment.createArgs(messageId)
-                                    )
-                                }
+            if (!message.fwdMessages.isNullOrEmpty()) {
+                rlBack?.apply { setPadding(paddingLeft, paddingTop, 6, paddingBottom) }
+                message.fwdMessages.forEachIndexed { index, innerMessage ->
+                    val binding = ItemMessageInChatBinding.inflate(inflater, llMessageContainer, false)
+                    val included = binding.root
+                    val maxWidth = messageInflater.getMessageMaxWidth(settings.fullDeepness, level + 1)
+                    (binding.llMessage.layoutParams as? ConstraintLayout.LayoutParams)
+                            ?.matchConstraintMaxWidth = maxWidth
+                    with(binding.rlBack) {
+                        setPadding(paddingLeft, paddingTop, 6, paddingBottom)
+                    }
+                    if (level < ALLOWED_DEEPNESS || settings.fullDeepness) {
+                        val wrappedInnerMessage = WrappedMessage(innerMessage)
+                        val wrappedPrevInnerMessage = message.fwdMessages
+                                .getOrNull(index - 1)
+                                ?.let(::WrappedMessage)
+                        putViews(included, wrappedInnerMessage, wrappedPrevInnerMessage, level + 1, isOutgoingStack)
+                    } else {
+                        with(binding) {
+                            tvBody.text = context.resources.getString(R.string.too_deep_forwarding)
+                            tvBody.paint(Munch.color.color)
+                            tvBody.paintFlags = tvBody.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+                            rlName.hide()
+                            root.setOnClickListener {
+                                val messageId = items
+                                        .getOrNull(adapterPosition)
+                                        ?.message?.id
+                                        ?: return@setOnClickListener
+                                context.startFragment<DeepForwardedFragment>(
+                                        DeepForwardedFragment.createArgs(messageId)
+                                )
                             }
                         }
-                        llMessageContainer.addView(included)
                     }
+                    llMessageContainer?.addView(included)
                 }
             }
         }
@@ -349,9 +340,7 @@ class MessagesAdapter(context: Context,
         private fun bindMessageDate(
                 message: Message,
                 prevMessage: Message?,
-                level: Int,
-                dateContainer: View,
-                dateTextView: TextView
+                level: Int
         ) {
             val dateOnlyDay = getDate(message.date)
             val dateOnlyDayPrev = prevMessage?.date?.let(::getDate)
@@ -359,20 +348,15 @@ class MessagesAdapter(context: Context,
             val zeroLevel = level == 0
             val dateChanged = dateOnlyDayPrev == null || dateOnlyDayPrev != dateOnlyDay
 
-            dateContainer.setVisible(dateChanged && zeroLevel)
-            if (dateContainer.isVisible()) {
-                dateTextView.text = dateOnlyDay
+            rlDateSeparator?.setVisible(dateChanged && zeroLevel)
+            if (rlDateSeparator?.isVisible() == true) {
+                tvDateSeparator?.text = dateOnlyDay
             }
         }
 
         private fun bindMessageTime(
                 context: Context,
                 message: Message,
-                textViewOverlayed: TextView,
-                textViewEmbedded: TextView,
-                textViewInlined: TextView,
-                textViewUnderlayed: TextView,
-                textViewMessage: TextView,
                 level: Int
         ) {
             val dateOnlyTime = getTime(message.date, noDate = true, withSeconds = Prefs.showSeconds)
@@ -386,16 +370,16 @@ class MessagesAdapter(context: Context,
             val dateToBeShown = when (messageInflater.getTimeStyle(message)) {
 
                 AttachmentsInflater.TimeStyle.ATTACHMENTS_OVERLAYED -> {
-                    textViewOverlayed
+                    tvDateAttachmentsOverlay
                 }
 
                 AttachmentsInflater.TimeStyle.ATTACHMENTS_EMBEDDED -> {
-                    textViewEmbedded
+                    tvDateAttachmentsEmbedded
                 }
 
                 AttachmentsInflater.TimeStyle.TEXT -> {
-                    val bodyWidth = textViewMessage.paint.measureText(message.text)
-                    val timeWidth = textViewUnderlayed.paint.measureText(dateMessage)
+                    val bodyWidth = tvBody?.paint?.measureText(message.text) ?: 0f
+                    val timeWidth = tvDateText?.paint?.measureText(dateMessage) ?: 0f
 
                     val isEmpty = message.text.isEmpty()
                     val freeSpace = textWidthInlineFitness - bodyWidth - 2 * levelPadding * level
@@ -403,7 +387,7 @@ class MessagesAdapter(context: Context,
                     val canBeInlined = hasEnoughSpaceToInline && !isEmpty
 
                     if (!canBeInlined) {
-                        (textViewUnderlayed.layoutParams as? RelativeLayout.LayoutParams)?.apply {
+                        (tvDateText?.layoutParams as? RelativeLayout.LayoutParams)?.apply {
                             if (isEmpty) {
                                 setMargins(dateTextMarginSingle)
                                 removeRule(RelativeLayout.ALIGN_END)
@@ -417,41 +401,38 @@ class MessagesAdapter(context: Context,
                     }
 
                     when {
-                        canBeInlined -> textViewInlined
-                        else -> textViewUnderlayed
+                        canBeInlined -> tvDateTextInlined
+                        else -> tvDateText
                     }
                 }
             }
-            dateToBeShown.apply {
+            dateToBeShown?.apply {
                 text = dateMessage
                 show()
             }
-            listOf(textViewOverlayed,
-                    textViewEmbedded,
-                    textViewInlined,
-                    textViewUnderlayed)
+            listOf(tvDateAttachmentsOverlay,
+                    tvDateAttachmentsEmbedded,
+                    tvDateTextInlined,
+                    tvDateText)
                     .filter { it != dateToBeShown }
-                    .forEach { it.hide() }
+                    .forEach { it?.hide() }
         }
 
         private fun bindName(
                 message: Message,
-                prevMessage: Message?,
-                nameContainer: View?,
-                nameTextView: TextView?,
-                photoImageView: XviiAvatar?
+                prevMessage: Message?
         ) {
             val showName = shouldShowName(message, prevMessage)
-            nameContainer?.setVisible(showName)
+            rlName?.setVisible(showName)
             if (showName) {
-                nameTextView?.apply {
+                tvName?.apply {
                     text = message.name
                     lowerIf(Prefs.lowerTexts)
                 }
-                photoImageView?.apply {
+                civPhoto?.apply {
                     load(message.photo, message.name?.getInitials(), id = message.fromId)
                 }
-                nameContainer?.setOnClickListener {
+                rlName?.setOnClickListener {
                     items.getOrNull(adapterPosition)
                             ?.message
                             ?.fromId

@@ -31,6 +31,7 @@ import android.view.View
 import com.twoeightnine.root.xvii.App
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseActivity
+import com.twoeightnine.root.xvii.databinding.ActivityPinBinding
 import com.twoeightnine.root.xvii.lg.L
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.managers.Session
@@ -38,10 +39,18 @@ import com.twoeightnine.root.xvii.network.ApiService
 import com.twoeightnine.root.xvii.storage.SessionProvider
 import com.twoeightnine.root.xvii.uikit.Munch
 import com.twoeightnine.root.xvii.uikit.paint
-import com.twoeightnine.root.xvii.utils.*
+import com.twoeightnine.root.xvii.utils.applySchedulers
+import com.twoeightnine.root.xvii.utils.getBatteryLevel
+import com.twoeightnine.root.xvii.utils.getMinutes
+import com.twoeightnine.root.xvii.utils.showToast
+import com.twoeightnine.root.xvii.utils.subscribeSmart
+import com.twoeightnine.root.xvii.utils.time
 import com.twoeightnine.root.xvii.views.PinPadView
-import global.msnthrp.xvii.uikit.extensions.*
-import kotlinx.android.synthetic.main.activity_pin.*
+import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
+import global.msnthrp.xvii.uikit.extensions.applyTopInsetMargin
+import global.msnthrp.xvii.uikit.extensions.hide
+import global.msnthrp.xvii.uikit.extensions.setVisible
+import global.msnthrp.xvii.uikit.extensions.show
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -58,6 +67,8 @@ class PinActivity : BaseActivity() {
 
     @Inject
     lateinit var api: ApiService
+
+    private val binding by lazy { ActivityPinBinding.inflate(layoutInflater) }
 
     private val action by lazy {
         intent?.extras?.getSerializable(ACTION) as? Action
@@ -80,16 +91,18 @@ class PinActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         App.appComponent?.inject(this)
-        setContentView(R.layout.activity_pin)
+        setContentView(binding.root)
 
         action ?: finish()
         init()
-        rlContainer.paint(Munch.color.colorDark(20))
-        rlPinControls.applyBottomInsetPadding()
+        binding.apply {
+            rlContainer.paint(Munch.color.colorDark(20))
+            rlPinControls.applyBottomInsetPadding()
 
-        ivBack.setVisible(action != Action.ENTER)
-        ivBack.setOnClickListener { onBackPressed() }
-        ivBack.applyTopInsetMargin()
+            ivBack.setVisible(action != Action.ENTER)
+            ivBack.setOnClickListener { onBackPressed() }
+            ivBack.applyTopInsetMargin()
+        }
 
         if (Session.needToWaitAfterFailedPin()) {
             showBruteForced(justNow = false)
@@ -103,7 +116,7 @@ class PinActivity : BaseActivity() {
 
     override fun shouldRunService(): Boolean = false
 
-    private fun onPin(key: Int) {
+    private fun onPin(key: Int) = with(binding) {
         when (key) {
             PinPadView.DELETE -> {
                 pin = ""
@@ -133,7 +146,7 @@ class PinActivity : BaseActivity() {
             Action.SET -> {
                 val errorStringRes = when (PinUtils.getPinWeakness(pin)) {
                     PinUtils.PinWeakness.NONE -> {
-                        tvTitle.setText(R.string.confirm_pin)
+                        binding.tvTitle.setText(R.string.confirm_pin)
                         currentStage = Action.CONFIRM
                         confirmedPin = pin
                         0
@@ -162,10 +175,11 @@ class PinActivity : BaseActivity() {
                     finish()
                 } else {
                     currentStage = Action.SET
-                    tvTitle.setText(R.string.enter_new_pin)
+                    binding.tvTitle.setText(R.string.enter_new_pin)
                     showError(getString(R.string.dont_match))
                 }
             }
+            else -> {} // TODO: check if needed
         }
         resetInput()
     }
@@ -210,19 +224,21 @@ class PinActivity : BaseActivity() {
             }
 
             Action.EDIT -> {
-                tvTitle.setText(R.string.enter_new_pin)
+                binding.tvTitle.setText(R.string.enter_new_pin)
                 if (Prefs.pinMixtureType != SecurityFragment.MixtureType.NONE) {
-                    tvMixtureHint.show()
+                    binding.tvMixtureHint.show()
                 }
                 currentStage = Action.SET
             }
+
+            else -> {} // TODO: check if needed
         }
     }
 
     private fun showBruteForced(justNow: Boolean = true) {
         val notify = Prefs.notifyAboutInvaders
         val notifyWithPhoto = notify && Prefs.takeInvaderPicture
-        rlBruteForce.show()
+        binding.rlBruteForce.show()
         if (justNow) {
             when {
                 notifyWithPhoto -> captureInvader()
@@ -233,7 +249,7 @@ class PinActivity : BaseActivity() {
 
     private fun captureInvader() {
         camera = SimpleCamera(
-                textureView,
+            binding.textureView,
                 photoFile,
                 CameraDelegate()
         )
@@ -293,15 +309,15 @@ class PinActivity : BaseActivity() {
     }
 
     private fun showError(text: String) {
-        tvError.text = text
+        binding.tvError.text = text
     }
 
     private fun resetInput() {
         pin = ""
-        tvPinDots.text = ""
+        binding.tvPinDots.text = ""
     }
 
-    private fun init() {
+    private fun init() = with(binding) {
         pinPad.listener = { onPin(it) }
 
         when (action) {
@@ -315,6 +331,8 @@ class PinActivity : BaseActivity() {
                 correctPin = Prefs.pin
                 currentStage = Action.ENTER
             }
+
+            else -> {} // TODO: check if needed
         }
     }
 
@@ -386,16 +404,16 @@ class PinActivity : BaseActivity() {
         override fun onPictureTaken(file: File) {
             uploadPhoto(file)
             postCamera {
-                textureView.hide()
+                binding.textureView.hide()
                 camera?.stop()
             }
         }
 
         override fun onPreviewRatioUpdated(wToH: Float) {
             if (wToH == 0f) return
-            cvPhoto.layoutParams?.apply {
+            binding.cvPhoto.layoutParams?.apply {
                 height = (width / wToH).toInt()
-                cvPhoto.layoutParams = this
+                binding.cvPhoto.layoutParams = this
             }
         }
     }

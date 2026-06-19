@@ -54,7 +54,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <include layout="@layout/view_appearance_sample" />
+                <include
+                    android:id="@+id/sample"
+                    layout="@layout/view_appearance_sample" />
             </androidx.cardview.widget.CardView>
 
             <com.twoeightnine.root.xvii.uikit.XviiLabel

@@ -1,4 +1,6 @@
-/*
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}/*
  * xvii - messenger for vk
  * Copyright (C) 2021  TwoEightNine
  *

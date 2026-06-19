@@ -23,7 +23,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import com.twoeightnine.root.xvii.App
@@ -33,20 +35,24 @@ import com.twoeightnine.root.xvii.base.FragmentPlacementActivity.Companion.start
 import com.twoeightnine.root.xvii.chats.attachments.base.BaseAttachViewModel
 import com.twoeightnine.root.xvii.chats.attachments.gallery.model.DeviceItem
 import com.twoeightnine.root.xvii.cropper.ImageCropperFragment
+import com.twoeightnine.root.xvii.databinding.FragmentGalleryNewBinding
 import com.twoeightnine.root.xvii.lg.L
 import com.twoeightnine.root.xvii.model.Wrapper
 import com.twoeightnine.root.xvii.utils.ImageUtils
 import com.twoeightnine.root.xvii.utils.PermissionHelper
 import com.twoeightnine.root.xvii.utils.showError
 import com.twoeightnine.root.xvii.utils.time
-import global.msnthrp.xvii.uikit.extensions.*
+import global.msnthrp.xvii.uikit.extensions.applyBottomInsetMargin
+import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
+import global.msnthrp.xvii.uikit.extensions.hide
+import global.msnthrp.xvii.uikit.extensions.setVisible
+import global.msnthrp.xvii.uikit.extensions.show
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.fragment_gallery_new.*
 import java.io.File
 import javax.inject.Inject
 
-class GalleryFragment : BaseFragment() {
+class GalleryFragment : BaseFragment<FragmentGalleryNewBinding>() {
 
     @Inject
     lateinit var viewModelFactory: BaseAttachViewModel.Factory
@@ -70,7 +76,8 @@ class GalleryFragment : BaseFragment() {
 
     private val cropMapping = mutableMapOf<String, String>()
 
-    override fun getLayoutId() = R.layout.fragment_gallery_new
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentGalleryNewBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -81,33 +88,45 @@ class GalleryFragment : BaseFragment() {
         reloadData()
         adapter.startLoading()
 
-        progressBar.show()
-        swipeRefresh.setOnRefreshListener { reloadData() }
+        binding.apply {
+            progressBar.show()
+            swipeRefresh.setOnRefreshListener { reloadData() }
 
-        fabDone.setOnClickListener { onDoneClicked() }
+            fabDone.setOnClickListener { onDoneClicked() }
 
-        rlPermissions.setVisible(!permissionHelper.hasStoragePermissions())
-        rlPermissions.setOnClickListener {
-            permissionHelper.request(arrayOf(PermissionHelper.READ_STORAGE, PermissionHelper.WRITE_STORAGE)) {
-                rlPermissions.hide()
-                progressBar.show()
-                reloadData()
+            rlPermissions.setVisible(!permissionHelper.hasStoragePermissions())
+            rlPermissions.setOnClickListener {
+                permissionHelper.request(
+                    arrayOf(
+                        PermissionHelper.READ_STORAGE,
+                        PermissionHelper.WRITE_STORAGE
+                    )
+                ) {
+                    rlPermissions.hide()
+                    progressBar.show()
+                    reloadData()
+                }
             }
+
+            if (!onlyPhotos) {
+                llButtons.show()
+                btnCamera.setOnClickListener {
+                    onCameraClick()
+                }
+                btnDoc.setOnClickListener {
+                    imageUtils.dispatchSelectFile(this@GalleryFragment)
+                }
+                rvAttachments.setPadding(
+                    0,
+                    resources.getDimensionPixelOffset(R.dimen.toolbar_height),
+                    0,
+                    0
+                )
+            }
+
+            rvAttachments.applyBottomInsetPadding()
+            fabDone.applyBottomInsetMargin()
         }
-
-        if (!onlyPhotos) {
-            llButtons.show()
-            btnCamera.setOnClickListener {
-                onCameraClick()
-            }
-            btnDoc.setOnClickListener {
-                imageUtils.dispatchSelectFile(this)
-            }
-            rvAttachments.setPadding(0, resources.getDimensionPixelOffset(R.dimen.toolbar_height), 0, 0)
-        }
-
-        rvAttachments.applyBottomInsetPadding()
-        fabDone.applyBottomInsetMargin()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -134,14 +153,18 @@ class GalleryFragment : BaseFragment() {
             adapter.startLoading()
             viewModel.loadAttach()
         } else {
-            rlPermissions.show()
-            progressBar.hide()
+            binding.apply {
+                rlPermissions.show()
+                progressBar.hide()
+            }
         }
     }
 
     private fun updateList(data: Wrapper<ArrayList<DeviceItem>>) {
-        swipeRefresh.isRefreshing = false
-        progressBar.hide()
+        binding.apply {
+            swipeRefresh.isRefreshing = false
+            progressBar.hide()
+        }
         if (data.data != null) {
             adapter.update(data.data)
         } else {
@@ -154,10 +177,12 @@ class GalleryFragment : BaseFragment() {
     }
 
     private fun initRecycler() {
-        rvAttachments.layoutManager = GridLayoutManager(context, SPAN_COUNT)
-        rvAttachments.adapter = adapter
-        adapter.multiSelectMode = true
-        adapter.multiListener = fabDone::setVisible
+        binding.apply {
+            rvAttachments.layoutManager = GridLayoutManager(context, SPAN_COUNT)
+            rvAttachments.adapter = adapter
+            adapter.multiSelectMode = true
+            adapter.multiListener = fabDone::setVisible
+        }
     }
 
     private fun onItemClick(deviceItem: DeviceItem) {

@@ -19,17 +19,17 @@
 package com.twoeightnine.root.xvii.chats.attachments.attached
 
 import android.content.Context
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.ItemAttachedBinding
 import com.twoeightnine.root.xvii.extensions.load
 import com.twoeightnine.root.xvii.model.attachments.Attachment
 import com.twoeightnine.root.xvii.utils.showAlert
 import com.twoeightnine.root.xvii.utils.stylize
 import global.msnthrp.xvii.uikit.base.adapters.BaseAdapter
 import global.msnthrp.xvii.uikit.extensions.setVisible
-import kotlinx.android.synthetic.main.item_attached.view.*
 
 class AttachedAdapter(
         context: Context,
@@ -63,7 +63,7 @@ class AttachedAdapter(
         get() = if (isReply) {
             try {
                 Integer.parseInt(fwdMessages)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         } else {
@@ -76,7 +76,7 @@ class AttachedAdapter(
     private val attachmentsOrder = arrayListOf<Int>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            AttachmentViewHolder(inflater.inflate(R.layout.item_attached, parent, false))
+            AttachmentViewHolder(ItemAttachedBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     override fun onBindViewHolder(holder: AttachmentViewHolder, position: Int) {
         holder.bind(items[position])
@@ -84,7 +84,7 @@ class AttachedAdapter(
 
     fun addWithOrder(item: Attachment, order: Int) {
         if (count < 10) {
-            val orderPos = attachmentsOrder.filter { it <= order }.count()
+            val orderPos = attachmentsOrder.count { it <= order }
             val delta = if (fwdMessages.isNotBlank()) 1 else 0
             attachmentsOrder.add(orderPos, order)
             super.add(item, orderPos + delta)
@@ -113,10 +113,10 @@ class AttachedAdapter(
         private val STUB_FWD_MESSAGES = Attachment()
     }
 
-    inner class AttachmentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class AttachmentViewHolder(private val binding: ItemAttachedBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(attachment: Attachment) {
-            with(itemView) {
+            with(binding) {
                 cvItem.stylize()
                 val isForwarded = attachment == STUB_FWD_MESSAGES
                 val isEncrypted = attachment.doc?.isEncrypted == true
@@ -141,7 +141,7 @@ class AttachedAdapter(
                 ivAttach.setVisible(attachPhoto != null)
                 ivAttach.load(attachPhoto)
 
-                setOnClickListener { onClick(items[adapterPosition]) }
+                root.setOnClickListener { onClick(items[adapterPosition]) } // TODO: test is it working
                 ivClear.setOnClickListener {
                     if (isForwarded) {
                         fwdMessages = ""

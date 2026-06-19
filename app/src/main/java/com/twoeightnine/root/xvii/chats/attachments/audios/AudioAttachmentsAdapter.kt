@@ -19,11 +19,13 @@
 package com.twoeightnine.root.xvii.chats.attachments.audios
 
 import android.content.Context
-import android.view.View
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.background.music.models.Track
 import com.twoeightnine.root.xvii.chats.attachments.base.BaseAttachmentsAdapter
+import com.twoeightnine.root.xvii.databinding.ItemAttachmentsTrackBinding
 import com.twoeightnine.root.xvii.model.attachments.Audio
 import com.twoeightnine.root.xvii.uikit.Munch
 import com.twoeightnine.root.xvii.uikit.paint
@@ -31,7 +33,6 @@ import com.twoeightnine.root.xvii.utils.secToTime
 import global.msnthrp.xvii.uikit.extensions.hide
 import global.msnthrp.xvii.uikit.extensions.setVisible
 import global.msnthrp.xvii.uikit.extensions.show
-import kotlinx.android.synthetic.main.item_attachments_track.view.*
 
 class AudioAttachmentsAdapter(
         context: Context,
@@ -41,7 +42,7 @@ class AudioAttachmentsAdapter(
         private val onDownload: (Track) -> Unit,
         private val cacheMode: Boolean = false
 
-) : BaseAttachmentsAdapter<Track, AudioAttachmentsAdapter.AudioViewHolder>(context, loader) {
+) : BaseAttachmentsAdapter<Track, ItemAttachmentsTrackBinding, AudioAttachmentsAdapter.AudioViewHolder>(context, loader) {
 
     var played: Track? = null
         set(value) {
@@ -49,17 +50,18 @@ class AudioAttachmentsAdapter(
             notifyDataSetChanged()
         }
 
-    override fun getViewHolder(view: View) = AudioViewHolder(view)
+    override fun getViewHolder(binding: ItemAttachmentsTrackBinding) = AudioViewHolder(binding)
 
-    override fun getLayoutId() = R.layout.item_attachments_track
+    override fun inflateBinding(inflater: LayoutInflater, parent: ViewGroup, attachToParent: Boolean) =
+        ItemAttachmentsTrackBinding.inflate(inflater, parent, attachToParent)
 
     override fun createStubLoadItem() = Track(Audio())
 
-    inner class AudioViewHolder(view: View)
-        : BaseAttachmentViewHolder<Track>(view) {
+    inner class AudioViewHolder(private val binding: ItemAttachmentsTrackBinding)
+        : BaseAttachmentViewHolder<Track, ItemAttachmentsTrackBinding>(binding) {
 
         override fun bind(item: Track) {
-            with(itemView) {
+            with(binding) {
                 val icon = if (item == played) {
                     val dPause = ContextCompat.getDrawable(context, R.drawable.ic_pause)
                     dPause?.paint(Munch.color.color)
@@ -80,8 +82,8 @@ class AudioAttachmentsAdapter(
                 tvTitle.text = item.audio.title
                 tvArtist.text = item.audio.artist
                 tvDuration.text = secToTime(item.audio.duration)
-                setOnClickListener { onClick(items[adapterPosition]) }
-                setOnLongClickListener {
+                root.setOnClickListener { onClick(items[adapterPosition]) } // TODO: test this code
+                root.setOnLongClickListener { // TODO: test this code
                     onLongClick(items[adapterPosition])
                     true
                 }

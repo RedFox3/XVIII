@@ -20,17 +20,16 @@ package com.twoeightnine.root.xvii.poll
 
 import android.content.Context
 import android.os.Build
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseMultiSelectAdapter
+import com.twoeightnine.root.xvii.databinding.ItemPollAnswerBinding
 import com.twoeightnine.root.xvii.model.attachments.PollAnswer
 import com.twoeightnine.root.xvii.uikit.Munch
 import com.twoeightnine.root.xvii.uikit.paint
 import global.msnthrp.xvii.uikit.extensions.setVisibleWithInvis
 import global.msnthrp.xvii.uikit.extensions.show
-import kotlinx.android.synthetic.main.item_poll_answer.view.*
 
 class PollAnswersAdapter(
         context: Context,
@@ -41,7 +40,7 @@ class PollAnswersAdapter(
     private var ignore: Boolean = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            PollAnswerViewHolder(inflater.inflate(R.layout.item_poll_answer, parent, false))
+            PollAnswerViewHolder(ItemPollAnswerBinding.inflate(LayoutInflater.from(parent.context)))
 
     override fun onBindViewHolder(holder: PollAnswerViewHolder, position: Int) {
         holder.bind(items[position])
@@ -56,10 +55,10 @@ class PollAnswersAdapter(
         notifyDataSetChanged()
     }
 
-    inner class PollAnswerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class PollAnswerViewHolder(private val binding: ItemPollAnswerBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(pollAnswer: PollAnswer) {
-            with(itemView) {
+            with(binding) {
                 if (voted) {
                     pbRating.progressDrawable.paint(Munch.color.color)
                     if (Build.VERSION.SDK_INT >= 24) {
@@ -74,7 +73,7 @@ class PollAnswersAdapter(
                 tvAnswer.text = pollAnswer.text
                 ivCheck.paint(Munch.color.color)
                 ivCheck.setVisibleWithInvis(pollAnswer in multiSelect)
-                setOnClickListener {
+                root.setOnClickListener {
                     if (ignore) return@setOnClickListener
 
                     val item = items[adapterPosition]

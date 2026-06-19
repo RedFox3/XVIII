@@ -19,7 +19,9 @@
 package com.twoeightnine.root.xvii.dialogs.fragments
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,23 +31,30 @@ import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
 import com.twoeightnine.root.xvii.chats.messages.chat.secret.SecretChatActivity
 import com.twoeightnine.root.xvii.chats.messages.chat.usual.ChatActivity
+import com.twoeightnine.root.xvii.databinding.FragmentDialogsBinding
 import com.twoeightnine.root.xvii.dialogs.adapters.DialogsAdapter
 import com.twoeightnine.root.xvii.dialogs.viewmodels.DialogsViewModel
 import com.twoeightnine.root.xvii.model.Wrapper
-import com.twoeightnine.root.xvii.utils.*
+import com.twoeightnine.root.xvii.utils.AppBarLifter
+import com.twoeightnine.root.xvii.utils.FakeData
+import com.twoeightnine.root.xvii.utils.LegalAlertDialog
+import com.twoeightnine.root.xvii.utils.ShortcutUtils
 import com.twoeightnine.root.xvii.utils.contextpopup.ContextPopupItem
 import com.twoeightnine.root.xvii.utils.contextpopup.createContextPopup
+import com.twoeightnine.root.xvii.utils.matchesUserId
 import com.twoeightnine.root.xvii.utils.notifications.NotificationUtils
+import com.twoeightnine.root.xvii.utils.showDeleteDialog
+import com.twoeightnine.root.xvii.utils.showError
+import com.twoeightnine.root.xvii.utils.showToast
 import com.twoeightnine.root.xvii.views.TextInputAlertDialog
 import global.msnthrp.xvii.data.dialogs.Dialog
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
 import global.msnthrp.xvii.uikit.extensions.hide
 import global.msnthrp.xvii.uikit.extensions.show
-import kotlinx.android.synthetic.main.fragment_dialogs.*
 import javax.inject.Inject
 
 
-open class DialogsFragment : BaseFragment() {
+open class DialogsFragment : BaseFragment<FragmentDialogsBinding>() {
 
     @Inject
     lateinit var viewModelFactory: DialogsViewModel.Factory
@@ -55,19 +64,22 @@ open class DialogsFragment : BaseFragment() {
         DialogsAdapter(requireContext(), ::loadMore, ::onClick, ::onLongClick)
     }
 
-    override fun getLayoutId() = R.layout.fragment_dialogs
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentDialogsBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecycler()
 
-        progressBar.show()
-        swipeRefresh.setOnRefreshListener {
-            viewModel.loadDialogs()
-            adapter.reset()
-            adapter.startLoading()
+        binding.apply {
+            progressBar.show()
+            swipeRefresh.setOnRefreshListener {
+                viewModel.loadDialogs()
+                adapter.reset()
+                adapter.startLoading()
+            }
+            rvDialogs.applyBottomInsetPadding()
         }
-        rvDialogs.applyBottomInsetPadding()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -83,14 +95,18 @@ open class DialogsFragment : BaseFragment() {
     }
 
     private fun initRecycler() {
-        rvDialogs.layoutManager = LinearLayoutManager(context)
-        rvDialogs.adapter = adapter
-        rvDialogs.addOnScrollListener(AppBarLifter(xviiToolbar))
+        binding.apply {
+            rvDialogs.layoutManager = LinearLayoutManager(context)
+            rvDialogs.adapter = adapter
+            rvDialogs.addOnScrollListener(AppBarLifter(xviiToolbar))
+        }
     }
 
     private fun updateDialogs(data: Wrapper<ArrayList<Dialog>>) {
-        swipeRefresh.isRefreshing = false
-        progressBar.hide()
+        binding.apply {
+            swipeRefresh.isRefreshing = false
+            progressBar.hide()
+        }
         if (data.data != null) {
             if (FakeData.ENABLED_DIALOGS) {
                 adapter.update(FakeData.dialogs)

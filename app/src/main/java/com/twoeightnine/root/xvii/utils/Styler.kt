@@ -164,9 +164,9 @@ fun AlertDialog.stylize(keepFont: Boolean = false, warnPositive: Boolean = false
 
     window?.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.shape_context_dialog))
 
-    findViewById<View>(R.id.contentPanel)?.setBackgroundColor(popupColor)
-    findViewById<View>(R.id.buttonPanel)?.setBackgroundColor(popupColor)
-    findViewById<View>(R.id.topPanel)?.setBackgroundColor(popupColor)
+    findViewById<View>(androidx.appcompat.R.id.contentPanel)?.setBackgroundColor(popupColor)
+    findViewById<View>(androidx.appcompat.R.id.buttonPanel)?.setBackgroundColor(popupColor)
+    findViewById<View>(androidx.appcompat.R.id.topPanel)?.setBackgroundColor(popupColor)
 
     findViewById<TextView>(android.R.id.message)?.apply {
         if (!keepFont) {
@@ -174,7 +174,7 @@ fun AlertDialog.stylize(keepFont: Boolean = false, warnPositive: Boolean = false
         }
         setTextColor(mainText)
     }
-    findViewById<DialogTitle>(R.id.alertTitle)?.apply {
+    findViewById<DialogTitle>(androidx.appcompat.R.id.alertTitle)?.apply {
         textSize = 20f
         setTextColor(mainText)
     }

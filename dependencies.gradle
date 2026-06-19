@@ -21,18 +21,18 @@ ext {
             versionCode  : 194,
             versionName  : "6.1.9",
 
-            applicationId: "com.twoeightnine.root.xvii"
+            applicationId: "com.twoeightnine.root.xviii"
     ]
 
     androidVersions = [
             minSdkVersion    : 23,
             targetSdkVersion : 30,
-            compileSdkVersion: 30,
+            compileSdkVersion: 34,
             buildToolsVersion: '30.0.0'
     ]
 
     toolsVersions = [
-            kotlinVersion     : "1.4.10",
+            kotlinVersion     : "1.9.24",
             javaVersion       : "1.8",
 
             roomVersion       : "2.2.5",
@@ -115,7 +115,7 @@ ext {
             calligraphy     : "io.github.inflationx:calligraphy3:3.1.1",
             viewPump        : "io.github.inflationx:viewpump:2.0.3",
 
-            imageCropper    : "com.theartofdev.edmodo:android-image-cropper:2.8.0",
+            imageCropper    : "com.vanniktech:android-image-cropper:4.3.3",
             roundedImageView: "com.makeramen:roundedimageview:2.3.0"
     ]
 

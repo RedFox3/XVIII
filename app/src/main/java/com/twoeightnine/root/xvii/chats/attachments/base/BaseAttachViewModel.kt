@@ -63,7 +63,7 @@ abstract class BaseAttachViewModel<T : Any> : ViewModel() {
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <VM : ViewModel?> create(modelClass: Class<VM>): VM = when (modelClass) {
+        override fun <VM : ViewModel> create(modelClass: Class<VM>): VM = when (modelClass) {
             PhotoAttachViewModel::class.java -> PhotoAttachViewModel(api) as VM
             GalleryViewModel::class.java -> GalleryViewModel(context) as VM
             DocAttachViewModel::class.java -> DocAttachViewModel(api) as VM

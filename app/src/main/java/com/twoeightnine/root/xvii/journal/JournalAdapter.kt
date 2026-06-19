@@ -19,10 +19,10 @@
 package com.twoeightnine.root.xvii.journal
 
 import android.content.Context
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.twoeightnine.root.xvii.R
+import com.twoeightnine.root.xvii.databinding.ItemJournalEventBinding
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.uikit.Munch
 import com.twoeightnine.root.xvii.uikit.paint
@@ -33,7 +33,6 @@ import global.msnthrp.xvii.core.journal.model.JournalEventWithPeer
 import global.msnthrp.xvii.uikit.base.adapters.BaseAdapter
 import global.msnthrp.xvii.uikit.extensions.lowerIf
 import global.msnthrp.xvii.uikit.extensions.setVisible
-import kotlinx.android.synthetic.main.item_journal_event.view.*
 
 class JournalAdapter(
         context: Context,
@@ -43,16 +42,16 @@ class JournalAdapter(
     override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
-    ): JournalEventViewHolder = JournalEventViewHolder(inflater.inflate(R.layout.item_journal_event, parent, false))
+    ): JournalEventViewHolder = JournalEventViewHolder(ItemJournalEventBinding.inflate(inflater, parent, false))
 
     override fun onBindViewHolder(holder: JournalEventViewHolder, position: Int) {
         holder.bind(items[position])
     }
 
-    inner class JournalEventViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class JournalEventViewHolder(private val binding: ItemJournalEventBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(event: JournalEventWithPeer) {
-            with(itemView) {
+            with(binding) {
                 xaPhoto.load(event.fromPhoto, event.fromName.first().toString(), event.journalEvent.peerId)
                 tvName.text = event.fromName
                 tvName.lowerIf(Prefs.lowerTexts)
@@ -68,7 +67,7 @@ class JournalAdapter(
                 tvMessage.setVisible(messageText != null)
                 messageText?.also(tvMessage::setText)
 
-                setOnClickListener { items.getOrNull(adapterPosition)?.also(onClick) }
+                root.setOnClickListener { items.getOrNull(adapterPosition)?.also(onClick) }
             }
         }
 

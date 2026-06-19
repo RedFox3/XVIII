@@ -117,7 +117,7 @@ class FeaturesViewModel(
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass == FeaturesViewModel::class.java) {
                 return FeaturesViewModel(appDb, api) as T
             }

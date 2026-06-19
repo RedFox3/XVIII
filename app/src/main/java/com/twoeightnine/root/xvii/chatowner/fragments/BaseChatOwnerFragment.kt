@@ -21,37 +21,42 @@ package com.twoeightnine.root.xvii.chatowner.fragments
 import android.app.Activity
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.annotation.DrawableRes
+import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
+import androidx.viewbinding.ViewBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
 import com.twoeightnine.root.xvii.chatowner.ChatOwnerViewModel
 import com.twoeightnine.root.xvii.chatowner.model.ChatOwner
 import com.twoeightnine.root.xvii.chats.messages.chat.usual.ChatActivity
+import com.twoeightnine.root.xvii.databinding.ItemChatOwnerFieldBinding
 import com.twoeightnine.root.xvii.extensions.load
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.model.Wrapper
 import com.twoeightnine.root.xvii.model.attachments.Photo
 import com.twoeightnine.root.xvii.photoviewer.ImageViewerActivity
 import com.twoeightnine.root.xvii.uikit.Munch
+import com.twoeightnine.root.xvii.uikit.XviiFab
+import com.twoeightnine.root.xvii.uikit.XviiToolbar
 import com.twoeightnine.root.xvii.uikit.paint
 import com.twoeightnine.root.xvii.utils.BrowsingUtils
 import com.twoeightnine.root.xvii.utils.copyToClip
 import com.twoeightnine.root.xvii.utils.showError
 import com.twoeightnine.root.xvii.utils.showToast
 import com.twoeightnine.root.xvii.views.RateAlertDialog
+import com.twoeightnine.root.xvii.views.XviiSwitch
 import global.msnthrp.xvii.uikit.extensions.*
-import kotlinx.android.synthetic.main.fragment_chat_owner.ivAvatar
-import kotlinx.android.synthetic.main.fragment_chat_owner.nsvContent
-import kotlinx.android.synthetic.main.fragment_chat_owner.tvInfo
-import kotlinx.android.synthetic.main.fragment_chat_owner.tvTitle
-import kotlinx.android.synthetic.main.fragment_chat_owner_user.*
-import kotlinx.android.synthetic.main.item_chat_owner_field.view.*
 
-abstract class BaseChatOwnerFragment<T : ChatOwner> : BaseFragment() {
+abstract class BaseChatOwnerFragment<T : ChatOwner, VB : ViewBinding> : BaseFragment<VB>() {
 
     private val peerId by lazy {
         arguments?.getInt(ARG_PEER_ID) ?: 0
@@ -68,17 +73,20 @@ abstract class BaseChatOwnerFragment<T : ChatOwner> : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val behavior = BottomSheetBehavior.from(nsvContent)
+
+        val behavior = BottomSheetBehavior.from(
+            view.findViewById<NestedScrollView>(R.id.nsvContent)
+        )
         behavior.setBottomSheetCallback(ProfileBottomSheetCallback(activity ?: return))
-        fabOpenChat.setOnClickListener {
+        view.findViewById<XviiFab>(R.id.fabOpenChat).setOnClickListener {
             chatOwner?.also {
                 ChatActivity.launch(context, it)
             }
         }
-        ivAvatar?.setOnClickListener(::onAvatarClicked)
-        ivAvatarHighRes?.setOnClickListener(::onAvatarClicked)
+        view.findViewById<ImageView>(R.id.ivAvatar)?.setOnClickListener(::onAvatarClicked)
+        view.findViewById<ImageView>(R.id.ivAvatarHighRes)?.setOnClickListener(::onAvatarClicked)
         context?.let { RateAlertDialog(it).show() }
-        ivBack.apply {
+        view.findViewById<ImageView>(R.id.ivBack).apply {
             applyTopInsetMargin()
             setOnClickListener {
                 onBackPressed()
@@ -109,26 +117,26 @@ abstract class BaseChatOwnerFragment<T : ChatOwner> : BaseFragment() {
     @Suppress("UNCHECKED_CAST")
     private fun onChatOwnerLoaded(data: Wrapper<ChatOwner>) {
         if (data.data != null) {
-            rlLoader.hide()
+            binding.root.findViewById<RelativeLayout>(R.id.rlLoader).hide()
             chatOwner = data.data
             chatOwner?.apply {
-                ivAvatar?.load(getAvatar())
+                binding.root.findViewById<ImageView>(R.id.ivAvatar)?.load(getAvatar())
 
                 val title = getTitle().lowerIf(Prefs.lowerTexts)
-                tvTitle.text = title
-                xviiToolbar?.title = title
+                binding.root.findViewById<TextView>(R.id.tvTitle).text = title
+                binding.root.findViewById<XviiToolbar>(R.id.xviiToolbar)?.title = title
 
                 context?.also {
-                    tvInfo.text = getInfoText(it)
+                    binding.root.findViewById<TextView>(R.id.tvInfo).text = getInfoText(it)
                     getPrivacyInfo(it).also { privacyInfo ->
-                        ivWarning.setVisible(privacyInfo != null)
-                        tvPrivacy.setVisible(privacyInfo != null)
-                        privacyInfo?.also { tvPrivacy.text = it }
+                        binding.root.findViewById<ImageView>(R.id.ivWarning).setVisible(privacyInfo != null)
+                        binding.root.findViewById<TextView>(R.id.tvPrivacy).setVisible(privacyInfo != null)
+                        privacyInfo?.also { binding.root.findViewById<TextView>(R.id.tvPrivacy).text = it }
                     }
                 }
 
-                tvInfo.lowerIf(Prefs.lowerTexts)
-                swNotifications.isChecked = viewModel.getShowNotifications(getPeerId())
+                binding.root.findViewById<TextView>(R.id.tvInfo).lowerIf(Prefs.lowerTexts)
+                binding.root.findViewById<XviiSwitch>(R.id.swNotifications).isChecked = viewModel.getShowNotifications(getPeerId())
                 resetValues()
                 bindChatOwner(this as? T)
                 viewModel.loadPhotos(getPeerId(), getChatOwnerClass())
@@ -140,15 +148,15 @@ abstract class BaseChatOwnerFragment<T : ChatOwner> : BaseFragment() {
 
     private fun onPhotosLoaded(photos: List<Photo>) {
         if (photos.isNotEmpty()) {
-            ivAvatar?.postDelayed({
+            binding.root.findViewById<ImageView>(R.id.ivAvatar)?.postDelayed({
                 loadHighResWithAnimation(photos[0].getOptimalPhoto()?.url)
             }, 1000L)
         }
     }
 
     private fun onAliasLoaded(alias: String) {
-        tvAlias.show()
-        tvAlias.text = getString(R.string.aka_prefix, alias)
+        binding.root.findViewById<TextView>(R.id.tvAlias).show()
+        binding.root.findViewById<TextView>(R.id.tvAlias).text = getString(R.string.aka_prefix, alias)
     }
 
     private fun onAvatarClicked(v: View) {
@@ -160,7 +168,7 @@ abstract class BaseChatOwnerFragment<T : ChatOwner> : BaseFragment() {
     }
 
     private fun resetValues() {
-        llContainer.removeAllViews()
+        binding.root.findViewById<CoordinatorLayout>(R.id.llContainer).removeAllViews()
     }
 
     protected fun addValue(
@@ -171,7 +179,15 @@ abstract class BaseChatOwnerFragment<T : ChatOwner> : BaseFragment() {
     ) {
         if (text.isNullOrBlank()) return
 
-        with(View.inflate(context, R.layout.item_chat_owner_field, null)) {
+
+        val llContainer = binding.root.findViewById<CoordinatorLayout>(R.id.llContainer)
+        val itemBinding = ItemChatOwnerFieldBinding.inflate(
+            LayoutInflater.from(context),
+            binding.root.findViewById<CoordinatorLayout>(R.id.llContainer),
+            false
+        )
+
+        itemBinding.apply {
             if (icon != 0) {
                 ivIcon.setImageResource(icon)
                 ivIcon.paint(Munch.color.color)
@@ -183,7 +199,7 @@ abstract class BaseChatOwnerFragment<T : ChatOwner> : BaseFragment() {
             onLongClick?.also {
                 rlItem.setOnLongClickListener { onLongClick(text); true }
             }
-            llContainer.addView(this)
+            llContainer.addView(root)
         }
     }
 
@@ -200,16 +216,16 @@ abstract class BaseChatOwnerFragment<T : ChatOwner> : BaseFragment() {
         val context = context ?: return
         url ?: return
         SimpleBitmapTarget { bitmap, _ ->
-            ivAvatarHighRes?.setImageBitmap(bitmap)
-            ivAvatarHighRes?.fadeIn(700L) {
-                ivAvatar?.hide()
+            binding.root.findViewById<ImageView>(R.id.ivAvatarHighRes)?.setImageBitmap(bitmap)
+            binding.root.findViewById<ImageView>(R.id.ivAvatarHighRes)?.fadeIn(700L) {
+                binding.root.findViewById<ImageView>(R.id.ivAvatar)?.hide()
             }
         }.load(context, url)
     }
 
     override fun onDestroyView() {
         chatOwner?.getPeerId()?.also { peerId ->
-            viewModel.setShowNotifications(peerId, swNotifications.isChecked)
+            viewModel.setShowNotifications(peerId, binding.root.findViewById<XviiSwitch>(R.id.swNotifications).isChecked)
         }
         super.onDestroyView()
     }
@@ -245,13 +261,13 @@ abstract class BaseChatOwnerFragment<T : ChatOwner> : BaseFragment() {
                 }
                 else -> {
                     val margin = imageHeight * -offset * PARALLAX_COEFF
-                    (ivAvatar?.layoutParams as? CoordinatorLayout.LayoutParams)?.apply {
+                    (binding.root.findViewById<ImageView>(R.id.ivAvatar)?.layoutParams as? CoordinatorLayout.LayoutParams)?.apply {
                         topMargin = margin.toInt()
-                        ivAvatar?.layoutParams = this
+                        binding.root.findViewById<ImageView>(R.id.ivAvatar)?.layoutParams = this
                     }
-                    (ivAvatarHighRes?.layoutParams as? CoordinatorLayout.LayoutParams)?.apply {
+                    (binding.root.findViewById<ImageView>(R.id.ivAvatarHighRes)?.layoutParams as? CoordinatorLayout.LayoutParams)?.apply {
                         topMargin = margin.toInt()
-                        ivAvatarHighRes?.layoutParams = this
+                        binding.root.findViewById<ImageView>(R.id.ivAvatarHighRes)?.layoutParams = this
                     }
                 }
             }
@@ -261,7 +277,7 @@ abstract class BaseChatOwnerFragment<T : ChatOwner> : BaseFragment() {
 
         }
 
-        private fun shouldColorToolbar() = xviiToolbar
-                ?.let { (screenHeight - it.height + 92) <= cvInfo.height } ?: false
+        private fun shouldColorToolbar() = binding.root.findViewById<XviiToolbar>(R.id.xviiToolbar)
+                ?.let { (screenHeight - it.height + 92) <= binding.root.findViewById<CardView>(R.id.cvInfo).height } ?: false
     }
 }

@@ -46,7 +46,7 @@
     <string name="rate">évaluer</string>
     <string name="gallery">gallerie</string>
     <string name="delete">supprimer</string>
-    <string name="join_us">suives le group officielle de xvii pour obtenir des nouveautés les plus fraîches à propos l\'app</string>
+    <string name="join_us">suives le group officielle de xviii pour obtenir des nouveautés les plus fraîches à propos l\'app</string>
     <string name="download">télécharger</string>
     <string name="add_to_saved">sauvegarder dans l\'album</string>
     <string name="added_to_saved">photo a été sauvegardé dans l\'album</string>
@@ -107,7 +107,7 @@
     <string name="not_now">pas maintenant</string>
     <string name="never">jamais</string>
     <string name="unable_to_add_to_gallery">incapable d\'ajouter à la gallerie. il va être ajouté bientôt</string>
-    <string name="generation_dh_hint">souyez sûr que votre interlocuteur a installé et ouvert xvii. c\'est necessaire pour l\'échangement des clés</string>
+    <string name="generation_dh_hint">souyez sûr que votre interlocuteur a installé et ouvert xviii. c\'est necessaire pour l\'échangement des clés</string>
     <string name="fingerprint">empreinte digitale</string>
     <string name="decrypting_image">la photo est été décrypté</string>
     <string name="invalid_file">disponible de décrypter ce fichier</string>
@@ -177,7 +177,7 @@
         <item quantity="other">%s participants</item>
     </plurals>
 
-    <string name="aboutbig">xvii messenger (par twoeightnine)\nver. %s depuis %s</string>
+    <string name="aboutbig">xviii messenger (par twoeightnine)\nver. %s depuis %s</string>
 
     <string name="offline">hors ligne</string>
 
@@ -205,7 +205,7 @@
     <string name="custom_key_type">personnalisé</string>
     <string name="random_key_type">au hasard (dhe)</string>
     <string name="no_access_to_storage">aucun accès au storage</string>
-    <string name="need_access_to_storage">xvii veut avoir un accès au storage pour attacher ou sauvegarder des fichiers</string>
+    <string name="need_access_to_storage">xviii veut avoir un accès au storage pour attacher ou sauvegarder des fichiers</string>
     <string name="details">détails</string>
     <string name="report_hint">il aidera à résoudre le problème plus vite</string>
     <string name="mark_as_read">marquer comme lu</string>
@@ -241,7 +241,7 @@
     <string name="unable_to_write">vous ne pouvez pas écrire un message à l\'utilisateur</string>
     <string name="show_seconds">montrer des secondes</string>
     <string name="longpoll_hint">tapez ici pour cacher cette notification</string>
-    <string name="xvii_longpoll">service en arrière-plan de xvii</string>
+    <string name="xvii_longpoll">service en arrière-plan de xviii</string>
     <string name="summary">totallément</string>
     <string name="show_voice">montrer de l\'audio</string>
     <string name="show_stickers">montrer des emojis/autocollants</string>
@@ -372,7 +372,7 @@
     <string name="login_no_internet">vous devrez etre connecte sur internet pour se connecter</string>
     <string name="pin_brute_force">force brute detectée\naccès refusé</string>
     <string name="pin_incident_report">l\'incident sera rapporté</string>
-    <string name="share_on_wall">partager xvii sur mon mur</string>
+    <string name="share_on_wall">partager xviii sur mon mur</string>
     <string name="source_code">le code source</string>
     <string name="destructor_title">message sera supprimé en %d secondes</string>
     <string name="destructor_process_title">supprime..</string>

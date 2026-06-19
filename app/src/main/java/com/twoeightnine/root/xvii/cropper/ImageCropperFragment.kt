@@ -20,12 +20,15 @@ package com.twoeightnine.root.xvii.cropper
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
+import com.twoeightnine.root.xvii.databinding.FragmentCropperBinding
 import com.twoeightnine.root.xvii.uikit.Munch
 import com.twoeightnine.root.xvii.uikit.paint
 import com.twoeightnine.root.xvii.utils.CacheFileUtils
@@ -36,10 +39,9 @@ import global.msnthrp.xvii.uikit.extensions.hide
 import global.msnthrp.xvii.uikit.extensions.show
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.fragment_cropper.*
 import java.io.File
 
-class ImageCropperFragment : BaseFragment() {
+class ImageCropperFragment : BaseFragment<FragmentCropperBinding>() {
 
     private val path by lazy {
         arguments?.getString(ARG_PATH)
@@ -47,42 +49,47 @@ class ImageCropperFragment : BaseFragment() {
 
     private var cropperDisposable: Disposable? = null
 
-    override fun getLayoutId(): Int = R.layout.fragment_cropper
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentCropperBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        cropImageView.setImageUriAsync(Uri.parse("file://$path"))
-        ivDone.setOnClickListener {
-            cropAndExit()
-        }
-        ivRotateCounter.setOnClickListener {
-            cropImageView.rotateImage(-90)
-        }
-        ivRotateClock.setOnClickListener {
-            cropImageView.rotateImage(90)
-        }
 
-        ivDone.paint(Munch.color.color)
-        ViewCompat.setOnApplyWindowInsetsListener(llBottom) { v, insets ->
-            val padding = context?.resources?.getDimensionPixelSize(R.dimen.attach_fab_done_margin) ?: 0
-            v.setPadding(0, padding, 0, padding + insets.systemWindowInsetBottom)
-            insets
+        binding.apply {
+            cropImageView.setImageUriAsync("file://$path".toUri())
+            ivDone.setOnClickListener {
+                cropAndExit()
+            }
+            ivRotateCounter.setOnClickListener {
+                cropImageView.rotateImage(-90)
+            }
+            ivRotateClock.setOnClickListener {
+                cropImageView.rotateImage(90)
+            }
+
+            ivDone.paint(Munch.color.color)
+            ViewCompat.setOnApplyWindowInsetsListener(llBottom) { v, insets ->
+                val padding =
+                    context?.resources?.getDimensionPixelSize(R.dimen.attach_fab_done_margin) ?: 0
+                v.setPadding(0, padding, 0, padding + insets.systemWindowInsetBottom)
+                insets
+            }
         }
     }
 
     private fun cropAndExit() {
-        rvLoader.show()
-        llBottom.hide()
+        binding.rvLoader.show()
+        binding.llBottom.hide()
         cropperDisposable?.dispose()
         cropperDisposable = Single.fromCallable {
-            val croppedImage = cropImageView.croppedImage
+            val croppedImage = binding.cropImageView.croppedImage
             val cacheDir = requireContext().cacheDir
 
             val croppedDir = File(cacheDir, CacheFileUtils.DIR_CROPPED)
             croppedDir.mkdir()
 
             val croppedFileName = File(croppedDir, "cropped_${time()}.png")
-            saveBmp(croppedFileName.absolutePath, croppedImage)
+            saveBmp(croppedFileName.absolutePath, croppedImage!!) // TODO: check if it works
             croppedFileName.absolutePath
         }
                 .compose(applySingleSchedulers())

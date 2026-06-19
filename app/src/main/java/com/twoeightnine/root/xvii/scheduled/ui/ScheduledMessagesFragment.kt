@@ -19,12 +19,15 @@
 package com.twoeightnine.root.xvii.scheduled.ui
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
+import com.twoeightnine.root.xvii.databinding.FragmentScheduledMessagesBinding
 import com.twoeightnine.root.xvii.uikit.Munch
 import com.twoeightnine.root.xvii.uikit.paint
 import com.twoeightnine.root.xvii.utils.AppBarLifter
@@ -33,9 +36,8 @@ import com.twoeightnine.root.xvii.utils.showToast
 import global.msnthrp.xvii.data.scheduled.ScheduledMessage
 import global.msnthrp.xvii.uikit.extensions.EndAnimatorListener
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
-import kotlinx.android.synthetic.main.fragment_scheduled_messages.*
 
-class ScheduledMessagesFragment : BaseFragment() {
+class ScheduledMessagesFragment : BaseFragment<FragmentScheduledMessagesBinding>() {
 
     private val viewModel by lazy {
         ViewModelProviders.of(this)[ScheduledMessagesViewModel::class.java]
@@ -54,21 +56,24 @@ class ScheduledMessagesFragment : BaseFragment() {
                 ?.toFloat() ?: 16f
     }
 
-    override fun getLayoutId(): Int = R.layout.fragment_scheduled_messages
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentScheduledMessagesBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ivSend.setOnClickListener {
-            showToast(context, R.string.scheduled_messages_not_here)
+        binding.apply {
+            ivSend.setOnClickListener {
+                showToast(context, R.string.scheduled_messages_not_here)
+            }
+
+            rvMessages.layoutManager = LinearLayoutManager(context)
+            rvMessages.adapter = adapter
+            rvMessages.addOnScrollListener(AppBarLifter(xviiToolbar))
+            adapter.emptyView = rlHint
+
+            ivSend.paint(Munch.color.color)
+            rvMessages.applyBottomInsetPadding()
         }
-
-        rvMessages.layoutManager = LinearLayoutManager(context)
-        rvMessages.adapter = adapter
-        rvMessages.addOnScrollListener(AppBarLifter(xviiToolbar))
-        adapter.emptyView = rlHint
-
-        ivSend.paint(Munch.color.color)
-        rvMessages.applyBottomInsetPadding()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -93,7 +98,7 @@ class ScheduledMessagesFragment : BaseFragment() {
         }
     }
 
-    private fun animateFinger() {
+    private fun animateFinger() = with(binding) {
         ivFinger?.animate()
                 ?.scaleX(-SCALE_PRESSED)
                 ?.scaleY(SCALE_PRESSED)

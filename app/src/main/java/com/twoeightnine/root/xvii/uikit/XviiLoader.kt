@@ -21,12 +21,14 @@ package com.twoeightnine.root.xvii.uikit
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.twoeightnine.root.xvii.R
-import kotlinx.android.synthetic.main.view_loader.view.*
+import com.twoeightnine.root.xvii.databinding.ViewLoaderBinding
 
 class XviiLoader(context: Context, attributeSet: AttributeSet) : FrameLayout(context, attributeSet) {
+
+    private val binding = ViewLoaderBinding.inflate(LayoutInflater.from(context), this)
 
     private val extraPadding by lazy {
         context.resources.getDimensionPixelSize(R.dimen.loader_extra_padding)
@@ -37,8 +39,7 @@ class XviiLoader(context: Context, attributeSet: AttributeSet) : FrameLayout(con
 
     init {
         initAttributes(attributeSet)
-        View.inflate(context, R.layout.view_loader, this)
-        circularProgress.apply {
+        binding.circularProgress.apply {
             if (alwaysWhite) {
                 setIndicatorColor(Color.WHITE)
             } else {
@@ -61,7 +62,7 @@ class XviiLoader(context: Context, attributeSet: AttributeSet) : FrameLayout(con
     private fun initAttributes(attributeSet: AttributeSet) {
         val attrs = context.theme.obtainStyledAttributes(attributeSet, R.styleable.XviiLoader, 0, 0)
         alwaysWhite = attrs.getBoolean(R.styleable.XviiLoader_alwaysWhite, false)
-        size = Size.values()[attrs.getInt(R.styleable.XviiLoader_size, 0)]
+        size = Size.entries.toTypedArray()[attrs.getInt(R.styleable.XviiLoader_size, 0)]
         attrs.recycle()
     }
 

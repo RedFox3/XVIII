@@ -25,6 +25,7 @@ plugins {
 apply from: "$project.rootDir/dependencies.gradle"
 
 android {
+    namespace "global.msnthrp.xvii.uikit"
     compileSdkVersion androidVersions.compileSdkVersion
     buildToolsVersion androidVersions.buildToolsVersion
 

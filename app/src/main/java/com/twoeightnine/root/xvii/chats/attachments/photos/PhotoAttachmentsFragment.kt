@@ -22,10 +22,11 @@ import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
 import com.twoeightnine.root.xvii.App
 import com.twoeightnine.root.xvii.chats.attachments.base.BaseAttachmentsFragment
+import com.twoeightnine.root.xvii.databinding.ItemPhotoAttachmentBinding
 import com.twoeightnine.root.xvii.model.attachments.Photo
 import com.twoeightnine.root.xvii.photoviewer.ImageViewerActivity
 
-class PhotoAttachmentsFragment : BaseAttachmentsFragment<Photo>() {
+class PhotoAttachmentsFragment : BaseAttachmentsFragment<Photo, ItemPhotoAttachmentBinding>() {
 
     override val adapter by lazy {
         PhotoAttachmentsAdapter(requireContext(), ::loadMore, ::onClick)

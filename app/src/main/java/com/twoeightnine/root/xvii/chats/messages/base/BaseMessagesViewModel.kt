@@ -65,7 +65,7 @@ abstract class BaseMessagesViewModel(protected val api: ApiService) : ViewModel(
                 1, 0
         )
                 .subscribeSmart({ response ->
-                    if (response.items.size > 0 && response.items[0].player != null) {
+                    if (response.items.isNotEmpty() && response.items[0].player != null) {
                         onLoaded(response.items[0].player ?: "")
                     } else {
                         onError(context.getString(R.string.not_playable_video))
@@ -95,7 +95,7 @@ abstract class BaseMessagesViewModel(protected val api: ApiService) : ViewModel(
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>) = when (modelClass) {
+        override fun <T : ViewModel> create(modelClass: Class<T>) = when (modelClass) {
             StarredMessagesViewModel::class.java -> StarredMessagesViewModel(api) as T
             DeepForwardedViewModel::class.java -> DeepForwardedViewModel(api) as T
             ChatMessagesViewModel::class.java -> ChatMessagesViewModel(api, chatStorage) as T

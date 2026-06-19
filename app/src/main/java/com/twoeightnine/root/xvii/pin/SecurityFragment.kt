@@ -24,11 +24,14 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.core.content.ContextCompat
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.base.BaseFragment
+import com.twoeightnine.root.xvii.databinding.FragmentPinSettingsBinding
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.uikit.Munch
 import com.twoeightnine.root.xvii.uikit.paint
@@ -36,9 +39,8 @@ import com.twoeightnine.root.xvii.utils.getBatteryLevel
 import com.twoeightnine.root.xvii.utils.getMinutes
 import global.msnthrp.xvii.uikit.extensions.applyBottomInsetPadding
 import global.msnthrp.xvii.uikit.extensions.setVisible
-import kotlinx.android.synthetic.main.fragment_pin_settings.*
 
-class SecurityFragment : BaseFragment() {
+class SecurityFragment : BaseFragment<FragmentPinSettingsBinding>() {
 
     private val pinCheckedListener = OnPinChecked()
 
@@ -48,16 +50,26 @@ class SecurityFragment : BaseFragment() {
     private var mixtureType = MixtureType.NONE
     private var fakeAppType = FakeAppType.NONE
 
-    override fun getLayoutId(): Int = R.layout.fragment_pin_settings
+    override fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentPinSettingsBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initListeners()
         initViews()
 
-        listOf(rbMinutesStart, rbMinutesEnd, rbBatteryStart, rbBatteryEnd, rbAlarms, rbDiagnostics)
+        binding.apply {
+            listOf(
+                rbMinutesStart,
+                rbMinutesEnd,
+                rbBatteryStart,
+                rbBatteryEnd,
+                rbAlarms,
+                rbDiagnostics
+            )
                 .forEach { it.paint(Munch.color.color) }
-        svContent.applyBottomInsetPadding()
+            svContent.applyBottomInsetPadding()
+        }
     }
 
     override fun onResume() {
@@ -67,10 +79,10 @@ class SecurityFragment : BaseFragment() {
 
     override fun onPause() {
         super.onPause()
-        Prefs.maskVoice = switchMaskVoice.isChecked
+        Prefs.maskVoice = binding.switchMaskVoice.isChecked
     }
 
-    private fun initSwitches() {
+    private fun initSwitches() = with(binding) {
         switchPin.onCheckedListener = null
 
         val hasPin = Prefs.pin.isNotBlank()
@@ -85,7 +97,7 @@ class SecurityFragment : BaseFragment() {
         switchPin.onCheckedListener = pinCheckedListener
     }
 
-    private fun initListeners() {
+    private fun initListeners() = with(binding) {
         switchPin.onCheckedListener = pinCheckedListener
         btnChange.setOnClickListener {
             PinActivity.launch(context, PinActivity.Action.EDIT)
@@ -145,7 +157,7 @@ class SecurityFragment : BaseFragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun initViews() {
+    private fun initViews() = with(binding) {
         val start = getString(R.string.pin_settings_mixture_start)
         val end = getString(R.string.pin_settings_mixture_end)
 
@@ -203,8 +215,8 @@ class SecurityFragment : BaseFragment() {
                 R.string.pin_settings_mixture_explanation_enter,
                 first, second
         )
-        tvMixtureHint.text = explanation
-        tvMixtureEnterHint.text = explanationEnter
+        binding.tvMixtureHint.text = explanation
+        binding.tvMixtureEnterHint.text = explanationEnter
     }
 
     private fun invalidateTakePhoto() {
@@ -212,7 +224,7 @@ class SecurityFragment : BaseFragment() {
         if (!hasPermissions) {
             Prefs.takeInvaderPicture = false
         }
-        switchInvaderPhoto.isChecked = Prefs.takeInvaderPicture
+        binding.switchInvaderPhoto.isChecked = Prefs.takeInvaderPicture
     }
 
     private fun hasCameraPermissions() =

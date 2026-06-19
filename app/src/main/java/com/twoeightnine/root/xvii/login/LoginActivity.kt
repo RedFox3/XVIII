@@ -34,15 +34,25 @@ import com.twoeightnine.root.xvii.App
 import com.twoeightnine.root.xvii.R
 import com.twoeightnine.root.xvii.background.longpoll.LongPollStorage
 import com.twoeightnine.root.xvii.base.BaseActivity
+import com.twoeightnine.root.xvii.databinding.ActivityLoginBinding
 import com.twoeightnine.root.xvii.main.MainActivity
 import com.twoeightnine.root.xvii.managers.Prefs
 import com.twoeightnine.root.xvii.pin.SecurityFragment
 import com.twoeightnine.root.xvii.pin.fake.alarm.AlarmActivity
 import com.twoeightnine.root.xvii.pin.fake.diagnostics.DiagnosticsActivity
 import com.twoeightnine.root.xvii.storage.SessionProvider
-import com.twoeightnine.root.xvii.utils.*
-import global.msnthrp.xvii.uikit.extensions.*
-import kotlinx.android.synthetic.main.activity_login.*
+import com.twoeightnine.root.xvii.utils.LegalLinksUtils
+import com.twoeightnine.root.xvii.utils.isOnline
+import com.twoeightnine.root.xvii.utils.showAlert
+import com.twoeightnine.root.xvii.utils.startNotificationService
+import global.msnthrp.xvii.uikit.extensions.applyBottomInsetMargin
+import global.msnthrp.xvii.uikit.extensions.applyTopInsetMargin
+import global.msnthrp.xvii.uikit.extensions.fadeIn
+import global.msnthrp.xvii.uikit.extensions.fadeOut
+import global.msnthrp.xvii.uikit.extensions.hide
+import global.msnthrp.xvii.uikit.extensions.hideInvis
+import global.msnthrp.xvii.uikit.extensions.isVisible
+import global.msnthrp.xvii.uikit.extensions.show
 import java.util.regex.Pattern
 
 class LoginActivity : BaseActivity() {
@@ -52,9 +62,11 @@ class LoginActivity : BaseActivity() {
         intent?.extras?.getBoolean(ARG_NEW_ACCOUNT) == true
     }
 
+    private val binding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        setContentView(binding.root)
 
         viewModel.accountCheckResult.observe(this, Observer(::onAccountChecked))
         viewModel.accountUpdated.observe(this, Observer(::onAccountUpdated))
@@ -70,7 +82,7 @@ class LoginActivity : BaseActivity() {
             else -> checkTokenAndStart()
         }
 
-        webView?.applyTopInsetMargin()
+        binding.webView?.applyTopInsetMargin()
     }
 
     override fun getStatusBarColor() = ContextCompat.getColor(this, R.color.splash_background)
@@ -89,7 +101,7 @@ class LoginActivity : BaseActivity() {
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private fun initLoginView() {
+    private fun initLoginView() = with(binding) {
         btnLogIn.setOnClickListener { onLogInClicked() }
 
 //        ivLoginLogo.setOnLongClickListener {
@@ -115,7 +127,7 @@ class LoginActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        if (webView.isVisible() && !addNewAccount) {
+        if (binding.webView.isVisible() && !addNewAccount) {
             hideWebView()
             showLoginView()
         } else {
@@ -133,7 +145,7 @@ class LoginActivity : BaseActivity() {
     }
 
     @Suppress("SameParameterValue")
-    private fun openWebView(url: String) {
+    private fun openWebView(url: String) = with(binding) {
         btnLogIn.hideInvis()
         webView.apply {
             loadUrl(url)
@@ -159,22 +171,22 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun showLoader() {
-        rlLoader.show()
+        binding.rlLoader.show()
     }
 
     private fun hideLoader() {
-        rlLoader.hide()
+        binding.rlLoader.hide()
     }
 
     private fun showWebView() {
-        webView?.apply {
+        binding.webView?.apply {
             alpha = 0f
             show()
-            webView.fadeIn(200L)
+            binding.webView.fadeIn(200L)
         }
     }
 
-    private fun hideWebView() {
+    private fun hideWebView() = with(binding) {
         vWebViewOverlay.show()
         webView.hide()
         vWebViewOverlay.fadeOut(200L) {
@@ -184,16 +196,16 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun showLoginView() {
-        clLoginContainer.show()
-        btnLogIn.show()
+        binding.clLoginContainer.show()
+        binding.btnLogIn.show()
     }
 
     private fun hideLoginView() {
-        clLoginContainer.hide()
+        binding.clLoginContainer.hide()
     }
 
     private fun invalidatePrivacyToS() {
-        tvPrivacyToS.apply {
+        binding.tvPrivacyToS.apply {
             text = LegalLinksUtils.formatLegalText(
                     this@LoginActivity,
                     R.string.login_privacy_and_tos

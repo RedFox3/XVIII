@@ -67,21 +67,21 @@ class RecordingAudioView : LinearLayout {
             animatorSet.playSequentially(animators)
             animatorSet.duration = DURATION
             animatorSet.addListener(object : Animator.AnimatorListener {
-                override fun onAnimationRepeat(animation: Animator?) {
+                override fun onAnimationRepeat(animation: Animator) {
 
                 }
 
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     if (!cancelled) {
                         animatorSet.start()
                     }
                 }
 
-                override fun onAnimationCancel(animation: Animator?) {
+                override fun onAnimationCancel(animation: Animator) {
 
                 }
 
-                override fun onAnimationStart(animation: Animator?) {
+                override fun onAnimationStart(animation: Animator) {
 
                 }
             })
