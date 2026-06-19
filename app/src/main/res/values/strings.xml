@@ -573,7 +573,7 @@
         <item quantity="other">%s votes</item>
     </plurals>
 
-    <string name="aboutbig">xviii messenger (by twoeightnine)\nver. %1$s since %2$s</string>
+    <string name="aboutbig">xviii messenger (by redfox3)\nfork of xvii messenger (by twoeightnine)\nver. %1$s since %2$s</string>
 
     <string name="other">other</string>
     <string name="recent">recent</string>

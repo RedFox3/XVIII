@@ -29,8 +29,8 @@ import java.util.*
 
 object LegalLinksUtils {
 
-    private const val PRIVACY_WORLD = "https://github.com/TwoEightNine/XVII/blob/master/privacy.md"
-    private const val PRIVACY_RU = "https://github.com/TwoEightNine/XVII/blob/master/privacy_ru.md"
+    private const val PRIVACY_WORLD = "https://github.com/RedFox3/XVII/blob/master/privacy.md"
+    private const val PRIVACY_RU = "https://github.com/RedFox3/XVII/blob/master/privacy_ru.md"
 
     private const val VK_TOS = "https://m.vk.com/terms"
 

@@ -1,6 +1,7 @@
 /*
- * xvii - messenger for vk
+ * xviii - messenger for vk
  * Copyright (C) 2021  TwoEightNine
+ * Copyright (C) 2026  RedFox3
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +25,7 @@ import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.DrawableRes
@@ -52,9 +54,16 @@ import com.twoeightnine.root.xvii.utils.BrowsingUtils
 import com.twoeightnine.root.xvii.utils.copyToClip
 import com.twoeightnine.root.xvii.utils.showError
 import com.twoeightnine.root.xvii.utils.showToast
-import com.twoeightnine.root.xvii.views.RateAlertDialog
 import com.twoeightnine.root.xvii.views.XviiSwitch
-import global.msnthrp.xvii.uikit.extensions.*
+import global.msnthrp.xvii.uikit.extensions.SimpleBitmapTarget
+import global.msnthrp.xvii.uikit.extensions.applyBottomInsetMargin
+import global.msnthrp.xvii.uikit.extensions.applyTopInsetMargin
+import global.msnthrp.xvii.uikit.extensions.fadeIn
+import global.msnthrp.xvii.uikit.extensions.hide
+import global.msnthrp.xvii.uikit.extensions.load
+import global.msnthrp.xvii.uikit.extensions.lowerIf
+import global.msnthrp.xvii.uikit.extensions.setVisible
+import global.msnthrp.xvii.uikit.extensions.show
 
 abstract class BaseChatOwnerFragment<T : ChatOwner, VB : ViewBinding> : BaseFragment<VB>() {
 
@@ -85,7 +94,7 @@ abstract class BaseChatOwnerFragment<T : ChatOwner, VB : ViewBinding> : BaseFrag
         }
         view.findViewById<ImageView>(R.id.ivAvatar)?.setOnClickListener(::onAvatarClicked)
         view.findViewById<ImageView>(R.id.ivAvatarHighRes)?.setOnClickListener(::onAvatarClicked)
-        context?.let { RateAlertDialog(it).show() }
+        //context?.let { RateAlertDialog(it).show() } // TODO: don't need until release
         view.findViewById<ImageView>(R.id.ivBack).apply {
             applyTopInsetMargin()
             setOnClickListener {
@@ -168,7 +177,7 @@ abstract class BaseChatOwnerFragment<T : ChatOwner, VB : ViewBinding> : BaseFrag
     }
 
     private fun resetValues() {
-        binding.root.findViewById<CoordinatorLayout>(R.id.llContainer).removeAllViews()
+        binding.root.findViewById<LinearLayout>(R.id.llContainer).removeAllViews()
     }
 
     protected fun addValue(
@@ -180,10 +189,10 @@ abstract class BaseChatOwnerFragment<T : ChatOwner, VB : ViewBinding> : BaseFrag
         if (text.isNullOrBlank()) return
 
 
-        val llContainer = binding.root.findViewById<CoordinatorLayout>(R.id.llContainer)
+        val llContainer = binding.root.findViewById<LinearLayout>(R.id.llContainer)
         val itemBinding = ItemChatOwnerFieldBinding.inflate(
             LayoutInflater.from(context),
-            binding.root.findViewById<CoordinatorLayout>(R.id.llContainer),
+            binding.root.findViewById<LinearLayout>(R.id.llContainer),
             false
         )
 

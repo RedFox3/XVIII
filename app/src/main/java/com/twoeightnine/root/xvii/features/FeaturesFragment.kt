@@ -96,15 +96,15 @@ class FeaturesFragment : BaseFragment<FragmentFeaturesBinding>() {
             xiAccounts.setOnClickListener { startFragment<AccountsFragment>() }
             xiGeneral.setOnClickListener {
                 startFragment<GeneralFragment>()
-                suggestJoin()
+//                suggestJoin() // TODO: don't need until release
             }
             xiNotifications.setOnClickListener {
                 startFragment<NotificationsFragment>()
-                suggestJoin()
+//                suggestJoin() // TODO: don't need until release
             }
             xiAppearance.setOnClickListener {
                 AppearanceActivity.launch(context)
-                suggestJoin()
+//                suggestJoin() // TODO: don't need until release
             }
             xiSecurity.setOnClickListener { startFragment<SecurityFragment>() }
 
