@@ -2,6 +2,8 @@
 
 xviii is a messenger for those who want to be online on the go! no feed, no stories, no walls, no likes, no clips. only messaging and features that are necessary!
 
+> **Note**: This project is a fork of the original [xvii](https://github.com/TwoEightNine/XVII) application developed by TwoEightNine. All modifications and new features in this repository are maintained by the fork community. See [CONTRIBUTORS.md](https://github.com/RedFox3/XVII/blob/master/CONTRIBUTORS.md) for full authorship details.
+
 extra features:
 
  * secret chats
@@ -36,7 +38,7 @@ border="0" cellpadding="0" cellspacing="0">
             </a>
         </td>
         <td>
-            <a href="https://github.com/TwoEightNine/XVII/releases" target="_blank">
+            <a href="https://github.com/RedFox3/XVII/releases" target="_blank">
                 <img src="https://user-images.githubusercontent.com/663460/26973090-f8fdc986-4d14-11e7-995a-e7c5e79ed925.png" height="60"/>
             </a>
         </td>
@@ -49,13 +51,14 @@ border="0" cellpadding="0" cellspacing="0">
 </table>
 
 ### useful links
- - [privacy policy](https://github.com/TwoEightNine/XVII/blob/master/privacy.md)
- - [official vk group](https://vk.com/xvii_app)
+ - [privacy policy](https://github.com/RedFox3/XVII/blob/master/privacy.md)
+ - [official vk group](https://vk.com/xviii_app)
 
 ### license
 ```
 xviii - messenger for vk
 Copyright (C) 2021  TwoEightNine
+Copyright (C) 2026  RedFox3
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
