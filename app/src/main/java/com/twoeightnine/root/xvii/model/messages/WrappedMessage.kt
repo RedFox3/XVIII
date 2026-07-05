@@ -19,7 +19,7 @@
 package com.twoeightnine.root.xvii.model.messages
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class WrappedMessage(
